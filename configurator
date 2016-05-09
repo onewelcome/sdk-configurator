@@ -1,0 +1,356 @@
+#!/bin/bash
+
+# common params
+declare zip_filepath
+declare libFolder=lib
+
+# Android
+declare android_package_name
+declare android_project_src_filepath
+declare keystore_hash
+
+# iOS
+declare -a base64certificates=()
+
+# app's config
+declare application_platform
+declare application_identifier
+declare application_version
+declare app_scheme
+declare base_url
+declare resource_base_url
+declare max_pin_failures
+declare redirect_url
+
+function initialize {
+	print_tool_header
+	validate_json_parser
+	create_temp_dirs
+	show_main_menu
+}
+
+function print_tool_header {
+	clear
+	printf "\n### Onegini SDK Configurator ###\n\n"
+}
+
+function create_temp_dirs {
+	# remove temp if it exists
+	remove_temp_dirs
+
+	mkdir -p ./tmp
+	mkdir -p ./tmp/formatedCerts
+	mkdir -p ./tmp/androidKeystores
+}
+
+function remove_temp_dirs {
+    rm -Rf ./tmp
+}
+
+function show_main_menu {
+	print_tool_header
+
+	printf "Provide a number [1-3] to select your option\n\n"
+
+	options=("Android app config" "iOS app config" "Quit")
+	select opt in "${options[@]}"
+	do
+		case $opt in 
+			"Android app config")
+				run_android
+				break
+				;;
+			"iOS app config")
+				run_ios
+				break
+				;;
+			"Quit")
+				break;
+				;;
+			*) echo "Bad option selected. Press a number [1-3] to select your option"
+		esac
+	done
+	clean_and_exit
+}
+
+function run_android {
+	process_config_package
+	parse_json_config
+
+	ask_for_android_src_directory
+	parse_android_namespace_from_manifest
+	
+	printf "\n# Certificate pinning #\n"
+	format_certs
+	create_android_keystores
+	copy_android_keystore
+
+	printf "\n# OneginiConfigModel setup #\n"
+	prepare_android_config_model
+	copy_android_config_model
+
+	printf "\nConfiguration completed!\n"
+	clean_and_exit
+}
+
+function run_ios {
+	process_config_package
+	parse_json_config
+
+	format_certs
+	prepare_base64_certs
+	prepare_converted_certs_paths
+
+	ask_for_xcodeproj_path
+	ask_for_target_name
+
+	printf "Generating configuration files...\n"
+	prepare_ios_config_model
+	copy_ios_config_model
+
+	printf "Configuration completed!\n"
+	remove_temp_dirs
+}
+
+function validate_json_parser {
+	type jq >/dev/null 2>&1 || {
+		echo "Error! jq JSON parser not found. please download and install jq from https://stedolan.github.io/jq/download/. "
+		exit 1
+	}
+}
+
+function process_config_package {
+	read -e -p "Enter the path to the config's ZIP file: " FILEPATH
+	eval zip_filepath=$FILEPATH
+	if [ ! -f "$zip_filepath" ]; then
+    echo "File not found!"
+    process_config_package
+  else
+  	unzip_config
+	fi
+}
+
+function unzip_config {
+	printf "Searching for a ZIP file in %s\n" "$zip_filepath"
+	unzip "$zip_filepath" -d ./tmp
+	ret_code=$?
+	if [ ${ret_code} != 0 ]; then
+		echo "Error! Provided ZIP file cannot be extracted."
+		process_config_package
+	fi
+}
+
+function ask_for_android_src_directory {
+	read -e -p "Enter the path to the Android's main \"src\" directory of the project: " RESPATH
+	eval respath=$RESPATH
+	echo "Checking provided path... "
+	if [ -d "$respath" ]; then
+		name="$(basename $respath)"
+		if [ "$name" = src ]; then
+				android_project_src_filepath=$respath
+				echo "Success!"
+		else
+				echo "Error! The provided path doesn't target the \"src\" directory."
+				ask_for_android_src_directory
+		fi
+	else
+			echo "Error! The provided path doesn't exist!"
+			ask_for_android_src_directory
+	fi
+}
+
+function ask_for_xcodeproj_path {
+	read -e -p "Enter the xcode project file path: " FILEPATH
+	eval xcodeproj_filepath=$FILEPATH
+	if [ ! -e $xcodeproj_filepath ] ; then
+		echo "$xcodeproj_filepath does not exists."
+		ask_for_xcodeproj_path
+	fi
+	if [[ ! $xcodeproj_filepath == *.xcodeproj ]] ; then
+		echo "$xcodeproj_filepath is not an .xcodeproj file"	
+		ask_for_xcodeproj_path
+	fi
+}
+
+function ask_for_target_name {
+	read -e -p "Enter the target name: " target_name
+	target_exists=$(ruby ./$libFolder/TargetCheck.rb $xcodeproj_filepath $target_name)
+	if [ "$target_exists" = 0 ]; then
+		echo "$target_name does not exists in $xcodeproj_filepath project."
+		ask_for_target_name
+	fi
+}
+
+function prepare_ios_config_model {
+	ios_config_model_name=OneginiConfigModel
+	certificatesStringForIOS=""
+	for base64cert in "${base64certificates[@]}"; do
+	   	certificatesStringForIOS=$certificatesStringForIOS"@\""$base64cert"\","
+	done
+	sed "s#CONFIG_MODEL_NAME#$ios_config_model_name#" ./$libFolder/ios_config_h_template > ./tmp/$ios_config_model_name.h
+
+	sed "s#ONEGINI_CERTIFICATES#$certificatesStringForIOS#" ./$libFolder/ios_config_m_template |
+		sed "s/ONEGINI_APP_IDENTIFIER/$application_identifier/" |
+		sed "s/ONEGINI_APP_VERSION/$application_version/" |
+		sed "s/ONEGINI_APP_PLATFORM/$application_platform/" |
+		sed "s/ONEGINI_APP_SCHEME/$app_scheme/" |
+		sed "s*ONEGINI_BASE_URL*$base_url*" |
+		sed "s*ONEGINI_RESOURCE_BASE_URL*$resource_base_url*" |
+		sed "s*ONEGINI_REDIRECT_URL*$redirect_url*" |
+		sed "s/ONEGINI_MAX_PIN_FAILURES/$max_pin_failures/" |
+		sed "s#CONFIG_MODEL_NAME#$ios_config_model_name#" > ./tmp/$ios_config_model_name.m
+
+}
+
+function copy_ios_config_model {
+	for convertedCertificarteFileName in "${convertedCertificates[@]}" 
+		do 
+			ruby ./$libFolder/AddFile.rb $xcodeproj_filepath $target_name $convertedCertificarteFileName "Configuration"
+	done
+	ruby ./$libFolder/AddFile.rb $xcodeproj_filepath $target_name "./tmp/$ios_config_model_name.h" "Configuration"
+	ruby ./$libFolder/AddFile.rb $xcodeproj_filepath $target_name "./tmp/$ios_config_model_name.m" "Configuration"
+}
+
+function parse_android_namespace_from_manifest {
+	echo "Searching for AndroidManifest file (in $android_project_src_filepath)... "
+	manifest=$(find $android_project_src_filepath -name "AndroidManifest.xml" -type f)
+	if ! [ -f "$manifest" ]; then
+		echo "Error! Can't find the \"AndroidManifest.xml\" file... aborting!"
+		clean_and_exit
+	fi
+	echo "Success!"
+	echo "Searching for package name in AndroidManifest file... "
+	android_package_name=$(grep -E -o 'package="[A-Za-z0-9_\.]+"' $manifest | head -1 | sed 's/"//g;s/package=//')
+	if [ -z "$android_package_name" ]; then
+		echo "Error! Can't find package name in AndroidManifest file: $manifest... aborting!"
+		clean_and_exit
+	fi
+	echo "Success!"
+}
+
+function parse_json_config {
+	if [ ! -f ./tmp/config.json ]; then
+		echo "Can't find config file: \"config.js\"... aborting!"
+		clean_and_exit
+	fi
+
+	read_json_value_or_abort '.application_identifier' application_identifier
+	read_json_value_or_abort '.application_platform' application_platform
+	read_json_value_or_abort '.application_version' application_version
+	read_json_value_or_abort '.token_server_uri' base_url
+	read_first_json_element_from_array_or_abort '.resource_gateway_uri' resource_base_url
+ 	read_json_value_or_abort '.max_pin_failures' max_pin_failures
+	read_json_value_or_abort '.redirect_url' redirect_url
+	# get scheme from redirect url
+	app_scheme=${redirect_url%://*}
+}
+
+function read_json_value_or_abort () {
+	value=$(jq $1 ./tmp/config.json)
+	if [ -z "$value" ]; then
+		echo "Can't find $1 value in config.json... aborting!"
+		clean_and_exit
+	else
+		eval ${2}=$value
+	fi
+}
+
+# for now resource_url is an array, when the SDK supports only one url
+# so we pick only first element
+function read_first_json_element_from_array_or_abort () {
+	value=$(jq "$1 | .[0]" ./tmp/config.json)
+	if [ -z "$value" ]; then
+		echo "Can't find $1 value in config.json... aborting!"
+		clean_and_exit
+	else
+		eval ${2}=$value
+	fi	
+}
+
+function format_certs {
+	for file in ./tmp/certificates/*; do
+		filename=$(basename $file)
+		openssl x509 -in $file -outform pem -out ./tmp/formatedCerts/$filename.pem
+		openssl x509 -in $file -outform der -out ./tmp/formatedCerts/$filename.cer
+	done	
+}
+
+function prepare_base64_certs {
+	base64certificates=()
+	for file in ./tmp/formatedCerts/*.cer; do
+		base64certificates+=("$(openssl base64 -A -in $file)")
+	done	
+}
+
+function prepare_converted_certs_paths {
+	convertedCertificates=()
+	for filename in ./tmp/formatedCerts/*; do
+		convertedCertificates+=($filename)
+	done	
+}
+
+function create_android_keystores {
+	for file in ./tmp/certificates/*; do
+		filename=$(basename $file)
+		keytool -import -alias $filename -file $file -keystore ./tmp/androidKeystores/keystore.bks -storepass PASSWORD -providerpath ./$libFolder/bcprov-jdk15on-1.46.jar -storetype BKS -provider org.bouncycastle.jce.provider.BouncyCastleProvider
+	done
+}
+
+function compute_keystore_hash {
+	keystore_hash=`shasum -a 256 ./tmp/androidKeystores/keystore.bks | awk '{ print $1 }'`
+}
+
+function copy_android_keystore {
+	echo "Searching for \"res\" directory..."
+	respath=$(find $android_project_src_filepath -name "res" -type d)
+	if ! [ -d "$respath" ]; then
+		echo "Error! Can't find the \"res\" directory... aborting!"
+		clean_and_exit
+	fi
+	echo "Success!"
+
+	rawpath=$respath/raw
+	mkdir -p $rawpath
+	echo "Copying certificates keystore into $rawpath..."
+    cp ./tmp/androidKeystores/keystore.bks $rawpath
+
+	if [ $? -ne 0 ]; then
+		echo "Error occured... aborting!"
+		clean_and_exit
+    fi
+    
+    printf "Success! Certificates keystore file was succussfuly copied to your project in %s.\n\n" $rawpath
+    compute_keystore_hash
+}
+
+function prepare_android_config_model {
+	sed "s/ONEGINI_PROJECT_PACKAGE/$android_package_name/" ./$libFolder/android_config_template |
+		sed "s/ONEGINI_APP_IDENTIFIER/\"$application_identifier\"/" |
+		sed "s/ONEGINI_APP_VERSION/\"$application_version\"/" |
+		sed "s/ONEGINI_APP_PLATFORM/\"$application_platform\"/" |
+		sed "s/ONEGINI_APP_SCHEME/\"$app_scheme\"/" |
+		sed "s*ONEGINI_BASE_URL*\"$base_url\"*" |
+		sed "s*ONEGINI_RESOURCE_BASE_URL*\"$resource_base_url\"*" |
+		sed "s/ONEGINI_KEYSTORE_HASH/\"$keystore_hash\"/" | 
+		sed "s/ONEGINI_MAX_PIN_FAILURES/$max_pin_failures/" > ./tmp/OneginiConfigModel.java
+}
+
+function copy_android_config_model {
+	package_path=$(echo $android_package_name | sed 's/\./\//g')
+	eval destination_path=$android_project_src_filepath"main/java/"$package_path
+	echo "Copying OneginiConfigModel into destination path $destination_path..."
+	if ! [ -d "$destination_path" ]; then
+		echo "Error! Destination path doesn't exist... aborting!"
+		clean_and_exit
+	fi
+
+	cp -i ./tmp/OneginiConfigModel.java $destination_path
+	# todo add a warning when user don't override the file, or different error occures
+}
+
+function clean_and_exit {
+	remove_temp_dirs
+	exit
+}
+
+initialize
