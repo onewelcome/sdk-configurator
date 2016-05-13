@@ -7,14 +7,14 @@ Tool can be used with Android and iOS projects.
 
 ## Requirements
 
-- bash : for Windows bash can be installed with Cygwin. More info http://cygwin.com/install.html
-- jq : JSON processor. Can be downloaded from: https://stedolan.github.io/jq/download/
+- **bash** : for Windows bash can be installed with Cygwin. More info http://cygwin.com/install.html
+- **jq** : JSON processor. Can be downloaded from: https://stedolan.github.io/jq/download/
 
 #### Android specific:
 - Only Android Studio's projects structure is supported
 
 #### iOS specific:
-- Ruby : for more info go to https://www.ruby-lang.org/en/documentation/installation/
+- **Ruby** : for more info go to https://www.ruby-lang.org/en/documentation/installation/
 - Xcodeproj which can be installed with $ [sudo] gem install xcodeproj. For more info go to https://github.com/CocoaPods/Xcodeproj
 
 ## How it works
