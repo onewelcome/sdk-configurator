@@ -7,20 +7,22 @@ Tool can be used with Android and iOS projects.
 
 ## Requirements
 
-• bash - for Windows bash can be installed with Cygwin - more info http://cygwin.com/install.html
-• jq - JSON processor - can be downloaded from: https://stedolan.github.io/jq/download/
-• Android specific:
-	- only Android Studio's projects structure is supported
-• iOS specific:
-  - Ruby - for more info go to https://www.ruby-lang.org/en/documentation/installation/
-	- Xcodeproj which can be installed with $ [sudo] gem install xcodeproj - for more info go to https://github.com/CocoaPods/Xcodeproj
+- bash : for Windows bash can be installed with Cygwin. More info http://cygwin.com/install.html
+- jq : JSON processor. Can be downloaded from: https://stedolan.github.io/jq/download/
+
+#### Android specific:
+- Only Android Studio's projects structure is supported
+
+#### iOS specific:
+- Ruby : for more info go to https://www.ruby-lang.org/en/documentation/installation/
+- Xcodeproj which can be installed with $ [sudo] gem install xcodeproj. For more info go to https://github.com/CocoaPods/Xcodeproj
 
 ## How it works
 
 Tool is a bash script. After execution, script will ask user for all required data one by one:
 1. Choose between Android and iOS platform.
 2. Provide path to ZIP file containing app's config and certificates.
-Next steps are platform specific.
+The next steps are platform specific.
 
 ### Android
 3. Provide path to a main "src" directory of Android project
