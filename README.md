@@ -1,38 +1,91 @@
-# Onegini Mobile SDK Configurator
+# SDK Configurator
+
+The SDK Configurator configures the Onegini SDK in your application project.
+
+It currently supports iOS, Android and Cordova projects. For Cordova it supports both the iOS and Android platforms.
 
 ## About the tool
 
-The tool was created to help developers to setup their apps to use Onegini Mobile SDKs. The main responsibilities of the tool is to generate config models and perform certificate pinning. In order to perform both operations a ZIP file containing certificates and app config is needed. The file can be downloaded from the Token Server's Admin Panel.
-Tool can be used with Android and iOS projects.
+The tool was created to help developers to setup their apps to use the Onegini Mobile SDKs. The main responsibilities of the tool is to generate config models 
+and perform certificate pinning. In order to perform both operations a ZIP file containing certificates and app config is needed. The file can be downloaded 
+from the Token Server's Admin Panel.
 
-## Requirements
 
-- **bash** : for Windows bash can be installed with Cygwin. More info http://cygwin.com/install.html
-- **jq** : JSON processor. Can be downloaded from: https://stedolan.github.io/jq/download/
+## Installing
 
-#### Android specific:
+You can download the latest binary for you platform from the [Release page](https://github.com/Onegini/sdk-configurator/releases).
+
+### Requirements
+
+**Android specific:**
+
 - Only Android Studio's projects structure is supported
 
-#### iOS specific:
-- **Ruby** : for more info go to https://www.ruby-lang.org/en/documentation/installation/
+**iOS specific:**
+
+- Ruby : for more info go to https://www.ruby-lang.org/en/documentation/installation/
 - Xcodeproj which can be installed with $ [sudo] gem install xcodeproj. For more info go to https://github.com/CocoaPods/Xcodeproj
 
-## How it works
+## Usage
 
-Tool is a bash script. After execution, script will ask user for all required data one by one:
-1. Choose between Android and iOS platform.
-2. Provide path to ZIP file containing app's config and certificates.
-The next steps are platform specific.
+Use the `--help` flag for up to date help:
+```sh
+onegini-sdk-configurator --help
+```
 
-### Android
-3. Provide path to a main "src" directory of Android project
+### iOS example
+ 
+Example for configuring an iOS project:
+```sh
+onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/cordova-app/ --debugDetection=true --rootDetection=true
+```
 
-The ZIP file is being unzipped and the certificates are stored in a new secure AndroidKeystore. During this process the user has to confirm, that he trusts shown certificates. After that the keystore is being copied to the project's `/res/raw` asset directory and a hash of the keystore is computed.
-`OneginiConfigModel` (that implements `OneginiClientConfigModel` interface) is being generated with values provided in config.json stored within the ZIP package. To assure tampering detection the tool also computes hash of the generated keystore and puts it into the output config model class. Afterwards the config model is being copied to the project's main sources package, for example `/src/main/java/com/onegini/mobile/demo/`.
+### Android Example
+Example for configuring an Android project:
+```sh
+onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/cordova-app/ --debugDetection=true --rootDetection=true
+```
 
-### iOS
-3. Provide path to `.xcodeproj` file
-4. Provide name of the target to which generated files will be added
+### Cordova example
+Example for configuring a Cordova Android project:
+```sh
+onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
+```
+Make sure you have `onegini-cordova-plugin` installed before running the configurator.
 
-OneginiConfigModel.h and OneginiConfigModel.m are generated along with certificate files in .pem and .cer formats. Files are added to the project into a group named "Configuration". At runtime SDK will detect those files and use them for configuration. When `Onegini SDK Configurator` tool is used OGOneginiClient should initialized through #initWithDelegate:delegate method.
+## Building from source
 
+The Onegini Cordova plugin actually contains a hook that will automatically trigger the configurator. 
+
+Make sure you have go installed:
+```sh
+brew install go
+```
+
+Read more about setting up go in the [official docs](https://golang.org/doc/install)
+
+Install dependencies:
+```sh
+go get github.com/spf13/cobra
+go get -u github.com/jteeuwen/go-bindata/...
+```
+
+Clone project:
+```sh
+mkdir -p $GOPATH/src/gitlab.onegini.com/mobile-platform
+git clone ssh://git@gitlab.onegini.com:10022/mobile-platform/sdk-config-importer.git $GOPATH/src/gitlab.onegini.com/mobile-platform/onegini-sdk-configurator
+
+Build project with:
+```sh
+go build
+```
+
+Or run without export a binary using:
+```sh
+go run main.go
+```
+
+Update binary assets using
+```sh
+go-bindata -pkg data -o data/bindata.go lib/
+```
