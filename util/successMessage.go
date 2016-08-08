@@ -14,8 +14,8 @@
 
 package util
 
-import "fmt"
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )

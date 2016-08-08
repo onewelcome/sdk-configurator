@@ -21,7 +21,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/util"
+	"github.com/Onegini/sdk-configurator/util"
 )
 
 var iosCmd = &cobra.Command{

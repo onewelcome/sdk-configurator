@@ -26,7 +26,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/data"
+	"github.com/Onegini/sdk-configurator/data"
 	"path/filepath"
 )
 

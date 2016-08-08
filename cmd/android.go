@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/util"
+	"github.com/Onegini/sdk-configurator/util"
 	"os"
 	"path"
 	"fmt"
