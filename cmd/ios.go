@@ -20,8 +20,8 @@ import (
 
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/Onegini/sdk-configurator/util"
+	"github.com/spf13/cobra"
 )
 
 var iosCmd = &cobra.Command{
@@ -54,7 +54,7 @@ var iosCmd = &cobra.Command{
 }
 
 func verifyAppTarget(appTarget string, cmd *cobra.Command) {
-	if (len(appTarget) == 0) {
+	if len(appTarget) == 0 {
 		if isCordova {
 			os.Stderr.WriteString(fmt.Sprintln("ERROR: No application identifier found in your 'config.xml'. Please make sure that you have set one."))
 			os.Exit(1)

@@ -21,8 +21,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Onegini/sdk-configurator/data"
 	"fmt"
+
+	"github.com/Onegini/sdk-configurator/data"
 )
 
 func WriteIOSConfigModel(appDir string, appName string, config *Config) {
@@ -43,9 +44,9 @@ func WriteIOSConfigModel(appDir string, appName string, config *Config) {
 	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, appName)
 }
 
-func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) ([]byte) {
+func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) []byte {
 	_, errFileNotFoundInAppProject := os.Stat(modelPath)
-	if (errFileNotFoundInAppProject == nil) {
+	if errFileNotFoundInAppProject == nil {
 		appProjectModel, err := ioutil.ReadFile(modelPath)
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: could not read Config model in Project: %v\n", err.Error()))
@@ -63,7 +64,7 @@ func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) (
 	}
 }
 
-func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) ([]byte) {
+func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) []byte {
 	configMap := map[string]string{
 		"kOGAppIdentifier":   config.Options.AppID,
 		"kOGAppScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
@@ -96,7 +97,7 @@ func WriteAndroidConfigModel(config *Config, appDir string, keystorePath string)
 	ioutil.WriteFile(modelPath, model, os.ModePerm)
 }
 
-func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) ([]byte) {
+func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
 		"appIdentifier":   config.Options.AppID,
 		"appScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
@@ -106,7 +107,7 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
 	}
 	intConfigMap := map[string]string{
-		"maxPinFailures":  strconv.Itoa(config.Options.MaxPinFailures),
+		"maxPinFailures": strconv.Itoa(config.Options.MaxPinFailures),
 	}
 
 	newPackage := "package " + getPackageIdentifierFromConfig(config) + ";"
@@ -125,12 +126,12 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
-	return model;
+	return model
 }
 
-func readAndroidConfigModelFromAssetsOrProject(modelPath string) ([]byte) {
+func readAndroidConfigModelFromAssetsOrProject(modelPath string) []byte {
 	_, errFileNotFoundInAppProject := os.Stat(modelPath)
-	if (errFileNotFoundInAppProject == nil) {
+	if errFileNotFoundInAppProject == nil {
 		appProjectModel, err := ioutil.ReadFile(modelPath)
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in Project: %v\n", err.Error()))
@@ -147,4 +148,3 @@ func readAndroidConfigModelFromAssetsOrProject(modelPath string) ([]byte) {
 		return modelFromTmp
 	}
 }
-

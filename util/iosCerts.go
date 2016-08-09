@@ -21,9 +21,9 @@ import (
 	"os"
 	"path"
 
-	"strings"
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 func ConfigureIOSCertificates(config *Config, appName string, appDir string) {
@@ -34,7 +34,7 @@ func ConfigureIOSCertificates(config *Config, appName string, appDir string) {
 
 	for certName, certContents := range config.Certs {
 
-		certPath := path.Join(storeDir, certName + ".cer")
+		certPath := path.Join(storeDir, certName+".cer")
 
 		block, _ := pem.Decode([]byte(certContents))
 		ioutil.WriteFile(certPath, block.Bytes, os.ModePerm)
@@ -46,7 +46,7 @@ func ConfigureIOSCertificates(config *Config, appName string, appDir string) {
 func removeOldCerts(storeDir string, xcodeProjPath string) {
 	d, err := os.Open(storeDir)
 	if err != nil {
-		if (os.IsNotExist(err)) {
+		if os.IsNotExist(err) {
 			return
 		} else {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot open certificate Store dir: %v\n", err.Error()))
@@ -70,7 +70,7 @@ func removeOldCerts(storeDir string, xcodeProjPath string) {
 	}
 }
 
-func getBase64Certs(config *Config) ([]string) {
+func getBase64Certs(config *Config) []string {
 	var base64Certs []string
 
 	for _, certContents := range config.Certs {

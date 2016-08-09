@@ -15,14 +15,14 @@
 package util
 
 import (
+	"os"
 	"path"
 	"strings"
-	"os"
 )
 
-func GetAndroidKeystorePath(appDir string, config *Config) (string) {
+func GetAndroidKeystorePath(appDir string, config *Config) string {
 	androidPlatformPath := ""
-	if (isCordova(config)) {
+	if isCordova(config) {
 		androidPlatformPath = path.Join(appDir, "platforms", "android")
 	} else {
 		androidPlatformPath = path.Join(appDir, "app", "src", "main")
@@ -36,24 +36,24 @@ func GetAndroidKeystorePath(appDir string, config *Config) (string) {
 	return path.Join(androidRawPath, "keystore.bks")
 }
 
-func getAndroidSecurityControllerPath(appDir string, config *Config) (string) {
-	if (isCordova(config)) {
+func getAndroidSecurityControllerPath(appDir string, config *Config) string {
+	if isCordova(config) {
 		return path.Join(appDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "SecurityController.java")
 	} else {
 		return path.Join(appDir, "app", "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "SecurityController.java")
 	}
 }
 
-func getAndroidManifestPath(appDir string, config *Config) (string) {
-	if (isCordova(config)) {
+func getAndroidManifestPath(appDir string, config *Config) string {
+	if isCordova(config) {
 		return path.Join(appDir, "platforms", "android", "AndroidManifest.xml")
 	} else {
 		return path.Join(appDir, "app", "src", "main", "AndroidManifest.xml")
 	}
 }
 
-func getAndroidConfigModelPath(appDir string, config *Config) (string) {
-	if (isCordova(config)) {
+func getAndroidConfigModelPath(appDir string, config *Config) string {
+	if isCordova(config) {
 		return path.Join(appDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "OneginiConfigModel.java")
 	} else {
 		return path.Join(appDir, "app", "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "OneginiConfigModel.java")
@@ -66,42 +66,42 @@ func PrepareIosPaths(appDir string, appName string, config *Config) {
 		os.Mkdir(configModelPath, os.ModePerm)
 	}
 
-	certificatePath:= getIosXcodeCertificatePath(appDir, appName, config)
+	certificatePath := getIosXcodeCertificatePath(appDir, appName, config)
 	if _, err := os.Stat(certificatePath); os.IsNotExist(err) {
 		os.Mkdir(certificatePath, os.ModePerm)
 	}
 }
 
-func getIosXcodeProjPath(appDir string, appName string, config *Config) (string) {
-	return path.Join(getIosSrcPath(appDir, config), appName + ".xcodeproj")
+func getIosXcodeProjPath(appDir string, appName string, config *Config) string {
+	return path.Join(getIosSrcPath(appDir, config), appName+".xcodeproj")
 }
 
-func getIosXcodeCertificatePath(appDir string, appName string, config *Config) (string) {
-	if (isCordova(config)) {
+func getIosXcodeCertificatePath(appDir string, appName string, config *Config) string {
+	if isCordova(config) {
 		return path.Join(getIosSrcPath(appDir, config), appName, "Resources")
 	} else {
 		return path.Join(getIosSrcPath(appDir, config), "Resources")
 	}
 }
 
-func getIosSrcPath(appDir string, config *Config) (string) {
-	if (isCordova(config)) {
+func getIosSrcPath(appDir string, config *Config) string {
+	if isCordova(config) {
 		return path.Join(appDir, "platforms", "ios")
 	} else {
 		return appDir
 	}
 }
 
-func getIosConfigModelPathMFile(appDir string, appName string, config *Config) (string) {
+func getIosConfigModelPathMFile(appDir string, appName string, config *Config) string {
 	return path.Join(getIosConfigModelPath(appDir, appName, config), "OneginiConfigModel.m")
 }
 
-func getIosConfigModelPathHFile(appDir string, appName string, config *Config) (string) {
+func getIosConfigModelPathHFile(appDir string, appName string, config *Config) string {
 	return path.Join(getIosConfigModelPath(appDir, appName, config), "OneginiConfigModel.h")
 }
 
-func getIosConfigModelPath(appDir string, appName string, config *Config) (string) {
-	if (isCordova(config)) {
+func getIosConfigModelPath(appDir string, appName string, config *Config) string {
+	if isCordova(config) {
 		return path.Join(appDir, "platforms", "ios", appName, "Configuration")
 	} else {
 		return path.Join(appDir, "Configuration")
@@ -120,7 +120,7 @@ func iosAddConfigModelFileToXcodeProj(modelFile string, xcodeProjPath string, ap
 	addFileToXcodeProj(modelFile, xcodeProjPath, appName, "Configuration")
 }
 
-func exists(path string) (bool) {
+func exists(path string) bool {
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return false

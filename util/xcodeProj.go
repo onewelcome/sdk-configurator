@@ -22,13 +22,14 @@ import (
 
 	"os/exec"
 
-	"github.com/Onegini/sdk-configurator/data"
 	"strings"
+
+	"github.com/Onegini/sdk-configurator/data"
 )
 
 var (
 	removeFileScriptPath string
-	addFileScriptPath string
+	addFileScriptPath    string
 )
 
 func init() {
@@ -63,8 +64,8 @@ func removeFileFromXcodeProj(filepath string, xcodeProjPath string, group string
 }
 
 func addFileToXcodeProj(filePath string, xcodeProjPath string, appName string, group string) {
-	ruby := checkForRuby();
-	checkForXcodeprojGem();
+	ruby := checkForRuby()
+	checkForXcodeprojGem()
 
 	cmd := exec.Command(
 		ruby,
@@ -92,7 +93,7 @@ func checkForXcodeprojGem() {
 	cmd := exec.Command("gem", "list")
 
 	result, err := cmd.CombinedOutput()
-	if (err != nil) {
+	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot find the xcodeproj gem: %v\n", err.Error()))
 		os.Exit(1)
 	}

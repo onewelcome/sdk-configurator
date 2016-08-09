@@ -34,7 +34,7 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 	fmt.Printf("Token Server URI:	%v\n", config.Options.TokenServerUri)
 	rgUris := config.Options.ResourceGatewayUris
 	for i := 0; i < len(rgUris); i++ {
-		if (i == 0) {
+		if i == 0 {
 			fmt.Printf("Resource Gateways:	%v\n", rgUris[i])
 		} else {
 			fmt.Printf("			%v\n", rgUris[i])
@@ -43,7 +43,7 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 }
 
 func PrintAndroidManifestUpdateHint(config *Config) {
-	if (!isCordova(config)) {
+	if !isCordova(config) {
 		fmt.Println("")
 		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
