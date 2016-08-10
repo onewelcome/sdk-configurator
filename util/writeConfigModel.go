@@ -98,7 +98,7 @@ func WriteAndroidConfigModel(config *Config, appDir string, keystorePath string)
 func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
 		"appIdentifier":   config.Options.AppID,
-		"appScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
+		"redirectionUri":  config.Options.RedirectUrl,
 		"appVersion":      config.Options.AppVersion,
 		"baseURL":         config.Options.TokenServerUri,
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
