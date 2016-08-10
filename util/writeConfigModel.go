@@ -66,13 +66,11 @@ func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) [
 
 func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) []byte {
 	configMap := map[string]string{
-		"kOGAppIdentifier":   config.Options.AppID,
-		"kOGAppScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
-		"kOGAppVersion":      config.Options.AppVersion,
-		"kOGAppBaseURL":      config.Options.TokenServerUri,
-		"kOGMaxPinFailures":  strconv.Itoa(config.Options.MaxPinFailures),
-		"kOGResourceBaseURL": config.Options.ResourceGatewayUris[0],
-		"kOGRedirectURL":     config.Options.RedirectUrl,
+		"ONGAppIdentifier":   config.Options.AppID,
+		"ONGAppVersion":      config.Options.AppVersion,
+		"ONGAppBaseURL":      config.Options.TokenServerUri,
+		"ONGResourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"ONGRedirectURL":     config.Options.RedirectUrl,
 	}
 
 	for preference, value := range configMap {
