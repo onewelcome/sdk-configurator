@@ -28,6 +28,7 @@ var (
 func init() {
 	RootCmd.AddCommand(androidCmd)
 	RootCmd.AddCommand(iosCmd)
+	RootCmd.AddCommand(versionCmd)
 	RootCmd.PersistentFlags().StringVarP(&tsConfigLocation, "config", "c", "", "Path to Token Server config zip file")
 	RootCmd.PersistentFlags().StringVarP(&appDir, "app-dir", "a", ".", "Path to application project root directory")
 	RootCmd.PersistentFlags().StringVarP(&targetName, "target-name", "t", "", "Name of the target (for iOS)")
