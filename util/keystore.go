@@ -26,8 +26,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"github.com/Onegini/onegini-sdk-configurator/data"
 	"path/filepath"
+
+	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
 func CreateKeystore(config *Config, storePath string) {

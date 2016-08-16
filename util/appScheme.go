@@ -15,11 +15,11 @@
 package util
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
-	"fmt"
 )
 
 func WriteAndroidAppScheme(appDir string, config *Config) {
@@ -32,11 +32,11 @@ func WriteAndroidAppScheme(appDir string, config *Config) {
 
 	scheme := strings.Split(config.Options.RedirectUrl, "://")[0]
 
-	if (isCordova(config)) {
+	if isCordova(config) {
 		re := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
 		rem := regexp.MustCompile(`android:scheme="[^"]*"`)
 		manifest = re.ReplaceAllFunc(manifest, func(m []byte) (r []byte) {
-			r = rem.ReplaceAll(m, []byte("android:scheme=\"" + scheme + "\""))
+			r = rem.ReplaceAll(m, []byte("android:scheme=\""+scheme+"\""))
 			return
 		})
 		ioutil.WriteFile(manifestPath, manifest, os.ModePerm)

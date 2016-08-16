@@ -15,11 +15,12 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/Onegini/onegini-sdk-configurator/util"
+	"fmt"
 	"os"
 	"path"
-	"fmt"
+
+	"github.com/Onegini/onegini-sdk-configurator/util"
+	"github.com/spf13/cobra"
 )
 
 var androidCmd = &cobra.Command{
@@ -59,4 +60,3 @@ func verifyCordovaAndroidPlatformInstalled() {
 		os.Exit(1)
 	}
 }
-

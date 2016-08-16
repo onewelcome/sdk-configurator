@@ -10,17 +10,12 @@
 + (NSDictionary *)configuration
 {
     return @{
-             @"kOGAppIdentifier" : @"",
-             @"kOGAppScheme" : @"",
-             @"kOGAppPlatform" : @"ios",
-             @"kOGAppVersion" : @"",
-             @"kOGAppBaseURL" : @"",
-             @"kOGMaxPinFailures" : @"",
-             @"kOGResourceBaseURL" : @"",
-             @"kOGRedirectURL" : @"",
-             @"kOGStoreCookies" : @(YES),
-             @"kOGUseEmbeddedWebview" : @(YES),
-             @"kOGDeviceName" : @"",
+             @"ONGAppIdentifier" : @"",
+             @"ONGAppPlatform" : @"ios",
+             @"ONGAppVersion" : @"",
+             @"ONGAppBaseURL" : @"",
+             @"ONGResourceBaseURL" : @"",
+             @"ONGRedirectURL" : @"",
              };
 }
 
