@@ -72,8 +72,7 @@ go get -u github.com/jteeuwen/go-bindata/...
 
 Clone project:
 ```sh
-mkdir -p $GOPATH/src/github.com/Onegini
-git clone git@github.com:Onegini/sdk-configurator.git $GOPATH/src/github.com/Onegini/onegini-sdk-configurator
+go get github.com/Onegini/onegini-sdk-configurator
 ```
 
 Build project with:
