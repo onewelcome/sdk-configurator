@@ -22,7 +22,7 @@ import (
 
 	"os/exec"
 
-	"github.com/Onegini/sdk-configurator/data"
+	"github.com/Onegini/onegini-sdk-configurator/data"
 	"strings"
 )
 
