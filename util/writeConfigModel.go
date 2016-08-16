@@ -23,7 +23,7 @@ import (
 
 	"fmt"
 
-	"github.com/Onegini/sdk-configurator/data"
+	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
 func WriteIOSConfigModel(appDir string, appName string, config *Config) {

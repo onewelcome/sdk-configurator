@@ -28,7 +28,7 @@ import (
 
 	"path/filepath"
 
-	"github.com/Onegini/sdk-configurator/data"
+	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
 func CreateKeystore(config *Config, storePath string) {

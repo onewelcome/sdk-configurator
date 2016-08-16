@@ -20,7 +20,7 @@ import (
 
 	"fmt"
 
-	"github.com/Onegini/sdk-configurator/util"
+	"github.com/Onegini/onegini-sdk-configurator/util"
 	"github.com/spf13/cobra"
 )
 
