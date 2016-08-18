@@ -33,9 +33,10 @@ configured.
 
 ####Android
 
-- **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the SDK configurator 
-searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the `<manifest>` element. 
-You must remove the existing config model if you have named it differently or it it's placed in a different location before running the SDK configurator.
+- **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the 
+SDK configurator searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the 
+`<manifest>` element. You must remove the existing config model if you have named it differently or it it's placed in a different location before running the 
+SDK configurator.
 
 ####iOS
 
@@ -48,26 +49,29 @@ any certificates located in another location before running the SDK configurator
 
 Use the `--help` flag for up to date help:
 ```sh
-onegini-sdk-configurator --help
+./onegini-sdk-configurator --help
 ```
 
 ### iOS example
  
 Example for configuring an iOS project:
 ```sh
-onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/cordova-app/ --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/ios-app/ --target-name <XCODE_TARGET> --debugDetection=true --rootDetection=true
 ```
+
+Replace the `<XCODE_TARGET>` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) 
+for more information on the app target.
 
 ### Android Example
 Example for configuring an Android project:
 ```sh
-onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/cordova-app/ --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/android-app/ --debugDetection=true --rootDetection=true
 ```
 
 ### Cordova example
 Example for configuring a Cordova Android project:
 ```sh
-onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
+./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
 ```
 Make sure you have `onegini-cordova-plugin` installed before running the configurator.
 
