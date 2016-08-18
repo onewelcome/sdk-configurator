@@ -26,6 +26,23 @@ You can download the latest binary for you platform from the [Release page](http
 - Ruby : for more info go to https://www.ruby-lang.org/en/documentation/installation/
 - Xcodeproj which can be installed with $ [sudo] gem install xcodeproj. For more info go to https://github.com/CocoaPods/Xcodeproj
 
+### Assumptions
+
+Please read the following assumptions **carefully** if you start to use the SDK configurator for an existing project in which the Onegini SDK is already configured.
+
+####Android
+
+- **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the SDK configurator 
+searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the `<manifest>` element. 
+You must remove the existing config model if you have named it differently or it it's placed in a different location before running the SDK configurator.
+
+####iOS
+
+- **Config model:** The configurator tries to look for an existing config model class in the `Configuration` group in the root of your Xcode project. You must 
+remove the existing config model if it's located in a different group before running the SDK configurator.
+- **Certificates:** The configurator will remove any existing certificates located in the `Resources` group in the root of your Xcode project. You must remove 
+any certificates located in another location before running the SDK configurator
+
 ## Usage
 
 Use the `--help` flag for up to date help:
