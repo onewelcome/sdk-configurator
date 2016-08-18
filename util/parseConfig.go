@@ -68,7 +68,7 @@ func ParseConfig(configPath string, cmd *cobra.Command) (config *Config) {
 
 	if len(configPath) == 0 {
 		fmt.Print("ERROR: No Token Server configuration provided. Provide one using 'onegini-sdk-configurator <platform> -c <config-zip-location>'\n\n")
-		cmd.Help()
+		fmt.Print("execute 'onegini-sdk-configurator --help' to see how to use the configurator\n")
 		os.Exit(1)
 	}
 
