@@ -28,7 +28,8 @@ You can download the latest binary for you platform from the [Release page](http
 
 ### Assumptions
 
-Please read the following assumptions **carefully** if you start to use the SDK configurator for an existing project in which the Onegini SDK is already configured.
+Please read the following assumptions **carefully** if you start to use the SDK configurator for an **existing** project in which the Onegini SDK is already 
+configured.
 
 ####Android
 
