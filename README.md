@@ -26,7 +26,7 @@ You can download the latest binary for you platform from the [Release page](http
 - Ruby : for more info go to https://www.ruby-lang.org/en/documentation/installation/
 - Xcodeproj which can be installed with $ [sudo] gem install xcodeproj. For more info go to https://github.com/CocoaPods/Xcodeproj
 
-### Assumptions
+## Assumptions
 
 Please read the following assumptions **carefully** if you start to use the SDK configurator for an **existing** project in which the Onegini SDK is already 
 configured.
