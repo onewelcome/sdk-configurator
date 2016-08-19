@@ -26,8 +26,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/spf13/cobra"
 )
 
 type Config struct {
@@ -62,7 +60,7 @@ type androidManifest struct {
 	PackageID string `xml:"package,attr"`
 }
 
-func ParseConfig(configPath string, cmd *cobra.Command) (config *Config) {
+func ParseConfig(configPath string) (config *Config) {
 	config = new(Config)
 	config.Certs = make(map[string]string)
 

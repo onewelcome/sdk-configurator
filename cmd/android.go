@@ -29,7 +29,7 @@ var androidCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var keystorePath string
 
-		config := util.ParseConfig(tsConfigLocation, cmd)
+		config := util.ParseConfig(tsConfigLocation)
 
 		if isCordova {
 			util.ParseCordovaConfig(appDir, config)

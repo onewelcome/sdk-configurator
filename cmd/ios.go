@@ -29,7 +29,7 @@ var iosCmd = &cobra.Command{
 	Short: "Configure an iOS project",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		config := util.ParseConfig(tsConfigLocation, cmd)
+		config := util.ParseConfig(tsConfigLocation)
 		var appTarget string
 
 		if isCordova {
