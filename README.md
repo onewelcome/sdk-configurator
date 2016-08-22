@@ -26,66 +26,56 @@ You can download the latest binary for you platform from the [Release page](http
 - Ruby : for more info go to https://www.ruby-lang.org/en/documentation/installation/
 - Xcodeproj which can be installed with $ [sudo] gem install xcodeproj. For more info go to https://github.com/CocoaPods/Xcodeproj
 
+## Assumptions
+
+Please read the following assumptions **carefully** if you start to use the SDK configurator for an **existing** project in which the Onegini SDK is already 
+configured.
+
+####Android
+
+- **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the 
+SDK configurator searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the 
+`<manifest>` element. You must remove the existing config model if you have named it differently or it it's placed in a different location before running the 
+SDK configurator.
+
+####iOS
+
+- **Config model:** The configurator tries to look for an existing config model class in the `Configuration` group in the root of your Xcode project. You must 
+remove the existing config model if it's located in a different group before running the SDK configurator.
+- **Certificates:** The configurator will remove any existing certificates located in the `Resources` group in the root of your Xcode project. You must remove 
+any certificates located in another location before running the SDK configurator
+
 ## Usage
 
 Use the `--help` flag for up to date help:
 ```sh
-onegini-sdk-configurator --help
+./onegini-sdk-configurator --help
 ```
 
 ### iOS example
  
 Example for configuring an iOS project:
 ```sh
-onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/cordova-app/ --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true
 ```
+
+Replace the `myTarget` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) 
+for more information on the app target.
 
 ### Android Example
 Example for configuring an Android project:
 ```sh
-onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/cordova-app/ --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/android-app/ --debugDetection=true --rootDetection=true
 ```
 
 ### Cordova example
-Example for configuring a Cordova Android project:
+The Onegini Cordova plugin contains a hook that will automatically trigger the configurator when you run `cordova platform add`.
+You can still choose to run the configurator manually (e.g for updating an existing platform).
+ 
+Example for configuring a Cordova Android project manually:
 ```sh
-onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
-```
-Make sure you have `onegini-cordova-plugin` installed before running the configurator.
-
-## Building from source
-
-The Onegini Cordova plugin actually contains a hook that will automatically trigger the configurator. 
-
-Make sure you have go installed:
-```sh
-brew install go
+./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
 ```
 
-Read more about setting up go in the [official docs](https://golang.org/doc/install)
-
-Install dependencies:
-```sh
-go get github.com/spf13/cobra
-go get -u github.com/jteeuwen/go-bindata/...
-```
-
-Clone project:
-```sh
-go get github.com/Onegini/onegini-sdk-configurator
-```
-
-Build project with:
-```sh
-go build
-```
-
-Or run without export a binary using:
-```sh
-go run main.go
-```
-
-Update binary assets using
-```sh
-go-bindata -pkg data -o data/bindata.go lib/
-```
+Make sure you have the `onegini-cordova-plugin` installed before running the configurator. You will need to rerun the configurator for each installed platform 
+in your Cordova project.
