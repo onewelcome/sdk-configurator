@@ -56,10 +56,10 @@ Use the `--help` flag for up to date help:
  
 Example for configuring an iOS project:
 ```sh
-./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/ios-app/ --target-name <XCODE_TARGET> --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true
 ```
 
-Replace the `<XCODE_TARGET>` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) 
+Replace the `myTarget` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) 
 for more information on the app target.
 
 ### Android Example
@@ -69,10 +69,11 @@ Example for configuring an Android project:
 ```
 
 ### Cordova example
-Example for configuring a Cordova Android project:
+The Onegini Cordova plugin contains a hook that will automatically trigger the configurator when you run `cordova platform add`.
+You can still choose to run the configurator manually (e.g for updating an existing platform).
+ 
+Example for configuring a Cordova Android project manually:
 ```sh
 ./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
 ```
-Make sure you have `onegini-cordova-plugin` installed before running the configurator.
-
-The Onegini Cordova plugin actually contains a hook that will automatically trigger the configurator. 
+Make sure you have `onegini-cordova-plugin` installed before running the configurator. You will need to rerun the configurator for each installed project in your Cordova project.
