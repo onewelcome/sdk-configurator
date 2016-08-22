@@ -76,4 +76,6 @@ Example for configuring a Cordova Android project manually:
 ```sh
 ./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
 ```
-Make sure you have `onegini-cordova-plugin` installed before running the configurator. You will need to rerun the configurator for each installed project in your Cordova project.
+
+Make sure you have the `onegini-cordova-plugin` installed before running the configurator. You will need to rerun the configurator for each installed platform 
+in your Cordova project.
