@@ -1,7 +1,7 @@
 package com.onegini.example;
 
 import android.os.Build;
-import com.onegini.mobile.sdk.android.library.model.OneginiClientConfigModel;
+import com.onegini.mobile.android.sdk.model.OneginiClientConfigModel;
 
 public class OneginiConfigModel implements OneginiClientConfigModel {
 
