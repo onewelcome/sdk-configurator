@@ -192,11 +192,11 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"lib/OneginiConfigModel.h": libOneginiconfigmodelH,
-	"lib/OneginiConfigModel.java": libOneginiconfigmodelJava,
-	"lib/OneginiConfigModel.m": libOneginiconfigmodelM,
-	"lib/addFileToXcodeProject.rb": libAddfiletoxcodeprojectRb,
-	"lib/bcprov-jdk15on-1.46.jar": libBcprovJdk15on146Jar,
+	"lib/OneginiConfigModel.h":          libOneginiconfigmodelH,
+	"lib/OneginiConfigModel.java":       libOneginiconfigmodelJava,
+	"lib/OneginiConfigModel.m":          libOneginiconfigmodelM,
+	"lib/addFileToXcodeProject.rb":      libAddfiletoxcodeprojectRb,
+	"lib/bcprov-jdk15on-1.46.jar":       libBcprovJdk15on146Jar,
 	"lib/removeFileFromXcodeProject.rb": libRemovefilefromxcodeprojectRb,
 }
 
@@ -239,13 +239,14 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"lib": &bintree{nil, map[string]*bintree{
-		"OneginiConfigModel.h": &bintree{libOneginiconfigmodelH, map[string]*bintree{}},
-		"OneginiConfigModel.java": &bintree{libOneginiconfigmodelJava, map[string]*bintree{}},
-		"OneginiConfigModel.m": &bintree{libOneginiconfigmodelM, map[string]*bintree{}},
-		"addFileToXcodeProject.rb": &bintree{libAddfiletoxcodeprojectRb, map[string]*bintree{}},
-		"bcprov-jdk15on-1.46.jar": &bintree{libBcprovJdk15on146Jar, map[string]*bintree{}},
+		"OneginiConfigModel.h":          &bintree{libOneginiconfigmodelH, map[string]*bintree{}},
+		"OneginiConfigModel.java":       &bintree{libOneginiconfigmodelJava, map[string]*bintree{}},
+		"OneginiConfigModel.m":          &bintree{libOneginiconfigmodelM, map[string]*bintree{}},
+		"addFileToXcodeProject.rb":      &bintree{libAddfiletoxcodeprojectRb, map[string]*bintree{}},
+		"bcprov-jdk15on-1.46.jar":       &bintree{libBcprovJdk15on146Jar, map[string]*bintree{}},
 		"removeFileFromXcodeProject.rb": &bintree{libRemovefilefromxcodeprojectRb, map[string]*bintree{}},
 	}},
 }}
@@ -296,4 +297,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
