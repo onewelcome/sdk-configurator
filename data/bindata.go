@@ -34,7 +34,7 @@ type asset struct {
 
 // libOneginiconfigmodelH reads file data from disk. It returns an error on failure.
 func libOneginiconfigmodelH() (*asset, error) {
-	path := "/Users/jim/go/src/github.com/Onegini/onegini-sdk-configurator/lib/OneginiConfigModel.h"
+	path := "lib/OneginiConfigModel.h"
 	name := "lib/OneginiConfigModel.h"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -52,7 +52,7 @@ func libOneginiconfigmodelH() (*asset, error) {
 
 // libOneginiconfigmodelJava reads file data from disk. It returns an error on failure.
 func libOneginiconfigmodelJava() (*asset, error) {
-	path := "/Users/jim/go/src/github.com/Onegini/onegini-sdk-configurator/lib/OneginiConfigModel.java"
+	path := "lib/OneginiConfigModel.java"
 	name := "lib/OneginiConfigModel.java"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -70,7 +70,7 @@ func libOneginiconfigmodelJava() (*asset, error) {
 
 // libOneginiconfigmodelM reads file data from disk. It returns an error on failure.
 func libOneginiconfigmodelM() (*asset, error) {
-	path := "/Users/jim/go/src/github.com/Onegini/onegini-sdk-configurator/lib/OneginiConfigModel.m"
+	path := "lib/OneginiConfigModel.m"
 	name := "lib/OneginiConfigModel.m"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -88,7 +88,7 @@ func libOneginiconfigmodelM() (*asset, error) {
 
 // libAddfiletoxcodeprojectRb reads file data from disk. It returns an error on failure.
 func libAddfiletoxcodeprojectRb() (*asset, error) {
-	path := "/Users/jim/go/src/github.com/Onegini/onegini-sdk-configurator/lib/addFileToXcodeProject.rb"
+	path := "lib/addFileToXcodeProject.rb"
 	name := "lib/addFileToXcodeProject.rb"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -106,7 +106,7 @@ func libAddfiletoxcodeprojectRb() (*asset, error) {
 
 // libBcprovJdk15on146Jar reads file data from disk. It returns an error on failure.
 func libBcprovJdk15on146Jar() (*asset, error) {
-	path := "/Users/jim/go/src/github.com/Onegini/onegini-sdk-configurator/lib/bcprov-jdk15on-1.46.jar"
+	path := "lib/bcprov-jdk15on-1.46.jar"
 	name := "lib/bcprov-jdk15on-1.46.jar"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -124,7 +124,7 @@ func libBcprovJdk15on146Jar() (*asset, error) {
 
 // libRemovefilefromxcodeprojectRb reads file data from disk. It returns an error on failure.
 func libRemovefilefromxcodeprojectRb() (*asset, error) {
-	path := "/Users/jim/go/src/github.com/Onegini/onegini-sdk-configurator/lib/removeFileFromXcodeProject.rb"
+	path := "lib/removeFileFromXcodeProject.rb"
 	name := "lib/removeFileFromXcodeProject.rb"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
