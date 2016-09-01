@@ -5,3 +5,6 @@ prepareLibs:
 
 install: prepareLibs
 	go install
+
+clean:
+	git checkout data/bindata.go
