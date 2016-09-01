@@ -23,7 +23,12 @@ go get github.com/Onegini/onegini-sdk-configurator
 
 Build project with:
 ```sh
-go build
+make
+```
+
+Install the go binary with:
+```sh
+make install
 ```
 
 Or run without export a binary using:
