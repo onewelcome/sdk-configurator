@@ -91,9 +91,31 @@ func WriteAndroidConfigModel(config *Config) {
 	modelPath := config.getAndroidConfigModelPath()
 	keyStorePath := config.getAndroidKeystorePath()
 
-	model := readAndroidConfigModelFromAssetsOrProject(modelPath)
+	cleanupOldAndroidConfigModel(modelPath)
+	model := readAndroidConfigModelFromAssets()
 	model = overrideAndroidConfigModelValues(config, keyStorePath, model)
 	ioutil.WriteFile(modelPath, model, os.ModePerm)
+}
+
+func cleanupOldAndroidConfigModel(modelPath string) {
+	if exists(modelPath) {
+		err := os.Remove(modelPath)
+
+		if err != nil {
+			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not delete old config model in Project: %v\n", err.Error()))
+			os.Exit(1)
+		}
+	}
+}
+
+func readAndroidConfigModelFromAssets() []byte {
+	model, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.java")
+	if errFileNotFoundInTmp != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
+		os.Exit(1)
+	}
+
+	return model
 }
 
 func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
@@ -126,24 +148,4 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 	}
 
 	return model
-}
-
-func readAndroidConfigModelFromAssetsOrProject(modelPath string) []byte {
-	_, errFileNotFoundInAppProject := os.Stat(modelPath)
-	if errFileNotFoundInAppProject == nil {
-		appProjectModel, err := ioutil.ReadFile(modelPath)
-		if err != nil {
-			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in Project: %v\n", err.Error()))
-			os.Exit(1)
-		}
-		return appProjectModel
-	} else {
-		modelFromTmp, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.java")
-		if errFileNotFoundInTmp != nil {
-			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
-			os.Exit(1)
-		}
-
-		return modelFromTmp
-	}
 }
