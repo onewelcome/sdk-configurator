@@ -60,6 +60,10 @@ func iosAddConfigModelFileToXcodeProj(modelFile string, xcodeProjPath string, ap
 	addFileToXcodeProj(modelFile, xcodeProjPath, appTarget, "Configuration")
 }
 
+func iosRemoveConfigModelFileFromXcodeProj(modelFile string, xcodeProjPath string) {
+	removeFileFromXcodeProj(modelFile, xcodeProjPath, "Configuration")
+}
+
 func removeFileFromXcodeProj(filepath string, xcodeProjPath string, group string) {
 	ruby := checkForRuby()
 	checkForXcodeprojGem()
