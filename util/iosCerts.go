@@ -73,7 +73,13 @@ func removeOldCerts(storeDir string, xcodeProjPath string) {
 func getBase64Certs(config *Config) []string {
 	var base64Certs []string
 
-	for _, certContents := range config.Certs {
+	for cert, certContents := range config.Certs {
+		if !strings.HasPrefix(certContents, "-----BEGIN CERTIFICATE-----") {
+			os.Stderr.WriteString(fmt.Sprintf("ERROR: The '%v' certificate file provided in the Token Server configuration zip does not have the correct format.\n", cert))
+			os.Stderr.WriteString(fmt.Sprint("ERROR: Make sure that it is a PEM encoded certificate. All cert files should start with '-----BEGIN CERTIFICATE-----'\n\n"))
+			os.Exit(1)
+		}
+
 		block, _ := pem.Decode([]byte(certContents))
 
 		base64Cert := base64.StdEncoding.EncodeToString(block.Bytes)
