@@ -57,7 +57,7 @@ func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDe
 	return
 }
 
-func WriteAndroidSecurityController(appDir string, config *Config, debugDetection bool, rootDetection bool) {
+func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool) {
 	fileContents := `package %s;
 
 @SuppressWarnings({ "unused", "WeakerAccess" })
@@ -67,7 +67,7 @@ public final class SecurityController {
 }`
 	packageId := getPackageIdentifierFromConfig(config)
 	fileContents = fmt.Sprintf(fileContents, packageId, strconv.FormatBool(debugDetection), strconv.FormatBool(rootDetection))
-	storePath := getAndroidSecurityControllerPath(appDir, config)
+	storePath := config.getAndroidSecurityControllerPath()
 
 	if rootDetection && debugDetection {
 		os.Remove(storePath)
@@ -78,7 +78,7 @@ public final class SecurityController {
 	}
 }
 
-func WriteIOSSecurityController(appDir string, appName string, config *Config, debugDetection bool, rootDetection bool) {
+func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool) {
 	group := "Configuration"
 	headerContents := `#import <Foundation/Foundation.h>
 
@@ -117,8 +117,8 @@ func WriteIOSSecurityController(appDir string, appName string, config *Config, d
 	}
 
 	modelContents = fmt.Sprintf(modelContents, sRootDetection, sDebugDetection)
-	xcodeProjPath := getIosXcodeProjPath(appDir, appName, config)
-	configModelPath := getIosConfigModelPath(appDir, appName, config)
+	xcodeProjPath := config.getIosXcodeProjPath()
+	configModelPath := config.getIosConfigModelPath()
 
 	headerStorePath := path.Join(configModelPath, "SecurityController.h")
 	modelStorePath := path.Join(configModelPath, "SecurityController.m")
@@ -131,7 +131,7 @@ func WriteIOSSecurityController(appDir string, appName string, config *Config, d
 	} else {
 		ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
 		ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
-		addFileToXcodeProj(headerStorePath, xcodeProjPath, appName, group)
-		addFileToXcodeProj(modelStorePath, xcodeProjPath, appName, group)
+		addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group)
+		addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
 	}
 }

@@ -26,11 +26,11 @@ import (
 	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
-func WriteIOSConfigModel(appDir string, appName string, config *Config) {
-	xcodeProjPath := getIosXcodeProjPath(appDir, appName, config)
+func WriteIOSConfigModel(config *Config) {
+	xcodeProjPath := config.getIosXcodeProjPath()
 
-	modelMFilePath := getIosConfigModelPathMFile(appDir, appName, config)
-	modelHFilePath := getIosConfigModelPathHFile(appDir, appName, config)
+	modelMFilePath := config.getIosConfigModelPathMFile()
+	modelHFilePath := config.getIosConfigModelPathHFile()
 	modelMFile := readIosConfigModelFromAssetsOrProject(modelMFilePath, "lib/OneginiConfigModel.m")
 	modelHFile := readIosConfigModelFromAssetsOrProject(modelHFilePath, "lib/OneginiConfigModel.h")
 
@@ -40,8 +40,8 @@ func WriteIOSConfigModel(appDir string, appName string, config *Config) {
 	ioutil.WriteFile(modelMFilePath, modelMFile, os.ModePerm)
 	ioutil.WriteFile(modelHFilePath, modelHFile, os.ModePerm)
 
-	iosAddConfigModelFileToXcodeProj(modelMFilePath, xcodeProjPath, appName)
-	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, appName)
+	iosAddConfigModelFileToXcodeProj(modelMFilePath, xcodeProjPath, config.AppTarget)
+	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, config.AppTarget)
 }
 
 func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) []byte {
@@ -87,11 +87,12 @@ func overrideIosConfigModelValues(config *Config, base64Certs []string, model []
 	return model
 }
 
-func WriteAndroidConfigModel(config *Config, appDir string, keystorePath string) {
-	modelPath := getAndroidConfigModelPath(appDir, config)
+func WriteAndroidConfigModel(config *Config) {
+	modelPath := config.getAndroidConfigModelPath()
+	keyStorePath := config.getAndroidKeystorePath()
 
 	model := readAndroidConfigModelFromAssetsOrProject(modelPath)
-	model = overrideAndroidConfigModelValues(config, keystorePath, model)
+	model = overrideAndroidConfigModelValues(config, keyStorePath, model)
 	ioutil.WriteFile(modelPath, model, os.ModePerm)
 }
 

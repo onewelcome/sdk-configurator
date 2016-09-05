@@ -26,9 +26,9 @@ import (
 	"strings"
 )
 
-func ConfigureIOSCertificates(config *Config, appName string, appDir string) {
-	storeDir := getIosXcodeCertificatePath(appDir, appName, config)
-	xcodeProjPath := getIosXcodeProjPath(appDir, appName, config)
+func ConfigureIOSCertificates(config *Config) {
+	storeDir := config.getIosXcodeCertificatePath()
+	xcodeProjPath := config.getIosXcodeProjPath()
 
 	removeOldCerts(storeDir, xcodeProjPath)
 
@@ -39,7 +39,7 @@ func ConfigureIOSCertificates(config *Config, appName string, appDir string) {
 		block, _ := pem.Decode([]byte(certContents))
 		ioutil.WriteFile(certPath, block.Bytes, os.ModePerm)
 
-		iosAddCertFilesToXcodeProj(certPath, xcodeProjPath, appName)
+		iosAddCertFilesToXcodeProj(certPath, xcodeProjPath, config.AppTarget)
 	}
 }
 

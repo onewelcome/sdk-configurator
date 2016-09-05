@@ -48,6 +48,18 @@ func init() {
 	}
 }
 
+func iosAddCertFilesToXcodeProj(certPath string, xcodeProjPath string, appTarget string) {
+	addFileToXcodeProj(certPath, xcodeProjPath, appTarget, "Resources")
+}
+
+func iosRemoveCertFilesFromXcodeProj(certPath string, xcodeProjPath string) {
+	removeFileFromXcodeProj(certPath, xcodeProjPath, "Resources")
+}
+
+func iosAddConfigModelFileToXcodeProj(modelFile string, xcodeProjPath string, appTarget string) {
+	addFileToXcodeProj(modelFile, xcodeProjPath, appTarget, "Configuration")
+}
+
 func removeFileFromXcodeProj(filepath string, xcodeProjPath string, group string) {
 	ruby := checkForRuby()
 	checkForXcodeprojGem()

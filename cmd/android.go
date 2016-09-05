@@ -27,27 +27,23 @@ var androidCmd = &cobra.Command{
 	Use:   "android",
 	Short: "Configure an Android project",
 	Run: func(cmd *cobra.Command, args []string) {
-		var keystorePath string
-
-		config := util.ParseConfig(tsConfigLocation)
+		config := util.ParseConfig(appDir, tsConfigLocation)
 
 		if isCordova {
-			util.ParseCordovaConfig(appDir, config)
+			util.ParseCordovaConfig(config)
 			rootDetection, debugDetection = util.ReadCordovaSecurityPreferences(config)
 			verifyCordovaAndroidPlatformInstalled()
 
-			util.WriteAndroidSecurityController(appDir, config, debugDetection, rootDetection)
+			util.WriteAndroidSecurityController(config, debugDetection, rootDetection)
 		} else {
-			util.ParseAndroidManifest(appDir, config)
+			util.ParseAndroidManifest(config)
 
-			util.WriteAndroidSecurityController(appDir, config, debugDetection, rootDetection)
+			util.WriteAndroidSecurityController(config, debugDetection, rootDetection)
 		}
 
-		keystorePath = util.GetAndroidKeystorePath(appDir, config)
-
-		util.WriteAndroidAppScheme(appDir, config)
-		util.CreateKeystore(config, keystorePath)
-		util.WriteAndroidConfigModel(config, appDir, keystorePath)
+		util.WriteAndroidAppScheme(config)
+		util.CreateKeystore(config)
+		util.WriteAndroidConfigModel(config)
 		util.PrintSuccessMessage(config, debugDetection, rootDetection)
 		util.PrintAndroidManifestUpdateHint(config)
 	},

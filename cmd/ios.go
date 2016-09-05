@@ -29,11 +29,11 @@ var iosCmd = &cobra.Command{
 	Short: "Configure an iOS project",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		config := util.ParseConfig(tsConfigLocation)
+		config := util.ParseConfig(appDir, tsConfigLocation)
 		var appTarget string
 
 		if isCordova {
-			util.ParseCordovaConfig(appDir, config)
+			util.ParseCordovaConfig(config)
 			rootDetection, debugDetection = util.ReadCordovaSecurityPreferences(config)
 			appTarget = config.Cordova.AppName
 
@@ -42,18 +42,19 @@ var iosCmd = &cobra.Command{
 		} else {
 			appTarget = targetName
 		}
-		verifyAppTarget(appTarget, cmd)
+		verifyAppTarget(appTarget)
+		util.SetAppTarget(appTarget, config)
 
-		util.PrepareIosPaths(appDir, appTarget, config)
-		util.WriteIOSConfigModel(appDir, appTarget, config)
-		util.WriteIOSSecurityController(appDir, appTarget, config, debugDetection, rootDetection)
-		util.ConfigureIOSCertificates(config, appTarget, appDir)
+		util.PrepareIosPaths(config)
+		util.WriteIOSConfigModel(config)
+		util.WriteIOSSecurityController(config, debugDetection, rootDetection)
+		util.ConfigureIOSCertificates(config)
 
 		util.PrintSuccessMessage(config, debugDetection, rootDetection)
 	},
 }
 
-func verifyAppTarget(appTarget string, cmd *cobra.Command) {
+func verifyAppTarget(appTarget string) {
 	if len(appTarget) == 0 {
 		if isCordova {
 			os.Stderr.WriteString(fmt.Sprintln("ERROR: No application identifier found in your 'config.xml'. Please make sure that you have set one."))

@@ -33,6 +33,8 @@ type Config struct {
 	Certs           map[string]string
 	Cordova         cordovaConfig
 	AndroidManifest androidManifest
+	AppDir          string
+	AppTarget       string
 }
 
 type options struct {
@@ -60,7 +62,7 @@ type androidManifest struct {
 	PackageID string `xml:"package,attr"`
 }
 
-func ParseConfig(configPath string) (config *Config) {
+func ParseConfig(appDir string, configPath string) (config *Config) {
 	config = new(Config)
 	config.Certs = make(map[string]string)
 
@@ -70,15 +72,16 @@ func ParseConfig(configPath string) (config *Config) {
 		os.Exit(1)
 	}
 
+	config.AppDir = appDir
 	parseTsZip(configPath, config)
 
 	return
 }
 
-func ParseCordovaConfig(appDir string, config *Config) {
+func ParseCordovaConfig(config *Config) {
 	values := cordovaConfig{}
 
-	configXml, err := ioutil.ReadFile(path.Join(appDir, "config.xml"))
+	configXml, err := ioutil.ReadFile(path.Join(config.AppDir, "config.xml"))
 	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Cordova config.xml: %v\n", err.Error()))
 		os.Exit(1)
@@ -93,10 +96,10 @@ func ParseCordovaConfig(appDir string, config *Config) {
 	config.Cordova = values
 }
 
-func ParseAndroidManifest(appDir string, config *Config) {
+func ParseAndroidManifest(config *Config) {
 	values := androidManifest{}
 
-	manifestXml, err := ioutil.ReadFile(path.Join(appDir, "app", "src", "main", "AndroidManifest.xml"))
+	manifestXml, err := ioutil.ReadFile(path.Join(config.AppDir, "app", "src", "main", "AndroidManifest.xml"))
 	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v\n", err.Error()))
 		os.Exit(1)
@@ -109,6 +112,10 @@ func ParseAndroidManifest(appDir string, config *Config) {
 	}
 
 	config.AndroidManifest = values
+}
+
+func SetAppTarget(appTarget string, config *Config) {
+	config.AppTarget = appTarget
 }
 
 func parseTsZip(path string, config *Config) {
@@ -181,4 +188,80 @@ func VerifyTsZipContents(config *Config) {
 		os.Stderr.WriteString(fmt.Sprintln("ERROR: Does the Token Server configuration zip contain certificates?"))
 		os.Exit(1)
 	}
+}
+
+func (config *Config) getAndroidKeystorePath() string {
+	androidPlatformPath := ""
+	if isCordova(config) {
+		androidPlatformPath = path.Join(config.AppDir, "platforms", "android")
+	} else {
+		androidPlatformPath = path.Join(config.AppDir, "app", "src", "main")
+	}
+
+	androidRawPath := path.Join(androidPlatformPath, "res", "raw")
+	if exists(androidRawPath) == false {
+		os.MkdirAll(androidRawPath, os.ModePerm)
+	}
+
+	return path.Join(androidRawPath, "keystore.bks")
+}
+
+func (config *Config) getAndroidSecurityControllerPath() string {
+	if isCordova(config) {
+		return path.Join(config.AppDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "SecurityController.java")
+	} else {
+		return path.Join(config.AppDir, "app", "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "SecurityController.java")
+	}
+}
+
+func (config *Config) getAndroidManifestPath() string {
+	if isCordova(config) {
+		return path.Join(config.AppDir, "platforms", "android", "AndroidManifest.xml")
+	} else {
+		return path.Join(config.AppDir, "app", "src", "main", "AndroidManifest.xml")
+	}
+}
+
+func (config *Config) getAndroidConfigModelPath() string {
+	if isCordova(config) {
+		return path.Join(config.AppDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "OneginiConfigModel.java")
+	} else {
+		return path.Join(config.AppDir, "app", "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "OneginiConfigModel.java")
+	}
+}
+
+func (config *Config) getIosXcodeProjPath() string {
+	return path.Join(config.getIosSrcPath(), config.AppTarget+".xcodeproj")
+}
+
+func (config *Config) getIosSrcPath() string {
+	if isCordova(config) {
+		return path.Join(config.AppDir, "platforms", "ios")
+	} else {
+		return config.AppDir
+	}
+}
+
+func (config *Config) getIosConfigModelPath() string {
+	if isCordova(config) {
+		return path.Join(config.AppDir, "platforms", "ios", config.AppTarget, "Configuration")
+	} else {
+		return path.Join(config.AppDir, "Configuration")
+	}
+}
+
+func (config *Config) getIosXcodeCertificatePath() string {
+	if isCordova(config) {
+		return path.Join(config.getIosSrcPath(), config.AppTarget, "Resources")
+	} else {
+		return path.Join(config.getIosSrcPath(), "Resources")
+	}
+}
+
+func (config *Config) getIosConfigModelPathMFile() string {
+	return path.Join(config.getIosConfigModelPath(), "OneginiConfigModel.m")
+}
+
+func (config *Config) getIosConfigModelPathHFile() string {
+	return path.Join(config.getIosConfigModelPath(), "OneginiConfigModel.h")
 }

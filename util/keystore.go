@@ -31,7 +31,9 @@ import (
 	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
-func CreateKeystore(config *Config, storePath string) {
+func CreateKeystore(config *Config) {
+	storePath := config.getAndroidKeystorePath()
+
 	_, err := os.Stat(storePath)
 	if err == nil {
 		os.Remove(storePath)
