@@ -29,6 +29,9 @@ var androidCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config := util.ParseConfig(appDir, tsConfigLocation)
 
+		verifyAppModuleName(moduleName)
+		util.SetAppTarget(moduleName, config)
+
 		if isCordova {
 			util.ParseCordovaConfig(config)
 			rootDetection, debugDetection = util.ReadCordovaSecurityPreferences(config)
@@ -54,5 +57,20 @@ func verifyCordovaAndroidPlatformInstalled() {
 	if os.IsNotExist(err) {
 		os.Stderr.WriteString(fmt.Sprintln("ERROR: Your project does not seem to have the Android platform added. Please try `cordova platform add android`"))
 		os.Exit(1)
+	}
+}
+
+func verifyAppModuleName(moduleName string) {
+	if isCordova {
+		if len(moduleName) != 0 {
+			fmt.Println("WARNING: Ignoring the module name parameter for Cordova")
+		}
+	} else {
+		if len(moduleName) == 0 {
+			fmt.Print("ERROR: No module name provided. Provide one using 'onegini-sdk-configurator android -m <module-name>'\n")
+			fmt.Print("ERROR: More info on the module name can be found here: https://developer.android.com/studio/projects/index.html\n\n")
+			fmt.Print("execute 'onegini-sdk-configurator --help' to see how to use the configurator\n")
+			os.Exit(1)
+		}
 	}
 }
