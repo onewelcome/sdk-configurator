@@ -11,15 +11,16 @@ project = Xcodeproj::Project.open(xcodeproj_filepath)
 xcodeproj_group = project.main_group[group_name]
 
 # Remove file from group
-xcodeproj_group.files.find{ |file|
-  if file.real_path.to_s==file_name
+if xcodeproj_group != nil
+  xcodeproj_group.files.find{ |file|
+    if file.real_path.to_s==file_name
       file.referrers.each do |ref|
         if ref.isa == "PBXBuildFile"
           ref.remove_from_project
         end
       end
-    file.remove_from_project
-  end
-}
-
+      file.remove_from_project
+    end
+  }
+end
 project.save

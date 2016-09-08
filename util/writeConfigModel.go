@@ -26,22 +26,35 @@ import (
 	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
-func WriteIOSConfigModel(appDir string, appName string, config *Config) {
-	xcodeProjPath := getIosXcodeProjPath(appDir, appName, config)
+func WriteIOSConfigModel(config *Config) {
+	cleanupOldIosConfigModel(config)
 
-	modelMFilePath := getIosConfigModelPathMFile(appDir, appName, config)
-	modelHFilePath := getIosConfigModelPathHFile(appDir, appName, config)
-	modelMFile := readIosConfigModelFromAssetsOrProject(modelMFilePath, "lib/OneginiConfigModel.m")
-	modelHFile := readIosConfigModelFromAssetsOrProject(modelHFilePath, "lib/OneginiConfigModel.h")
+	modelMFile := overrideIosConfigModelValues(config)
+	modelHFile := readIosConfigModelFromAssetsOrProject(config.getIosConfigModelPathHFile(), "lib/OneginiConfigModel.h")
 
-	base64Certs := getBase64Certs(config)
-	modelMFile = overrideIosConfigModelValues(config, base64Certs, modelMFile)
+	WriteIosConfigModel(modelMFile, modelHFile, config)
+}
+func WriteIosConfigModel(modelMFile []byte, modelHFile []byte, config *Config) {
+	xcodeProjPath := config.getIosXcodeProjPath()
+	modelMFilePath := config.getIosConfigModelPathMFile()
+	modelHFilePath := config.getIosConfigModelPathHFile()
 
 	ioutil.WriteFile(modelMFilePath, modelMFile, os.ModePerm)
 	ioutil.WriteFile(modelHFilePath, modelHFile, os.ModePerm)
 
-	iosAddConfigModelFileToXcodeProj(modelMFilePath, xcodeProjPath, appName)
-	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, appName)
+	iosAddConfigModelFileToXcodeProj(modelMFilePath, xcodeProjPath, config.AppTarget)
+	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, config.AppTarget)
+}
+
+func cleanupOldIosConfigModel(config *Config) {
+	modelMFilePath := config.getIosConfigModelPathMFile()
+	modelHFilePath := config.getIosConfigModelPathHFile()
+
+	deleteFileIfExists(modelMFilePath, "ERROR: Could not delete old config model M file in Project")
+	deleteFileIfExists(modelHFilePath, "ERROR: Could not delete old config model H file in Project")
+
+	iosRemoveConfigModelFileFromXcodeProj(modelMFilePath, config.getIosXcodeProjPath())
+	iosRemoveConfigModelFileFromXcodeProj(modelHFilePath, config.getIosXcodeProjPath())
 }
 
 func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) []byte {
@@ -64,7 +77,11 @@ func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) [
 	}
 }
 
-func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) []byte {
+func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
+	modelMFile = readIosConfigModelFromAssetsOrProject(config.getIosConfigModelPathMFile(), "lib/OneginiConfigModel.m")
+
+	base64Certs := getBase64Certs(config)
+
 	configMap := map[string]string{
 		"ONGAppIdentifier":   config.Options.AppID,
 		"ONGAppVersion":      config.Options.AppVersion,
@@ -76,23 +93,48 @@ func overrideIosConfigModelValues(config *Config, base64Certs []string, model []
 	for preference, value := range configMap {
 		newPref := `@"` + preference + `" : @"` + value + `"`
 		re := regexp.MustCompile(`@"` + preference + `"\s*:\s*@".*"`)
-		model = re.ReplaceAll(model, []byte(newPref))
+		modelMFile = re.ReplaceAll(modelMFile, []byte(newPref))
 	}
 
 	newDef := "return @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
 
 	re := regexp.MustCompile(`return @\[.*\];.*`)
-	model = re.ReplaceAll(model, []byte(newDef))
+	modelMFile = re.ReplaceAll(modelMFile, []byte(newDef))
 
-	return model
+	return
 }
 
-func WriteAndroidConfigModel(config *Config, appDir string, keystorePath string) {
-	modelPath := getAndroidConfigModelPath(appDir, config)
+func WriteAndroidConfigModel(config *Config) {
+	modelPath := config.getAndroidConfigModelPath()
+	keyStorePath := config.getAndroidKeystorePath()
 
-	model := readAndroidConfigModelFromAssetsOrProject(modelPath)
-	model = overrideAndroidConfigModelValues(config, keystorePath, model)
+	deleteFileIfExists(modelPath, "ERROR: Could not delete old config model in Project")
+
+	model := readAndroidConfigModelFromAssets()
+	model = overrideAndroidConfigModelValues(config, keyStorePath, model)
 	ioutil.WriteFile(modelPath, model, os.ModePerm)
+}
+
+func deleteFileIfExists(filePath string, errorDescription string) {
+	fmt.Sprintf("%v, %v", 1, 2)
+	if exists(filePath) {
+		err := os.Remove(filePath)
+
+		if err != nil {
+			os.Stderr.WriteString(fmt.Sprintf("%v: %v\n", errorDescription, err.Error()))
+			os.Exit(1)
+		}
+	}
+}
+
+func readAndroidConfigModelFromAssets() []byte {
+	model, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.java")
+	if errFileNotFoundInTmp != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
+		os.Exit(1)
+	}
+
+	return model
 }
 
 func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
@@ -125,24 +167,4 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 	}
 
 	return model
-}
-
-func readAndroidConfigModelFromAssetsOrProject(modelPath string) []byte {
-	_, errFileNotFoundInAppProject := os.Stat(modelPath)
-	if errFileNotFoundInAppProject == nil {
-		appProjectModel, err := ioutil.ReadFile(modelPath)
-		if err != nil {
-			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in Project: %v\n", err.Error()))
-			os.Exit(1)
-		}
-		return appProjectModel
-	} else {
-		modelFromTmp, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.java")
-		if errFileNotFoundInTmp != nil {
-			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
-			os.Exit(1)
-		}
-
-		return modelFromTmp
-	}
 }

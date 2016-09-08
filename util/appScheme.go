@@ -22,8 +22,8 @@ import (
 	"strings"
 )
 
-func WriteAndroidAppScheme(appDir string, config *Config) {
-	manifestPath := getAndroidManifestPath(appDir, config)
+func WriteAndroidAppScheme(config *Config) {
+	manifestPath := config.getAndroidManifestPath()
 	manifest, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v.\n", err))
