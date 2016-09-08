@@ -195,7 +195,7 @@ func (config *Config) getAndroidKeystorePath() string {
 	if isCordova(config) {
 		androidPlatformPath = path.Join(config.AppDir, "platforms", "android")
 	} else {
-		androidPlatformPath = path.Join(config.AppDir, "app", "src", "main")
+		androidPlatformPath = path.Join(config.AppDir, config.AppTarget, "src", "main")
 	}
 
 	androidRawPath := path.Join(androidPlatformPath, "res", "raw")
@@ -210,7 +210,7 @@ func (config *Config) getAndroidSecurityControllerPath() string {
 	if isCordova(config) {
 		return path.Join(config.AppDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "SecurityController.java")
 	} else {
-		return path.Join(config.AppDir, "app", "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "SecurityController.java")
+		return path.Join(config.AppDir, config.AppTarget, "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "SecurityController.java")
 	}
 }
 
@@ -218,7 +218,7 @@ func (config *Config) getAndroidManifestPath() string {
 	if isCordova(config) {
 		return path.Join(config.AppDir, "platforms", "android", "AndroidManifest.xml")
 	} else {
-		return path.Join(config.AppDir, "app", "src", "main", "AndroidManifest.xml")
+		return path.Join(config.AppDir, config.AppTarget, "src", "main", "AndroidManifest.xml")
 	}
 }
 
@@ -226,7 +226,7 @@ func (config *Config) getAndroidConfigModelPath() string {
 	if isCordova(config) {
 		return path.Join(config.AppDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "OneginiConfigModel.java")
 	} else {
-		return path.Join(config.AppDir, "app", "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "OneginiConfigModel.java")
+		return path.Join(config.AppDir, config.AppTarget, "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "OneginiConfigModel.java")
 	}
 }
 
