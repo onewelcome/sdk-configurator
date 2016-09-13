@@ -8,3 +8,8 @@ install: prepareLibs
 
 clean:
 	git checkout data/bindata.go
+	rm -rf target
+
+release:
+	go get github.com/mitchellh/gox
+	gox -os="darwin linux windows" -arch="386 amd64" -output="target/{{.OS}}/{{.Arch}}/{{.Dir}}"
