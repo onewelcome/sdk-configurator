@@ -146,6 +146,8 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
 	}
+
+	// We might remove the maxPinFailures in a future release as it is no longer necessary for Android SDK versions > 6.00.01
 	intConfigMap := map[string]string{
 		"maxPinFailures": strconv.Itoa(config.Options.MaxPinFailures),
 	}

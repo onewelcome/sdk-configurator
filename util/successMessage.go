@@ -16,7 +16,6 @@ package util
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -28,7 +27,6 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 	fmt.Printf("App Platform:		%v\n", config.Options.AppPlatform)
 	fmt.Printf("App Version:		%v\n", config.Options.AppVersion)
 	fmt.Printf("Redirect URI:		%v\n", config.Options.RedirectUrl)
-	fmt.Printf("Max PIN failures:	%v\n", strconv.Itoa(config.Options.MaxPinFailures))
 	fmt.Printf("Debug detection:	%v\n", debugDetection)
 	fmt.Printf("Root detection:		%v\n", rootDetection)
 	fmt.Printf("Token Server URI:	%v\n", config.Options.TokenServerUri)
