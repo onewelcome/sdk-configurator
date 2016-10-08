@@ -1,5 +1,11 @@
 # Release notes
 
+## 3.1.0
+
+### Features
+
+* The Max PIN failures property in the ConfigModel for Android is no longer a required property.
+
 ## 3.0.0
 
 Please note that this release is only compatible with the following SDK versions:
