@@ -65,13 +65,16 @@ for more information on the app target.
 ### Android Example
 Example for configuring an Android project:
 ```sh
-./onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --app-dir ~/onegini/android-app/ --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --module-name app --app-dir ~/onegini/android-app/ --debugDetection=true --rootDetection=true
 ```
+
+Replace the `app` value with the name of the Gradle module that contains your application sources. See the 
+[Android documentation](https://developer.android.com/studio/projects/index.html) for more info.
 
 ### Cordova example
 The Onegini Cordova plugin contains a hook that will automatically trigger the configurator when you run `cordova platform add`.
 You can still choose to run the configurator manually (e.g for updating an existing platform).
- 
+
 Example for configuring a Cordova Android project manually:
 ```sh
 ./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
