@@ -34,10 +34,10 @@ func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDe
 		}
 	}
 
-	if (!rootDetectionSet) {
+	if !rootDetectionSet {
 		rootDetection = true
 	}
-	if (!debugDetectionSet) {
+	if !debugDetectionSet {
 		debugDetection = true
 	}
 	return
@@ -87,7 +87,7 @@ func WriteIOSSecurityController(appDir string, appName string, config *Config, d
 `
 	var (
 		sDebugDetection string
-		sRootDetection string
+		sRootDetection  string
 	)
 
 	if debugDetection {
