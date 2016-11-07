@@ -12,3 +12,9 @@
 
 * Complete rebuild of the SDK configurator in go
 * CLI api using flags
+
+## 2.0.1
+
+### Fixes
+
+* The configurator now parses the value "OneginiStoreCookies" from config.xml for cordova projects.
