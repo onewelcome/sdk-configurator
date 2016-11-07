@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/cmd"
+	"github.com/Onegini/onegini-sdk-configurator/cmd"
 )
 
 func main() {

@@ -13,6 +13,7 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
   private final String resourceBaseURL = "value_will_be_replaced";
   private final String keystoreHash = "value_will_be_replaced";
   private final int maxPinFailures = 1;
+  private final boolean storeCookies = true;
 
   @Override
   public String getAppIdentifier() {
@@ -66,7 +67,7 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
 
   @Override
   public boolean shouldStoreCookies() {
-    return false;
+    return storeCookies;
   }
 
   @Override

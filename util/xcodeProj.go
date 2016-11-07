@@ -10,7 +10,7 @@ import (
 
 	"strings"
 
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/data"
+	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
 var (

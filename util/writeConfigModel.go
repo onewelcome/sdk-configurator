@@ -1,15 +1,14 @@
 package util
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"fmt"
-
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/data"
+	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
 func WriteIOSConfigModel(appDir string, appName string, config *Config) {
@@ -51,7 +50,15 @@ func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) [
 }
 
 func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) []byte {
-	configMap := map[string]string{
+	var storeCookiesStr string
+
+	if shouldStoreCookies(config) == true {
+		storeCookiesStr = "YES"
+	} else {
+		storeCookiesStr = "NO"
+	}
+
+	stringConfigMap := map[string]string{
 		"kOGAppIdentifier":   config.Options.AppID,
 		"kOGAppScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
 		"kOGAppVersion":      config.Options.AppVersion,
@@ -60,10 +67,19 @@ func overrideIosConfigModelValues(config *Config, base64Certs []string, model []
 		"kOGResourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"kOGRedirectURL":     config.Options.RedirectUrl,
 	}
+	nonStringConfigMap := map[string]string{
+		"kOGStoreCookies": storeCookiesStr,
+	}
 
-	for preference, value := range configMap {
+	for preference, value := range stringConfigMap {
 		newPref := `@"` + preference + `" : @"` + value + `"`
 		re := regexp.MustCompile(`@"` + preference + `"\s*:\s*@".*"`)
+		model = re.ReplaceAll(model, []byte(newPref))
+	}
+
+	for preference, value := range nonStringConfigMap {
+		newPref := `@"` + preference + `" : @(` + value + `)`
+		re := regexp.MustCompile(`@"` + preference + `"\s*:\s*@(.*)`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
@@ -92,8 +108,9 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
 	}
-	intConfigMap := map[string]string{
+	nonStringConfigMap := map[string]string{
 		"maxPinFailures": strconv.Itoa(config.Options.MaxPinFailures),
+		"storeCookies":   strconv.FormatBool(shouldStoreCookies(config)),
 	}
 
 	newPackage := "package " + getPackageIdentifierFromConfig(config) + ";"
@@ -106,13 +123,34 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
-	for preference, value := range intConfigMap {
+	for preference, value := range nonStringConfigMap {
 		newPref := preference + ` = ` + value + `;`
 		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
 	return model
+}
+
+func shouldStoreCookies(config *Config) bool {
+	storeCookies := true
+
+	if config.Cordova.Preferences == nil {
+		return storeCookies
+	}
+
+	for _, pref := range config.Cordova.Preferences {
+		if pref.Name == "OneginiStoreCookies" {
+			var err error
+			storeCookies, err = strconv.ParseBool(pref.Value)
+			if err != nil {
+				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse 'OneginiStoreCookies' preference: %v\n", err.Error()))
+				os.Exit(1)
+			}
+		}
+	}
+
+	return storeCookies
 }
 
 func readAndroidConfigModelFromAssetsOrProject(modelPath string) []byte {

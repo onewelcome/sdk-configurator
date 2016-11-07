@@ -5,8 +5,8 @@ import (
 	"os"
 	"path"
 
+	"github.com/Onegini/onegini-sdk-configurator/util"
 	"github.com/spf13/cobra"
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/util"
 )
 
 var androidCmd = &cobra.Command{
