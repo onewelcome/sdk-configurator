@@ -5,14 +5,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"path"
-	"strings"
-	"fmt"
 	"os"
-	"github.com/spf13/cobra"
+	"path"
 	"path/filepath"
+	"strings"
+
+	"github.com/spf13/cobra"
 )
 
 type Config struct {
@@ -44,14 +45,14 @@ type cordovaConfig struct {
 }
 
 type androidManifest struct {
-	PackageID string              `xml:"package,attr"`
+	PackageID string `xml:"package,attr"`
 }
 
 func ParseConfig(configPath string, cmd *cobra.Command) (config *Config) {
 	config = new(Config)
 	config.Certs = make(map[string]string)
 
-	if (len(configPath) == 0) {
+	if len(configPath) == 0 {
 		fmt.Print("ERROR: No Token Server configuration provided. Provide one using 'onegini-sdk-configurator <platform> -c <config-zip-location>'\n\n")
 		cmd.Help()
 		os.Exit(1)
@@ -84,13 +85,13 @@ func ParseAndroidManifest(appDir string, config *Config) {
 	values := androidManifest{}
 
 	manifestXml, err := ioutil.ReadFile(path.Join(appDir, "app", "src", "main", "AndroidManifest.xml"))
-	if (err != nil) {
+	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v\n", err.Error()))
 		os.Exit(1)
 	}
 
 	err = xml.Unmarshal(manifestXml, &values)
-	if (err != nil) {
+	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v\n", err.Error()))
 		os.Exit(1)
 	}
@@ -119,7 +120,7 @@ func parseTsZip(path string, config *Config) {
 			// Don't use the filepath.Separator in the statement below because the filename always contains the forward / regardless of the
 			// platform the configurator is run on
 		} else if strings.HasPrefix(file.Name, "certificates/") {
-			config.Certs[strings.Replace(file.Name, "certificates" + string(filepath.Separator), "", -1)] = readCert(readCloser)
+			config.Certs[strings.Replace(file.Name, "certificates"+string(filepath.Separator), "", -1)] = readCert(readCloser)
 		}
 	}
 	VerifyTsZipContents(config)
@@ -138,33 +139,33 @@ func readCert(reader io.Reader) (contents string) {
 	return
 }
 
-func getPackageIdentifierFromConfig(config *Config) (string) {
-	if (isCordova(config)) {
+func getPackageIdentifierFromConfig(config *Config) string {
+	if isCordova(config) {
 		return config.Cordova.ID
 	} else {
 		return config.AndroidManifest.PackageID
 	}
 }
 
-func isCordova(config *Config) (bool) {
+func isCordova(config *Config) bool {
 	var cordovaConfig = &config.Cordova
 	return len(cordovaConfig.ID) > 0
 }
 
 func VerifyTsZipContents(config *Config) {
-	if (config.Options == nil) {
+	if config.Options == nil {
 		os.Stderr.WriteString(fmt.Sprintln("ERROR: The provided configuration zip does not contain the required information. Is the supplied archive a valid Token " +
 			"Server configuration zip?"))
 		os.Exit(1)
 	}
 
-	if (config.Options.ResourceGatewayUris == nil || len(config.Options.ResourceGatewayUris) == 0) {
+	if config.Options.ResourceGatewayUris == nil || len(config.Options.ResourceGatewayUris) == 0 {
 		os.Stderr.WriteString(fmt.Sprint("ERROR: No resource gateway URI is specified in the configuration zip. Please check the Token Server configuration.\n" +
 			"See the following link for more info: https://docs.onegini.com/public/token-server/topics/general-app-config/resource-gateway/resource-gateway.html\n"))
 		os.Exit(1)
 	}
 
-	if (config.Certs == nil || len(config.Certs) == 0) {
+	if config.Certs == nil || len(config.Certs) == 0 {
 		os.Stderr.WriteString(fmt.Sprintln("ERROR: Does the Token Server configuration zip contain certificates?"))
 		os.Exit(1)
 	}

@@ -1,14 +1,14 @@
 package util
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"gitlab.onegini.com/mobile-platform/onegini-sdk-configurator/data"
-	"fmt"
+	"github.com/Onegini/onegini-sdk-configurator/data"
 )
 
 func WriteIOSConfigModel(appDir string, appName string, config *Config) {
@@ -29,9 +29,9 @@ func WriteIOSConfigModel(appDir string, appName string, config *Config) {
 	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, appName)
 }
 
-func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) ([]byte) {
+func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) []byte {
 	_, errFileNotFoundInAppProject := os.Stat(modelPath)
-	if (errFileNotFoundInAppProject == nil) {
+	if errFileNotFoundInAppProject == nil {
 		appProjectModel, err := ioutil.ReadFile(modelPath)
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: could not read Config model in Project: %v\n", err.Error()))
@@ -49,8 +49,16 @@ func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) (
 	}
 }
 
-func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) ([]byte) {
-	configMap := map[string]string{
+func overrideIosConfigModelValues(config *Config, base64Certs []string, model []byte) []byte {
+	var storeCookiesStr string
+
+	if shouldStoreCookies(config) == true {
+		storeCookiesStr = "YES"
+	} else {
+		storeCookiesStr = "NO"
+	}
+
+	stringConfigMap := map[string]string{
 		"kOGAppIdentifier":   config.Options.AppID,
 		"kOGAppScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
 		"kOGAppVersion":      config.Options.AppVersion,
@@ -59,10 +67,19 @@ func overrideIosConfigModelValues(config *Config, base64Certs []string, model []
 		"kOGResourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"kOGRedirectURL":     config.Options.RedirectUrl,
 	}
+	nonStringConfigMap := map[string]string{
+		"kOGStoreCookies": storeCookiesStr,
+	}
 
-	for preference, value := range configMap {
+	for preference, value := range stringConfigMap {
 		newPref := `@"` + preference + `" : @"` + value + `"`
 		re := regexp.MustCompile(`@"` + preference + `"\s*:\s*@".*"`)
+		model = re.ReplaceAll(model, []byte(newPref))
+	}
+
+	for preference, value := range nonStringConfigMap {
+		newPref := `@"` + preference + `" : @(` + value + `)`
+		re := regexp.MustCompile(`@"` + preference + `"\s*:\s*@(.*)`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
@@ -82,7 +99,7 @@ func WriteAndroidConfigModel(config *Config, appDir string, keystorePath string)
 	ioutil.WriteFile(modelPath, model, os.ModePerm)
 }
 
-func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) ([]byte) {
+func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
 		"appIdentifier":   config.Options.AppID,
 		"appScheme":       strings.Split(config.Options.RedirectUrl, "://")[0],
@@ -91,8 +108,9 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
 	}
-	intConfigMap := map[string]string{
-		"maxPinFailures":  strconv.Itoa(config.Options.MaxPinFailures),
+	nonStringConfigMap := map[string]string{
+		"maxPinFailures": strconv.Itoa(config.Options.MaxPinFailures),
+		"storeCookies":   strconv.FormatBool(shouldStoreCookies(config)),
 	}
 
 	newPackage := "package " + getPackageIdentifierFromConfig(config) + ";"
@@ -105,18 +123,39 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
-	for preference, value := range intConfigMap {
+	for preference, value := range nonStringConfigMap {
 		newPref := preference + ` = ` + value + `;`
 		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
-	return model;
+	return model
 }
 
-func readAndroidConfigModelFromAssetsOrProject(modelPath string) ([]byte) {
+func shouldStoreCookies(config *Config) bool {
+	storeCookies := true
+
+	if config.Cordova.Preferences == nil {
+		return storeCookies
+	}
+
+	for _, pref := range config.Cordova.Preferences {
+		if pref.Name == "OneginiStoreCookies" {
+			var err error
+			storeCookies, err = strconv.ParseBool(pref.Value)
+			if err != nil {
+				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse 'OneginiStoreCookies' preference: %v\n", err.Error()))
+				os.Exit(1)
+			}
+		}
+	}
+
+	return storeCookies
+}
+
+func readAndroidConfigModelFromAssetsOrProject(modelPath string) []byte {
 	_, errFileNotFoundInAppProject := os.Stat(modelPath)
-	if (errFileNotFoundInAppProject == nil) {
+	if errFileNotFoundInAppProject == nil {
 		appProjectModel, err := ioutil.ReadFile(modelPath)
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in Project: %v\n", err.Error()))
@@ -133,4 +172,3 @@ func readAndroidConfigModelFromAssetsOrProject(modelPath string) ([]byte) {
 		return modelFromTmp
 	}
 }
-
