@@ -18,3 +18,9 @@
 ### Fixes
 
 * The configurator now parses the value "OneginiStoreCookies" from config.xml for cordova projects.
+
+## 2.0.2
+
+### Fixes
+
+* Fix a bug that caused an error in the iOS Config model.
