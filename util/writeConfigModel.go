@@ -78,7 +78,7 @@ func overrideIosConfigModelValues(config *Config, base64Certs []string, model []
 	}
 
 	for preference, value := range nonStringConfigMap {
-		newPref := `@"` + preference + `" : @(` + value + `)`
+		newPref := `@"` + preference + `" : @(` + value + `),`
 		re := regexp.MustCompile(`@"` + preference + `"\s*:\s*@(.*)`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
