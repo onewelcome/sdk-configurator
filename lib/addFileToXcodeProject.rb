@@ -7,9 +7,11 @@ file_name = ARGV[1]
 app_name = ARGV[2]
 group_name = ARGV[3]
 
-# Create group
+# Find group
 project = Xcodeproj::Project.open(xcodeproj_filepath)
 xcodeproj_group = project.main_group[group_name]
+
+# Create group
 unless xcodeproj_group
   xcodeproj_group = project.main_group.new_group(group_name, nil)
 end

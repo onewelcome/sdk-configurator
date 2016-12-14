@@ -6,7 +6,7 @@ xcodeproj_filepath = ARGV[0]
 file_name = ARGV[1]
 group_name = ARGV[2]
 
-# Create group
+# Find group
 project = Xcodeproj::Project.open(xcodeproj_filepath)
 xcodeproj_group = project.main_group[group_name]
 
