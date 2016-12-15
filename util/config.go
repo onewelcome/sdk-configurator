@@ -72,7 +72,7 @@ func ParseConfig(appDir string, configPath string) (config *Config) {
 		os.Exit(1)
 	}
 
-	config.AppDir = appDir
+	config.AppDir = config.resolveAppDirPath(appDir)
 	parseTsZip(configPath, config)
 
 	return
@@ -188,6 +188,16 @@ func VerifyTsZipContents(config *Config) {
 		os.Stderr.WriteString(fmt.Sprintln("ERROR: Does the Token Server configuration zip contain certificates?"))
 		os.Exit(1)
 	}
+}
+
+func (config *Config) resolveAppDirPath(appDir string) string {
+	absAppDirPath, err := filepath.Abs(appDir)
+
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could resolve App dir '%v' into absolute path", config.AppDir))
+		os.Exit(1)
+	}
+	return absAppDirPath
 }
 
 func (config *Config) getAndroidKeystorePath() string {
