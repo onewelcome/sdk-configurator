@@ -18,7 +18,7 @@ end
 
 # Add file to group
 file_refs = []
-file_ref = xcodeproj_group.files.find{|file|file.real_path.to_s==file_name}
+file_ref = xcodeproj_group.files.find{|file|file.real_path.to_s.include? file_name}
 unless file_ref
   file_ref = xcodeproj_group.new_file(file_name)
   file_refs<<file_ref
