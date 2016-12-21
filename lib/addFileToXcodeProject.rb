@@ -7,16 +7,18 @@ file_name = ARGV[1]
 app_name = ARGV[2]
 group_name = ARGV[3]
 
-# Create group
+# Find group
 project = Xcodeproj::Project.open(xcodeproj_filepath)
 xcodeproj_group = project.main_group[group_name]
+
+# Create group
 unless xcodeproj_group
   xcodeproj_group = project.main_group.new_group(group_name, nil)
 end
 
 # Add file to group
 file_refs = []
-file_ref = xcodeproj_group.files.find{|file|file.real_path.to_s==file_name}
+file_ref = xcodeproj_group.files.find{|file|file.real_path.to_s.include? file_name}
 unless file_ref
   file_ref = xcodeproj_group.new_file(file_name)
   file_refs<<file_ref

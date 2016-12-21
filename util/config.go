@@ -72,7 +72,7 @@ func ParseConfig(appDir string, configPath string) (config *Config) {
 		os.Exit(1)
 	}
 
-	config.AppDir = appDir
+	config.AppDir = config.resolveAppDirPath(appDir)
 	parseTsZip(configPath, config)
 
 	return
@@ -190,6 +190,16 @@ func VerifyTsZipContents(config *Config) {
 	}
 }
 
+func (config *Config) resolveAppDirPath(appDir string) string {
+	absAppDirPath, err := filepath.Abs(appDir)
+
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could resolve App dir '%v' into absolute path", config.AppDir))
+		os.Exit(1)
+	}
+	return absAppDirPath
+}
+
 func (config *Config) getAndroidKeystorePath() string {
 	androidPlatformPath := ""
 	if isCordova(config) {
@@ -231,7 +241,20 @@ func (config *Config) getAndroidConfigModelPath() string {
 }
 
 func (config *Config) getIosXcodeProjPath() string {
-	return path.Join(config.getIosSrcPath(), config.AppTarget+".xcodeproj")
+	files, err := filepath.Glob(path.Join(config.getIosSrcPath(), "*.xcodeproj"))
+
+	if err != nil || len(files) == 0 {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not find an Xcode project directory (.xcodeproj). Are you sure that '%v' contains one?\n", config.getIosSrcPath()))
+		os.Exit(1)
+	}
+
+	if len(files) > 1 {
+		os.Stderr.WriteString(fmt.Sprint("ERROR: Found multiple Xcode project directories (.xcodeproj). The SDK configurator currently only support a " +
+			"single xcodeproj directory."))
+		os.Exit(1)
+	}
+
+	return files[0]
 }
 
 func (config *Config) getIosSrcPath() string {
