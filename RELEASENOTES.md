@@ -4,8 +4,9 @@
 
 ### Bug fixes
 
-* Fixed path resolving issues when using a relative path as `app-dir`.
+* Fixed path resolving issues when using a relative path as `app-dir`
 * Auto locate the Xcode project file
+* Prevent the configurator from creating multiple Xcode references wen run multiple times
 
 ## 3.1.0
 
