@@ -30,6 +30,17 @@ Please note that this release is only compatible with the following SDK versions
 
 * Fixed a bug that forced a specific Gradle project layout for Android
 
+## 2.0.2
+
+### Bug fixes
+* Fixed a bug that caused an error in the iOS Config model.
+
+## 2.0.1
+
+### Bug fixes
+
+* The configurator now parses the value "OneginiStoreCookies" from config.xml for Cordova projects.
+
 ## 2.0.0
 
 ### Features
