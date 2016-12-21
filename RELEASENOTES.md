@@ -1,5 +1,12 @@
 # Release notes
 
+## 3.1.1
+
+### Bug fixes
+
+* Fixed path resolving issues when using a relative path as `app-dir`.
+* Auto locate the Xcode project file
+
 ## 3.1.0
 
 ### Features
@@ -9,8 +16,8 @@
 ## 3.0.0
 
 Please note that this release is only compatible with the following SDK versions:
-- Android SDK 6.00.00 and higher
-- iOS SDK 5.00.00 and higher
+* Android SDK 6.00.00 and higher
+* iOS SDK 5.00.00 and higher
 
 ### Features
 
