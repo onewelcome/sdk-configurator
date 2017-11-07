@@ -14,52 +14,45 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
   private final String keystoreHash = "value_will_be_replaced";
   private final int maxPinFailures = 1;
 
-  @Override
   public String getAppIdentifier() {
     return appIdentifier;
   }
 
-  @Override
   public String getAppPlatform() {
     return appPlatform;
   }
 
-  @Override
   public String getRedirectUri() {
     return redirectionUri;
   }
 
-  @Override
   public String getAppVersion() {
     return appVersion;
   }
 
-  @Override
   public String getBaseUrl() {
     return baseURL;
   }
 
-  @Override
   public String getResourceBaseUrl() {
     return resourceBaseURL;
   }
 
-  @Override
   public int getCertificatePinningKeyStore() {
     return R.raw.keystore;
   }
 
-  @Override
   public String getKeyStoreHash() {
     return keystoreHash;
   }
 
-  @Override
   public String getDeviceName() {
     return Build.BRAND + " " + Build.MODEL;
   }
 
-  @Override
+  /**
+   * @Deprecated Since Android SDK 8.0.0 this attribute is not required.
+   */
   public boolean shouldGetIdToken() {
     return false;
   }
