@@ -1,4 +1,4 @@
-//Copyright 2016 Onegini B.V.
+//Copyright 2017 Onegini B.V.
 //
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "v3.1.1"
+const version = "v4.0.0"
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
