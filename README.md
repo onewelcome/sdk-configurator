@@ -17,7 +17,7 @@ Please have a look at the SDK compatibility in the next paragraph to choose the 
 
 ### SDK compatibility
 
-The configurator binaries differ per SDK version. Please see the compatibility matrix below to choose the correct SDK configurator version to use:
+The configurator binaries differ per SDK version. Please see the compatibility matrix below to choose the correct SDK configurator version:
 
 **Android SDK**
 
