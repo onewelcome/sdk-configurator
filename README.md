@@ -12,17 +12,36 @@ from the Token Server's Admin Panel.
 
 ## Installing
 
-**Important:**
+You can download the latest compatible binary for your platform and SDK version from the [Release page](https://github.com/Onegini/sdk-configurator/releases). 
+Please have a look at the SDK compatibility in the next paragraph to choose the correct SDK configurator version.
 
-The configurator binaries differ per SDK version. For SDK versions:
+### SDK compatibility
 
-* Android SDK 6.00.00 and higher
-* iOS SDK 5.00.00 and higher
-* Cordova Plugin 2.0.0 and higher
+The configurator binaries differ per SDK version. Please see the compatibility matrix below to choose the correct SDK configurator version:
 
-Please use the latest 3.x binary. For previous SDK versions, please use the latest 2.x binary.
+**Android SDK**
 
-You can download the latest binary for your platform and SDK version from the [Release page](https://github.com/Onegini/sdk-configurator/releases).
+| SDK version           | Configurator version   |
+|-----------------------|------------------------|
+| Android SDK 8.x       | 4.x                    |
+| Android SDK 6.x & 7.x | 3.x                    |
+| Android SDK < 6.00.00 | 2.x                    |
+ 
+**iOS SDK**
+
+| SDK version       | Configurator version   |
+|-------------------|------------------------|
+| iOS SDK 7.x       | 4.x                    |
+| iOS SDK 5.x & 6.x | 3.x                    |
+| iOS SDK < 5.00.00 | 2.x                    |
+
+**Cordova plugin**
+
+| Plugin version             | Configurator version   |
+|----------------------------|------------------------|
+| Cordova plugin 4.x         | 4.x                    |
+| Cordova plugin 3.x & 2.x   | 3.x                    |
+| Cordova plugin < 2.0.0     | 2.x                    |
 
 ### Requirements
 

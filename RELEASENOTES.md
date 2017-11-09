@@ -1,5 +1,17 @@
 # Release notes
 
+## 4.0.0
+
+Please note that this release is required if you are using the following SDK versions:
+* Android SDK 8.0.0 and higher
+* iOS SDK 7.0.0 and higher
+
+It is backwards compatible with the previous SDK versions.
+
+### Features
+
+* Made the SDK configurator compatible with Android SDK 8.0.0 and iOS SDK 7.0.0 
+
 ## 3.1.1
 
 ### Bug fixes
