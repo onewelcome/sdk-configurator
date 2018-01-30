@@ -33,37 +33,40 @@ var androidCmd = &cobra.Command{
 		util.SetAppTarget(moduleName, config)
 
 		if isCordova {
+			config.ConfigureForCordova = true
 			util.ParseCordovaConfig(config)
-			rootDetection, debugDetection = util.ReadCordovaSecurityPreferences(config)
-			verifyCordovaAndroidPlatformInstalled()
-
-			util.WriteAndroidSecurityController(config, debugDetection, rootDetection)
-		} else {
-			util.ParseAndroidManifest(config)
-
-			util.WriteAndroidSecurityController(config, debugDetection, rootDetection)
+			rootDetection, debugDetection, debugLogs = util.ReadCordovaSecurityPreferences(config)
+			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `cordova platform add android`")
+		} else if isNativeScript {
+			config.ConfigureForNativeScript = true
+			util.SetAppTarget("", config)
+			util.ParseNativeScriptConfig(config)
+			rootDetection, debugDetection, debugLogs = util.ReadNativeScriptSecurityPreferences(config)
+			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `tns platform add android`")
 		}
+		util.ParseAndroidManifest(config)
 
+		util.WriteAndroidSecurityController(config, debugDetection, rootDetection, debugLogs)
 		util.WriteAndroidAppScheme(config)
 		util.CreateKeystore(config)
 		util.WriteAndroidConfigModel(config)
-		util.PrintSuccessMessage(config, debugDetection, rootDetection)
+		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
 		util.PrintAndroidManifestUpdateHint(config)
 	},
 }
 
-func verifyCordovaAndroidPlatformInstalled() {
+func verifyAndroidPlatformInstalled(errorMessage string) {
 	_, err := os.Stat(path.Join(appDir, "platforms", "android"))
 	if os.IsNotExist(err) {
-		os.Stderr.WriteString(fmt.Sprintln("ERROR: Your project does not seem to have the Android platform added. Please try `cordova platform add android`"))
+		os.Stderr.WriteString(fmt.Sprintln(errorMessage))
 		os.Exit(1)
 	}
 }
 
 func verifyAppModuleName(moduleName string) {
-	if isCordova {
+	if isCordova || isNativeScript {
 		if len(moduleName) != 0 {
-			fmt.Println("WARNING: Ignoring the module name parameter for Cordova")
+			fmt.Println("WARNING: Ignoring the module name parameter for Cordova or NativeScript")
 		}
 	} else {
 		if len(moduleName) == 0 {

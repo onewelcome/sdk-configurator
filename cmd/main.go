@@ -23,7 +23,9 @@ var (
 	moduleName       string
 	rootDetection    bool
 	debugDetection   bool
+	debugLogs        bool
 	isCordova        bool
+	isNativeScript   bool
 )
 
 func init() {
@@ -36,7 +38,9 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&moduleName, "module-name", "m", "", "The Gradle module name that contains your application sources (for Android). More info can be found at https://developer.android.com/studio/projects/index.html")
 	RootCmd.PersistentFlags().BoolVarP(&debugDetection, "debugDetection", "d", true, "Enable or disable debug detection: --debugDetection=false")
 	RootCmd.PersistentFlags().BoolVarP(&rootDetection, "rootDetection", "r", true, "Enable or disable root detection: --rootDetection=false")
+	RootCmd.PersistentFlags().BoolVarP(&debugLogs, "debugLogs", "l", true, "Enable or disable debug logs: --debugLogs=true")
 	RootCmd.PersistentFlags().BoolVarP(&isCordova, "cordova", "o", false, "Configure as Cordova project")
+	RootCmd.PersistentFlags().BoolVarP(&isNativeScript, "nativescript", "n", false, "Configure as NativeScript project")
 }
 
 var RootCmd = &cobra.Command{

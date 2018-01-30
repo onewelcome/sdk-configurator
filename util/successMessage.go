@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool) {
+func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
 	fmt.Print("SUCCESS! Your application is now configured.\n\n")
 	fmt.Println("CONFIGURATION")
 
@@ -29,6 +29,7 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 	fmt.Printf("Redirect URI:		%v\n", config.Options.RedirectUrl)
 	fmt.Printf("Debug detection:	%v\n", debugDetection)
 	fmt.Printf("Root detection:		%v\n", rootDetection)
+	fmt.Printf("Debug logs:		%v\n", debugLogs)
 	fmt.Printf("Token Server URI:	%v\n", config.Options.TokenServerUri)
 	rgUris := config.Options.ResourceGatewayUris
 	for i := 0; i < len(rgUris); i++ {
@@ -41,7 +42,7 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 }
 
 func PrintAndroidManifestUpdateHint(config *Config) {
-	if !isCordova(config) {
+	if !config.ConfigureForCordova {
 		fmt.Println("")
 		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])

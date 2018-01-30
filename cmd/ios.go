@@ -34,7 +34,7 @@ var iosCmd = &cobra.Command{
 
 		if isCordova {
 			util.ParseCordovaConfig(config)
-			rootDetection, debugDetection = util.ReadCordovaSecurityPreferences(config)
+			rootDetection, debugDetection, debugLogs = util.ReadCordovaSecurityPreferences(config)
 			appTarget = config.Cordova.AppName
 
 			verifyCordovaIosPlatformInstalled()
@@ -50,7 +50,7 @@ var iosCmd = &cobra.Command{
 		util.WriteIOSSecurityController(config, debugDetection, rootDetection)
 		util.ConfigureIOSCertificates(config)
 
-		util.PrintSuccessMessage(config, debugDetection, rootDetection)
+		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
 	},
 }
 

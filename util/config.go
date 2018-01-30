@@ -29,12 +29,15 @@ import (
 )
 
 type Config struct {
-	Options         *options
-	Certs           map[string]string
-	Cordova         cordovaConfig
-	AndroidManifest androidManifest
-	AppDir          string
-	AppTarget       string
+	Options                  *options
+	Certs                    map[string]string
+	Cordova                  cordovaConfig
+	NativeScript             nativeScriptConfig
+	AndroidManifest          androidManifest
+	AppDir                   string
+	AppTarget                string
+	ConfigureForCordova      bool
+	ConfigureForNativeScript bool
 }
 
 type options struct {
@@ -54,8 +57,22 @@ type cordovaPreference struct {
 
 type cordovaConfig struct {
 	Preferences []cordovaPreference `xml:"preference"`
-	ID          string              `xml:"id,attr"`
 	AppName     string              `xml:"name"`
+}
+
+type nativeScriptConfig struct {
+	NS                 NS                 `json:"nativescript"`
+	OneginiPreferences OneginiPreferences `json:"onegini"`
+}
+
+type NS struct {
+	ID string `json:"id"`
+}
+
+type OneginiPreferences struct {
+	RootDetectionEnabled  bool `json:"root-detection-enabled"`
+	DebugDetectionEnabled bool `json:"debug-detection-enabled"`
+	DebugLogsEnabled      bool `json:"debug-logs-enabled"`
 }
 
 type androidManifest struct {
@@ -96,10 +113,26 @@ func ParseCordovaConfig(config *Config) {
 	config.Cordova = values
 }
 
+func ParseNativeScriptConfig(config *Config) {
+	jsonFile, err := os.Open("package.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the NativeScript package.json: %v\n", err.Error()))
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	var nsConfig nativeScriptConfig
+	json.Unmarshal(byteValue, &nsConfig)
+
+	config.NativeScript = nsConfig
+}
+
 func ParseAndroidManifest(config *Config) {
 	values := androidManifest{}
 
-	manifestXml, err := ioutil.ReadFile(path.Join(config.AppDir, "app", "src", "main", "AndroidManifest.xml"))
+	manifestPath := config.getAndroidManifestPath()
+	manifestXml, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v\n", err.Error()))
 		os.Exit(1)
@@ -130,12 +163,12 @@ func parseTsZip(path string, config *Config) {
 	for _, file := range readCloser.File {
 		readCloser, err := file.Open()
 		if err != nil {
-			os.Stderr.WriteString(fmt.Sprintf("ERROR: could not contents of Token Server configuration zip: %v\n", err.Error()))
+			os.Stderr.WriteString(fmt.Sprintf("ERROR: could not read the contents of Token Server configuration zip: %v\n", err.Error()))
 			os.Exit(1)
 		}
 
 		if file.Name == "config.json" {
-			config.Options, _ = parseJson(readCloser)
+			config.Options, _ = parseTsJson(readCloser)
 			// Don't use the filepath.Separator in the statement below because the filename always contains the forward / regardless of the
 			// platform the configurator is run on
 		} else if strings.HasPrefix(file.Name, "certificates/") {
@@ -145,7 +178,7 @@ func parseTsZip(path string, config *Config) {
 	VerifyTsZipContents(config)
 }
 
-func parseJson(reader io.Reader) (v *options, err error) {
+func parseTsJson(reader io.Reader) (v *options, err error) {
 	v = new(options)
 	err = json.NewDecoder(reader).Decode(v)
 	return
@@ -159,16 +192,7 @@ func readCert(reader io.Reader) (contents string) {
 }
 
 func getPackageIdentifierFromConfig(config *Config) string {
-	if isCordova(config) {
-		return config.Cordova.ID
-	} else {
-		return config.AndroidManifest.PackageID
-	}
-}
-
-func isCordova(config *Config) bool {
-	var cordovaConfig = &config.Cordova
-	return len(cordovaConfig.ID) > 0
+	return config.AndroidManifest.PackageID
 }
 
 func VerifyTsZipContents(config *Config) {
@@ -200,15 +224,58 @@ func (config *Config) resolveAppDirPath(appDir string) string {
 	return absAppDirPath
 }
 
-func (config *Config) getAndroidKeystorePath() string {
+func getCordovaAndroidPlatformPath(config *Config) string {
+	return path.Join(config.AppDir, "platforms", "android")
+}
+
+func getCordovaAndroidClasspath(config *Config) string {
+	return path.Join(getCordovaAndroidPlatformPath(config), "src", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
+}
+
+func getNativeScriptAndroidPlatformPath(config *Config) string {
+	return path.Join(config.AppDir, "platforms", "android", "src", "main")
+}
+
+func getNativeScriptAndroidClasspath(config *Config) string {
+	return path.Join(getNativeScriptAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
+}
+
+func getDefaultAndroidPlatformPath(config *Config) string {
+	return path.Join(config.AppDir, config.AppTarget, "src", "main")
+}
+
+func getDefaultAndroidClasspath(config *Config) string {
+	return path.Join(getDefaultAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
+}
+
+func getPlatformSpecificAndroidPlatformPath(config *Config) string {
 	androidPlatformPath := ""
-	if isCordova(config) {
-		androidPlatformPath = path.Join(config.AppDir, "platforms", "android")
+	if config.ConfigureForCordova {
+		androidPlatformPath = getCordovaAndroidPlatformPath(config)
+	} else if config.ConfigureForNativeScript {
+		androidPlatformPath = getNativeScriptAndroidPlatformPath(config)
 	} else {
-		androidPlatformPath = path.Join(config.AppDir, config.AppTarget, "src", "main")
+		androidPlatformPath = getDefaultAndroidPlatformPath(config)
 	}
 
-	androidRawPath := path.Join(androidPlatformPath, "res", "raw")
+	return androidPlatformPath
+}
+
+func getPlatformSpecificAndroidClasspathPath(config *Config) string {
+	androidClasspathPath := ""
+	if config.ConfigureForCordova {
+		androidClasspathPath = getCordovaAndroidClasspath(config)
+	} else if config.ConfigureForNativeScript {
+		androidClasspathPath = getNativeScriptAndroidClasspath(config)
+	} else {
+		androidClasspathPath = getDefaultAndroidClasspath(config)
+	}
+
+	return androidClasspathPath
+}
+
+func (config *Config) getAndroidKeystorePath() string {
+	androidRawPath := path.Join(getPlatformSpecificAndroidPlatformPath(config), "res", "raw")
 	if exists(androidRawPath) == false {
 		os.MkdirAll(androidRawPath, os.ModePerm)
 	}
@@ -216,28 +283,16 @@ func (config *Config) getAndroidKeystorePath() string {
 	return path.Join(androidRawPath, "keystore.bks")
 }
 
-func (config *Config) getAndroidSecurityControllerPath() string {
-	if isCordova(config) {
-		return path.Join(config.AppDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "SecurityController.java")
-	} else {
-		return path.Join(config.AppDir, config.AppTarget, "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "SecurityController.java")
-	}
-}
-
 func (config *Config) getAndroidManifestPath() string {
-	if isCordova(config) {
-		return path.Join(config.AppDir, "platforms", "android", "AndroidManifest.xml")
-	} else {
-		return path.Join(config.AppDir, config.AppTarget, "src", "main", "AndroidManifest.xml")
-	}
+	return path.Join(getPlatformSpecificAndroidPlatformPath(config), "AndroidManifest.xml")
 }
 
 func (config *Config) getAndroidConfigModelPath() string {
-	if isCordova(config) {
-		return path.Join(config.AppDir, "platforms", "android", "src", path.Join(strings.Split(config.Cordova.ID, ".")...), "OneginiConfigModel.java")
-	} else {
-		return path.Join(config.AppDir, config.AppTarget, "src", "main", "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...), "OneginiConfigModel.java")
-	}
+	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+}
+
+func (config *Config) getAndroidSecurityControllerPath() string {
+	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
 }
 
 func (config *Config) getIosXcodeProjPath() string {
@@ -258,7 +313,7 @@ func (config *Config) getIosXcodeProjPath() string {
 }
 
 func (config *Config) getIosSrcPath() string {
-	if isCordova(config) {
+	if config.ConfigureForCordova {
 		return path.Join(config.AppDir, "platforms", "ios")
 	} else {
 		return config.AppDir
@@ -266,7 +321,7 @@ func (config *Config) getIosSrcPath() string {
 }
 
 func (config *Config) getIosConfigModelPath() string {
-	if isCordova(config) {
+	if config.ConfigureForCordova {
 		return path.Join(config.AppDir, "platforms", "ios", config.AppTarget, "Configuration")
 	} else {
 		return path.Join(config.AppDir, "Configuration")
@@ -274,7 +329,7 @@ func (config *Config) getIosConfigModelPath() string {
 }
 
 func (config *Config) getIosXcodeCertificatePath() string {
-	if isCordova(config) {
+	if config.ConfigureForCordova {
 		return path.Join(config.getIosSrcPath(), config.AppTarget, "Resources")
 	} else {
 		return path.Join(config.getIosSrcPath(), "Resources")
