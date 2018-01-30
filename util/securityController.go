@@ -69,13 +69,13 @@ func ReadNativeScriptSecurityPreferences(config *Config) (rootDetection bool, de
 	rootDetectionSet := false
 	debugDetectionSet := false
 
-	if config.NativeScript.OneginiPreferences.DebugDetectionEnabled {
+	if config.NativeScript.OneginiPreferences.DebugDetectionEnabled != nil {
 		debugDetectionSet = true
-		debugDetection = config.NativeScript.OneginiPreferences.DebugDetectionEnabled
+		debugDetection = *config.NativeScript.OneginiPreferences.DebugDetectionEnabled
 	}
-	if config.NativeScript.OneginiPreferences.RootDetectionEnabled {
+	if config.NativeScript.OneginiPreferences.RootDetectionEnabled != nil {
 		rootDetectionSet = true
-		rootDetection = config.NativeScript.OneginiPreferences.RootDetectionEnabled
+		rootDetection = *config.NativeScript.OneginiPreferences.RootDetectionEnabled
 	}
 	if config.NativeScript.OneginiPreferences.DebugLogsEnabled {
 		debugLogs = config.NativeScript.OneginiPreferences.DebugLogsEnabled
@@ -112,13 +112,14 @@ public final class SecurityController {
 	}
 }
 
-func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool) {
+func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
 	group := "Configuration"
 	headerContents := `#import <Foundation/Foundation.h>
 
 @interface SecurityController : NSObject
 + (bool)rootDetection;
 + (bool)debugDetection;
++ (bool)debugLogs;
 @end
 `
 
@@ -131,11 +132,15 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 +(bool)debugDetection{
     return %s;
 }
++(bool)debugLogs{
+    return %s;
+}
 @end
 `
 	var (
 		sDebugDetection string
 		sRootDetection  string
+		sDebugLogs      string
 	)
 
 	if debugDetection {
@@ -150,14 +155,20 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 		sRootDetection = "NO"
 	}
 
-	modelContents = fmt.Sprintf(modelContents, sRootDetection, sDebugDetection)
+	if debugLogs {
+		sDebugLogs = "YES"
+	} else {
+		sDebugLogs = "NO"
+	}
+
+	modelContents = fmt.Sprintf(modelContents, sRootDetection, sDebugDetection, sDebugLogs)
 	xcodeProjPath := config.getIosXcodeProjPath()
 	configModelPath := config.getIosConfigModelPath()
 
 	headerStorePath := path.Join(configModelPath, "SecurityController.h")
 	modelStorePath := path.Join(configModelPath, "SecurityController.m")
 
-	if rootDetection && debugDetection {
+	if rootDetection && debugDetection && !debugLogs {
 		removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group)
 		removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group)
 		os.Remove(headerStorePath)

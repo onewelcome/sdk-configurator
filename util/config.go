@@ -70,9 +70,9 @@ type NS struct {
 }
 
 type OneginiPreferences struct {
-	RootDetectionEnabled  bool `json:"root-detection-enabled"`
-	DebugDetectionEnabled bool `json:"debug-detection-enabled"`
-	DebugLogsEnabled      bool `json:"debug-logs-enabled"`
+	RootDetectionEnabled  *bool `json:"root-detection-enabled,omitempty"`
+	DebugDetectionEnabled *bool `json:"debug-detection-enabled,omitempty"`
+	DebugLogsEnabled      bool  `json:"debug-logs-enabled"`
 }
 
 type androidManifest struct {
@@ -224,6 +224,8 @@ func (config *Config) resolveAppDirPath(appDir string) string {
 	return absAppDirPath
 }
 
+// Android Paths
+
 func getCordovaAndroidPlatformPath(config *Config) string {
 	return path.Join(config.AppDir, "platforms", "android")
 }
@@ -295,11 +297,53 @@ func (config *Config) getAndroidSecurityControllerPath() string {
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
 }
 
+// iOS Paths
+
+func getCordovaIosProjPath(config *Config) string {
+	return path.Join(config.AppDir, "platforms", "ios")
+}
+
+func getCordovaIosSrcPath(config *Config) string {
+	return path.Join(getCordovaIosProjPath(config), config.AppTarget)
+}
+
+func getNativeScriptIosProjPath(config *Config) string {
+	return path.Join(config.AppDir, "platforms", "ios")
+}
+
+func getNativeScriptIosSrcPath(config *Config) string {
+	return path.Join(getNativeScriptIosProjPath(config), config.AppTarget)
+}
+
+func getNativeIosProjPath(config *Config) string {
+	return config.AppDir
+}
+
+func getPlatformSpecificIosProjPath(config *Config) string {
+	if config.ConfigureForCordova {
+		return getCordovaIosProjPath(config)
+	} else if config.ConfigureForNativeScript {
+		return getNativeScriptIosProjPath(config)
+	} else {
+		return getNativeIosProjPath(config)
+	}
+}
+
+func getPlatformSpecificIosSrcPath(config *Config) string {
+	if config.ConfigureForCordova {
+		return getCordovaIosSrcPath(config)
+	} else if config.ConfigureForNativeScript {
+		return getNativeScriptIosSrcPath(config)
+	} else {
+		return getNativeIosProjPath(config)
+	}
+}
+
 func (config *Config) getIosXcodeProjPath() string {
-	files, err := filepath.Glob(path.Join(config.getIosSrcPath(), "*.xcodeproj"))
+	files, err := filepath.Glob(path.Join(getPlatformSpecificIosProjPath(config), "*.xcodeproj"))
 
 	if err != nil || len(files) == 0 {
-		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not find an Xcode project directory (.xcodeproj). Are you sure that '%v' contains one?\n", config.getIosSrcPath()))
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not find an Xcode project directory (.xcodeproj). Are you sure that '%v' contains one?\n", getPlatformSpecificIosProjPath(config)))
 		os.Exit(1)
 	}
 
@@ -312,28 +356,12 @@ func (config *Config) getIosXcodeProjPath() string {
 	return files[0]
 }
 
-func (config *Config) getIosSrcPath() string {
-	if config.ConfigureForCordova {
-		return path.Join(config.AppDir, "platforms", "ios")
-	} else {
-		return config.AppDir
-	}
-}
-
 func (config *Config) getIosConfigModelPath() string {
-	if config.ConfigureForCordova {
-		return path.Join(config.AppDir, "platforms", "ios", config.AppTarget, "Configuration")
-	} else {
-		return path.Join(config.AppDir, "Configuration")
-	}
+	return path.Join(getPlatformSpecificIosSrcPath(config), "Configuration")
 }
 
 func (config *Config) getIosXcodeCertificatePath() string {
-	if config.ConfigureForCordova {
-		return path.Join(config.getIosSrcPath(), config.AppTarget, "Resources")
-	} else {
-		return path.Join(config.getIosSrcPath(), "Resources")
-	}
+	return path.Join(getPlatformSpecificIosSrcPath(config), "Resources")
 }
 
 func (config *Config) getIosConfigModelPathMFile() string {
