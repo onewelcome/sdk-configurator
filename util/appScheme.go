@@ -23,6 +23,10 @@ import (
 )
 
 func WriteAndroidAppScheme(config *Config) {
+	if config.ConfigureForNativeScript {
+		return
+	}
+
 	manifestPath := config.getAndroidManifestPath()
 	manifest, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
@@ -41,20 +45,4 @@ func WriteAndroidAppScheme(config *Config) {
 		})
 		ioutil.WriteFile(manifestPath, manifest, os.ModePerm)
 	}
-
-	//TODO Figure out if we want to 'automate' this
-	//if config.ConfigureForNativeScript {
-	//	re := regexp.MustCompile(`(?s)<activity.*android:name=".*NativeScriptOneginiActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>.*`)
-	//	rem := regexp.MustCompile(`android:scheme="[^"]*"`)
-	//	result := re.Find(manifest)
-	//	os.Stderr.WriteString(fmt.Sprintf("INFO: Find result: %s", result))
-	//	manifest = re.ReplaceAllFunc(manifest, func(m []byte) (r []byte) {
-	//		os.Stderr.WriteString("******************INFO: Inside replace all****************\n")
-	//		r = rem.ReplaceAll(m, []byte("android:scheme=\""+scheme+"\""))
-	//		return
-	//	})
-	//
-	//	os.Stderr.WriteString(fmt.Sprintf("Manifest: %s", manifest))
-	//	ioutil.WriteFile(manifestPath, manifest, os.ModePerm)
-	//}
 }
