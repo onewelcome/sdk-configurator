@@ -46,6 +46,7 @@ var androidCmd = &cobra.Command{
 		}
 		util.ParseAndroidManifest(config)
 
+		util.PrepareAndroidPaths(config)
 		util.WriteAndroidSecurityController(config, debugDetection, rootDetection, debugLogs)
 		util.WriteAndroidAppScheme(config)
 		util.CreateKeystore(config)

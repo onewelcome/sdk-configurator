@@ -14,17 +14,30 @@
 
 package util
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 func PrepareIosPaths(config *Config) {
 	configModelPath := config.getIosConfigModelPath()
 	if _, err := os.Stat(configModelPath); os.IsNotExist(err) {
-		os.Mkdir(configModelPath, os.ModePerm)
+		os.Mkdir(configModelPath, 0775)
 	}
 
 	certificatePath := config.getIosXcodeCertificatePath()
 	if _, err := os.Stat(certificatePath); os.IsNotExist(err) {
-		os.Mkdir(certificatePath, os.ModePerm)
+		os.Mkdir(certificatePath, 0775)
+	}
+}
+
+func PrepareAndroidPaths(config *Config) {
+	os.Stderr.WriteString("Preparing paths!\n")
+	classpathPath := config.getAndroidClasspathPath()
+	os.Stderr.WriteString(fmt.Sprintf("Classpath path: %s\n", classpathPath))
+	if _, err := os.Stat(classpathPath); os.IsNotExist(err) {
+		os.Stderr.WriteString("Creating DIR!\n")
+		os.MkdirAll(classpathPath, 0775)
 	}
 }
 

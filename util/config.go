@@ -297,6 +297,10 @@ func (config *Config) getAndroidSecurityControllerPath() string {
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
 }
 
+func (config *Config) getAndroidClasspathPath() string {
+	return path.Join(getPlatformSpecificAndroidClasspathPath(config))
+}
+
 // iOS Paths
 
 func getCordovaIosProjPath(config *Config) string {
