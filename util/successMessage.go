@@ -42,7 +42,16 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 }
 
 func PrintAndroidManifestUpdateHint(config *Config) {
-	if !config.ConfigureForCordova {
+	if config.ConfigureForCordova {
+		return
+	}
+	if config.ConfigureForNativeScript {
+		fmt.Println("")
+		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
+		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
+		// TODO replace with link to docs
+		fmt.Println("INFO: More info is provided here: TODO replace with link to documentation")
+	} else {
 		fmt.Println("")
 		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
