@@ -361,7 +361,12 @@ func (config *Config) getIosConfigModelPath() string {
 }
 
 func (config *Config) getIosXcodeCertificatePath() string {
-	return path.Join(getPlatformSpecificIosSrcPath(config), "Resources")
+	// Certs are stored in a different place for NS.
+	if config.ConfigureForNativeScript {
+		return path.Join(config.AppDir, "app", "App_Resources", "iOS")
+	} else {
+		return path.Join(getPlatformSpecificIosSrcPath(config), "Resources")
+	}
 }
 
 func (config *Config) getIosConfigModelPathMFile() string {

@@ -39,7 +39,9 @@ func ConfigureIOSCertificates(config *Config) {
 		block, _ := pem.Decode([]byte(certContents))
 		ioutil.WriteFile(certPath, block.Bytes, os.ModePerm)
 
-		iosAddCertFilesToXcodeProj(certPath, xcodeProjPath, config.AppTarget)
+		if !config.ConfigureForNativeScript {
+			iosAddCertFilesToXcodeProj(certPath, xcodeProjPath, config.AppTarget)
+		}
 	}
 }
 
