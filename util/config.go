@@ -361,7 +361,7 @@ func (config *Config) getIosConfigModelPath() string {
 }
 
 func (config *Config) getIosXcodeCertificatePath() string {
-	// Certs are stored in a different place for NS.
+	// Certs need to be stored in a different place NS a full build will override the resources in the src path.
 	if config.ConfigureForNativeScript {
 		return path.Join(config.AppDir, "app", "App_Resources", "iOS")
 	} else {
