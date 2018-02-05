@@ -58,6 +58,7 @@ var iosCmd = &cobra.Command{
 		util.ConfigureIOSCertificates(config)
 
 		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
+		util.PrintIosInfoPlistUpdateHint(config)
 	},
 }
 
