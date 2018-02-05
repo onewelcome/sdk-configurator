@@ -235,7 +235,7 @@ func getCordovaAndroidClasspath(config *Config) string {
 }
 
 func getNativeScriptAndroidPlatformPath(config *Config) string {
-	return path.Join(config.AppDir, "platforms", "android", "src", "main")
+	return path.Join(config.AppDir, "platforms", "android", "app", "src", "main")
 }
 
 func getNativeScriptAndroidClasspath(config *Config) string {
