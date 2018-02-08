@@ -49,8 +49,7 @@ func PrintAndroidManifestUpdateHint(config *Config) {
 		fmt.Println("")
 		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
-		// TODO replace with link to docs
-		fmt.Println("INFO: More info is provided here: TODO replace with link to documentation")
+		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/nativescript-plugin/topics/configuration.html#configuring-a-custom-url-scheme-for-authentication")
 	} else {
 		fmt.Println("")
 		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
@@ -67,8 +66,7 @@ func PrintIosInfoPlistUpdateHint(config *Config) {
 		fmt.Println("")
 		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
-		// TODO replace with link to docs
-		fmt.Println("INFO: More info is provided here: TODO replace with link to documentation")
+		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/nativescript-plugin/topics/configuration.html#configuring-a-custom-url-scheme-for-authentication")
 	} else {
 		fmt.Println("")
 		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
