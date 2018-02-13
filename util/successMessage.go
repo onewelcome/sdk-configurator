@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool) {
+func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
 	fmt.Print("SUCCESS! Your application is now configured.\n\n")
 	fmt.Println("CONFIGURATION")
 
@@ -29,6 +29,7 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 	fmt.Printf("Redirect URI:		%v\n", config.Options.RedirectUrl)
 	fmt.Printf("Debug detection:	%v\n", debugDetection)
 	fmt.Printf("Root detection:		%v\n", rootDetection)
+	fmt.Printf("Debug logs:		%v\n", debugLogs)
 	fmt.Printf("Token Server URI:	%v\n", config.Options.TokenServerUri)
 	rgUris := config.Options.ResourceGatewayUris
 	for i := 0; i < len(rgUris); i++ {
@@ -41,10 +42,35 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 }
 
 func PrintAndroidManifestUpdateHint(config *Config) {
-	if !isCordova(config) {
+	if config.ConfigureForCordova {
+		return
+	}
+	if config.ConfigureForNativeScript {
+		fmt.Println("")
+		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
+		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
+		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/nativescript-plugin/topics/configuration.html#configuring-a-custom-url-scheme-for-authentication")
+	} else {
 		fmt.Println("")
 		fmt.Println("INFO: Don't forget to update your android manifest to let Android handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
 		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/android-sdk/topics/authenticate-user-with-pin.html#handling-the-authentication-callback-during-registration")
+	}
+}
+
+func PrintIosInfoPlistUpdateHint(config *Config) {
+	if config.ConfigureForCordova {
+		return
+	}
+	if config.ConfigureForNativeScript {
+		fmt.Println("")
+		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
+		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
+		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/nativescript-plugin/topics/configuration.html#configuring-a-custom-url-scheme-for-authentication")
+	} else {
+		fmt.Println("")
+		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
+		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
+		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/ios-sdk/topics/user-authentication.html#handling-registration-request-url-with-external-web-browser")
 	}
 }

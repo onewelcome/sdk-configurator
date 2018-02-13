@@ -23,7 +23,7 @@ import (
 	"strconv"
 )
 
-func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDetection bool) {
+func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDetection bool, debugLogs bool) {
 	rootDetectionSet := false
 	debugDetectionSet := false
 
@@ -46,6 +46,14 @@ func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDe
 				os.Exit(1)
 			}
 		}
+		if pref.Name == "OneginiDebugLogsEnabled" {
+			var err error
+			debugLogs, err = strconv.ParseBool(pref.Value)
+			if err != nil {
+				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse 'OneginiDebugLogsEnabled' preference: %v\n", err.Error()))
+				os.Exit(1)
+			}
+		}
 	}
 
 	if !rootDetectionSet {
@@ -57,19 +65,45 @@ func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDe
 	return
 }
 
-func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool) {
+func ReadNativeScriptSecurityPreferences(config *Config) (rootDetection bool, debugDetection bool, debugLogs bool) {
+	rootDetectionSet := false
+	debugDetectionSet := false
+
+	if config.NativeScript.OneginiPreferences.DebugDetectionEnabled != nil {
+		debugDetectionSet = true
+		debugDetection = *config.NativeScript.OneginiPreferences.DebugDetectionEnabled
+	}
+	if config.NativeScript.OneginiPreferences.RootDetectionEnabled != nil {
+		rootDetectionSet = true
+		rootDetection = *config.NativeScript.OneginiPreferences.RootDetectionEnabled
+	}
+	if config.NativeScript.OneginiPreferences.DebugLogsEnabled {
+		debugLogs = config.NativeScript.OneginiPreferences.DebugLogsEnabled
+	}
+
+	if !rootDetectionSet {
+		rootDetection = true
+	}
+	if !debugDetectionSet {
+		debugDetection = true
+	}
+	return
+}
+
+func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
 	fileContents := `package %s;
 
 @SuppressWarnings({ "unused", "WeakerAccess" })
 public final class SecurityController {
   public static final boolean debugDetection = %s;
   public static final boolean rootDetection = %s;
+  public static final boolean debugLogs = %s;
 }`
 	packageId := getPackageIdentifierFromConfig(config)
-	fileContents = fmt.Sprintf(fileContents, packageId, strconv.FormatBool(debugDetection), strconv.FormatBool(rootDetection))
+	fileContents = fmt.Sprintf(fileContents, packageId, strconv.FormatBool(debugDetection), strconv.FormatBool(rootDetection), strconv.FormatBool(debugLogs))
 	storePath := config.getAndroidSecurityControllerPath()
 
-	if rootDetection && debugDetection {
+	if rootDetection && debugDetection && !debugLogs {
 		os.Remove(storePath)
 	} else {
 		if err := ioutil.WriteFile(storePath, []byte(fileContents), os.ModePerm); err != nil {
@@ -78,13 +112,14 @@ public final class SecurityController {
 	}
 }
 
-func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool) {
+func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
 	group := "Configuration"
 	headerContents := `#import <Foundation/Foundation.h>
 
 @interface SecurityController : NSObject
 + (bool)rootDetection;
 + (bool)debugDetection;
++ (bool)debugLogs;
 @end
 `
 
@@ -97,11 +132,15 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 +(bool)debugDetection{
     return %s;
 }
++(bool)debugLogs{
+    return %s;
+}
 @end
 `
 	var (
 		sDebugDetection string
 		sRootDetection  string
+		sDebugLogs      string
 	)
 
 	if debugDetection {
@@ -116,14 +155,20 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 		sRootDetection = "NO"
 	}
 
-	modelContents = fmt.Sprintf(modelContents, sRootDetection, sDebugDetection)
+	if debugLogs {
+		sDebugLogs = "YES"
+	} else {
+		sDebugLogs = "NO"
+	}
+
+	modelContents = fmt.Sprintf(modelContents, sRootDetection, sDebugDetection, sDebugLogs)
 	xcodeProjPath := config.getIosXcodeProjPath()
 	configModelPath := config.getIosConfigModelPath()
 
 	headerStorePath := path.Join(configModelPath, "SecurityController.h")
 	modelStorePath := path.Join(configModelPath, "SecurityController.m")
 
-	if rootDetection && debugDetection {
+	if rootDetection && debugDetection && !debugLogs {
 		removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group)
 		removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group)
 		os.Remove(headerStorePath)

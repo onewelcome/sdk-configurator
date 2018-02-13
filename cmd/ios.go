@@ -33,12 +33,19 @@ var iosCmd = &cobra.Command{
 		var appTarget string
 
 		if isCordova {
+			config.ConfigureForCordova = true
 			util.ParseCordovaConfig(config)
-			rootDetection, debugDetection = util.ReadCordovaSecurityPreferences(config)
+			rootDetection, debugDetection, debugLogs = util.ReadCordovaSecurityPreferences(config)
 			appTarget = config.Cordova.AppName
 
-			verifyCordovaIosPlatformInstalled()
+			verifyIosPlatformInstalled("ERROR: Your project does not seem to have the iOS platform added. Please try `cordova platform add ios`")
+		} else if isNativeScript {
+			config.ConfigureForNativeScript = true
+			util.ParseNativeScriptConfig(config)
+			rootDetection, debugDetection, debugLogs = util.ReadNativeScriptSecurityPreferences(config)
+			appTarget = targetName
 
+			verifyIosPlatformInstalled("ERROR: Your project does not seem to have the iOS platform added. Please try `tns platform add ios`")
 		} else {
 			appTarget = targetName
 		}
@@ -47,10 +54,11 @@ var iosCmd = &cobra.Command{
 
 		util.PrepareIosPaths(config)
 		util.WriteIOSConfigModel(config)
-		util.WriteIOSSecurityController(config, debugDetection, rootDetection)
+		util.WriteIOSSecurityController(config, debugDetection, rootDetection, debugLogs)
 		util.ConfigureIOSCertificates(config)
 
-		util.PrintSuccessMessage(config, debugDetection, rootDetection)
+		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
+		util.PrintIosInfoPlistUpdateHint(config)
 	},
 }
 
@@ -68,10 +76,10 @@ func verifyAppTarget(appTarget string) {
 	}
 }
 
-func verifyCordovaIosPlatformInstalled() {
-	_, err := os.Stat(path.Join(appDir, "platforms", "ios"))
+func verifyIosPlatformInstalled(errorMessage string) {
+	_, err := os.Stat(path.Join(appDir, "platforms", "android"))
 	if os.IsNotExist(err) {
-		os.Stderr.WriteString(fmt.Sprintln("ERROR: Your project does not seem to have the iOS platform added. Please try `cordova platform add ios`"))
+		os.Stderr.WriteString(fmt.Sprintln(errorMessage))
 		os.Exit(1)
 	}
 }

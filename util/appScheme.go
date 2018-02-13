@@ -23,6 +23,10 @@ import (
 )
 
 func WriteAndroidAppScheme(config *Config) {
+	if config.ConfigureForNativeScript {
+		return
+	}
+
 	manifestPath := config.getAndroidManifestPath()
 	manifest, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
@@ -32,7 +36,7 @@ func WriteAndroidAppScheme(config *Config) {
 
 	scheme := strings.Split(config.Options.RedirectUrl, "://")[0]
 
-	if isCordova(config) {
+	if config.ConfigureForCordova {
 		re := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
 		rem := regexp.MustCompile(`android:scheme="[^"]*"`)
 		manifest = re.ReplaceAllFunc(manifest, func(m []byte) (r []byte) {
