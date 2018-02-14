@@ -77,7 +77,7 @@ func verifyAppTarget(appTarget string) {
 }
 
 func verifyIosPlatformInstalled(errorMessage string) {
-	_, err := os.Stat(path.Join(appDir, "platforms", "android"))
+	_, err := os.Stat(path.Join(appDir, "platforms", "ios"))
 	if os.IsNotExist(err) {
 		os.Stderr.WriteString(fmt.Sprintln(errorMessage))
 		os.Exit(1)
