@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Onegini/onegini-sdk-configurator/version"
+
 	"fmt"
 
 	"github.com/Onegini/onegini-sdk-configurator/data"
@@ -101,6 +103,9 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	re := regexp.MustCompile(`return @\[.*\];.*`)
 	modelMFile = re.ReplaceAll(modelMFile, []byte(newDef))
 
+	versionRe := regexp.MustCompile(`CONFIGURATOR_VERSION`)
+	modelMFile = versionRe.ReplaceAll(modelMFile, []byte(version.Version))
+
 	return
 }
 
@@ -167,6 +172,9 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
+
+	re := regexp.MustCompile(`CONFIGURATOR_VERSION`)
+	model = re.ReplaceAll(model, []byte(version.Version))
 
 	return model
 }
