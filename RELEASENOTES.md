@@ -1,5 +1,12 @@
 # Release notes
 
+## 4.1.0
+
+### Features
+
+* Add support for NativeScript projects
+* Print a comment in the config model to show which Configurator version was used to generate it
+
 ## 4.0.0
 
 Please note that this release is required if you are using the following SDK versions:
