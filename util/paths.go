@@ -14,10 +14,7 @@
 
 package util
 
-import (
-	"fmt"
-	"os"
-)
+import "os"
 
 func PrepareIosPaths(config *Config) {
 	configModelPath := config.getIosConfigModelPath()
@@ -32,11 +29,8 @@ func PrepareIosPaths(config *Config) {
 }
 
 func PrepareAndroidPaths(config *Config) {
-	os.Stderr.WriteString("Preparing paths!\n")
 	classpathPath := config.getAndroidClasspathPath()
-	os.Stderr.WriteString(fmt.Sprintf("Classpath path: %s\n", classpathPath))
 	if _, err := os.Stat(classpathPath); os.IsNotExist(err) {
-		os.Stderr.WriteString("Creating DIR!\n")
 		os.MkdirAll(classpathPath, 0775)
 	}
 }
