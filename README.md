@@ -43,6 +43,12 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 | Cordova plugin 3.x & 2.x   | 3.x                    |
 | Cordova plugin < 2.0.0     | 2.x                    |
 
+**NativeScript plugin**
+
+| Plugin version             | Configurator version   |
+|----------------------------|------------------------|
+| NativeScript plugin 1.x    | 4.1.x                  |
+
 ### Requirements
 
 **Android specific:**
