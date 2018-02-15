@@ -2,7 +2,7 @@
 
 The SDK Configurator configures the Onegini SDK in your application project.
 
-It currently supports iOS, Android and Cordova projects. For Cordova it supports both the iOS and Android platforms.
+It currently supports iOS, Android, Cordova and NativeScript projects. For Cordova & NativeScript it supports both the iOS and Android platforms.
 
 ## About the tool
 
@@ -105,5 +105,13 @@ Example for configuring a Cordova Android project manually:
 ./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
 ```
 
-Make sure you have the `onegini-cordova-plugin` installed before running the configurator. You will need to rerun the configurator for each installed platform 
-in your Cordova project.
+### NativeScript example
+The Onegini NativeScript plugin contains a hook that will automatically trigger the configurator when you run `tns platform add`. You can still choose to run the configurator manually (e.g. for updating an existing platform).
+
+Example for configuring a NativeScript Android project manually:
+```sh
+./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --nativescript
+```
+
+Make sure you have the `nativescript-onegini` plugin installed before running the configurator. You will need to rerun the configurator for each installed platform 
+in your NativeScript project.
