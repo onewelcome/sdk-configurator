@@ -106,7 +106,7 @@ Example for configuring a Cordova Android project manually:
 ```
 
 ### NativeScript example
-The Onegini NativeScript plugin contains a hook that will automatically trigger the configurator when you run `tns platform add`. You can still choose to run the configurator manually (e.g. for updating an existing platform).
+The Onegini NativeScript plugin contains a hook that will automatically trigger the configurator when you run `tns prepare`. You can still choose to run the configurator manually (e.g. for updating an existing platform).
 
 Example for configuring a NativeScript Android project manually:
 ```sh
