@@ -1,5 +1,11 @@
 # Release notes
 
+## 4.2.0
+
+### Improvements
+
+* Add support for the Cordova Android Platform 7.0.0
+
 ## 4.1.0
 
 ### Features

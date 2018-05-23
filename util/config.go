@@ -225,12 +225,35 @@ func (config *Config) resolveAppDirPath(appDir string) string {
 }
 
 // Android Paths
-
 func getCordovaAndroidPlatformPath(config *Config) string {
+	var android7PlatformPath = getCordovaAndroid7PlatformPath(config)
+	if exists(android7PlatformPath) {
+		return android7PlatformPath
+	}
+	return getCordovaAndroid6PlatformPath(config)
+}
+
+func getCordovaAndroid7PlatformPath(config *Config) string {
+	return path.Join(config.AppDir, "platforms", "android", "app", "src", "main")
+}
+
+func getCordovaAndroid6PlatformPath(config *Config) string {
 	return path.Join(config.AppDir, "platforms", "android")
 }
 
 func getCordovaAndroidClasspath(config *Config) string {
+	var cordovaAndroid7Classpath = getCordovaAndroid7Classpath(config)
+	if exists(cordovaAndroid7Classpath) {
+		return cordovaAndroid7Classpath
+	}
+	return getCordovaAndroid6Classpath(config)
+}
+
+func getCordovaAndroid7Classpath(config *Config) string {
+	return path.Join(getCordovaAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
+}
+
+func getCordovaAndroid6Classpath(config *Config) string {
 	return path.Join(getCordovaAndroidPlatformPath(config), "src", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
 }
 
