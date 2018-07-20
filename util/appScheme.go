@@ -37,12 +37,24 @@ func WriteAndroidAppScheme(config *Config) {
 	scheme := strings.Split(config.Options.RedirectUrl, "://")[0]
 
 	if config.ConfigureForCordova {
-		re := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
-		rem := regexp.MustCompile(`android:scheme="[^"]*"`)
-		manifest = re.ReplaceAllFunc(manifest, func(m []byte) (r []byte) {
-			r = rem.ReplaceAll(m, []byte("android:scheme=\""+scheme+"\""))
-			return
-		})
+		newRegexp := regexp.MustCompile(`(?s)<intent-filter android:label="OneginiRedirectionIntent" android:name="OneginiRedirectionIntent">.*android:scheme="([^"]*)".*</intent-filter>`)
+		oldRegexp := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
+
+		schemeRegexp := regexp.MustCompile(`android:scheme="[^"]*"`)
+
+		if newRegexp.Match(manifest) {
+			os.Stderr.WriteString(fmt.Sprintf("NEW MATCH FOUND\n"))
+			manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
+				output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+				return
+			})
+		} else {
+			os.Stderr.WriteString(fmt.Sprintf("OLD MATCH FOUND\n"))
+			manifest = oldRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
+				output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+				return
+			})
+		}
 		ioutil.WriteFile(manifestPath, manifest, os.ModePerm)
 	}
 }
