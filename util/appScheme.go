@@ -37,19 +37,25 @@ func WriteAndroidAppScheme(config *Config) {
 	scheme := strings.Split(config.Options.RedirectUrl, "://")[0]
 
 	if config.ConfigureForCordova {
-		newRegexp := regexp.MustCompile(`(?s)<intent-filter android:label="OneginiRedirectionIntent" android:name="OneginiRedirectionIntent">.*android:scheme="([^"]*)".*</intent-filter>`)
+		newRegexp := regexp.MustCompile(`(?s)<intent-filter android:label="OneginiRedirectionIntent" android:name="OneginiRedirectionIntent">(.*?)</intent-filter>`)
 		oldRegexp := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
 
 		schemeRegexp := regexp.MustCompile(`android:scheme="[^"]*"`)
-
 		if newRegexp.Match(manifest) {
-			os.Stderr.WriteString(fmt.Sprintf("NEW MATCH FOUND\n"))
-			manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
-				output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
-				return
-			})
+			if shouldRemoveIntentFilter(config) {
+				manifest = newRegexp.ReplaceAll(manifest, []byte(""))
+				/*manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
+					output = []byte("")
+					return
+				})*/
+			} else {
+				manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
+					output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+					return
+				})
+			}
 		} else {
-			os.Stderr.WriteString(fmt.Sprintf("OLD MATCH FOUND\n"))
+			// backward compatible check for older versions of the plugin
 			manifest = oldRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
 				output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
 				return
@@ -57,4 +63,13 @@ func WriteAndroidAppScheme(config *Config) {
 		}
 		ioutil.WriteFile(manifestPath, manifest, os.ModePerm)
 	}
+}
+
+func shouldRemoveIntentFilter(config *Config) bool {
+	for _, pref := range config.Cordova.Preferences {
+		if pref.Name == "OneginiWebView" && pref.Value == "disabled" {
+			return true
+		}
+	}
+	return false
 }
