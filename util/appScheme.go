@@ -44,10 +44,6 @@ func WriteAndroidAppScheme(config *Config) {
 		if newRegexp.Match(manifest) {
 			if shouldRemoveIntentFilter(config) {
 				manifest = newRegexp.ReplaceAll(manifest, []byte(""))
-				/*manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
-					output = []byte("")
-					return
-				})*/
 			} else {
 				manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
 					output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
