@@ -37,12 +37,35 @@ func WriteAndroidAppScheme(config *Config) {
 	scheme := strings.Split(config.Options.RedirectUrl, "://")[0]
 
 	if config.ConfigureForCordova {
-		re := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
-		rem := regexp.MustCompile(`android:scheme="[^"]*"`)
-		manifest = re.ReplaceAllFunc(manifest, func(m []byte) (r []byte) {
-			r = rem.ReplaceAll(m, []byte("android:scheme=\""+scheme+"\""))
-			return
-		})
+		newRegexp := regexp.MustCompile(`(?s)<intent-filter android:label="OneginiRedirectionIntent" android:name="OneginiRedirectionIntent">(.*?)</intent-filter>`)
+		oldRegexp := regexp.MustCompile(`(?s)<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
+
+		schemeRegexp := regexp.MustCompile(`android:scheme="[^"]*"`)
+		if newRegexp.Match(manifest) {
+			if shouldRemoveIntentFilter(config) {
+				manifest = newRegexp.ReplaceAll(manifest, []byte(""))
+			} else {
+				manifest = newRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
+					output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+					return
+				})
+			}
+		} else {
+			// backward compatible check for older versions of the plugin
+			manifest = oldRegexp.ReplaceAllFunc(manifest, func(input []byte) (output []byte) {
+				output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+				return
+			})
+		}
 		ioutil.WriteFile(manifestPath, manifest, os.ModePerm)
 	}
+}
+
+func shouldRemoveIntentFilter(config *Config) bool {
+	for _, pref := range config.Cordova.Preferences {
+		if pref.Name == "OneginiWebView" && pref.Value == "disabled" {
+			return true
+		}
+	}
+	return false
 }
