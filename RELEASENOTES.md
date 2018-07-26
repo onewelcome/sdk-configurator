@@ -1,5 +1,17 @@
 # Release notes
 
+## 4.2.1
+
+Please note that this release is required if you are using the following Cordova Plugin Onegini versions:
+* Cordova Plugin Onegini 4.2.1
+* Cordova Plugin Onegini 5.0.1 and higher
+
+It is backward compatible with the previous Cordova Plugin Onegini versions.
+
+### Bug fixes
+
+* Fixed user registration flow with JavaScript callback on Android platform using Cordova Onegini Plugin
+
 ## 4.2.0
 
 ### Improvements
