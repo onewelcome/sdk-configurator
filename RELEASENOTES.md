@@ -6,7 +6,7 @@ Please note that this release is required if you are using the following Cordova
 * Cordova Plugin Onegini 4.2.1
 * Cordova Plugin Onegini 5.0.1 and higher
 
-It is backward compatible with the previous Cordova Plugin Onegini versions.
+It is backward compatible with the previous Cordova Plugin Onegini and SDK versions.
 
 ### Bug fixes
 
