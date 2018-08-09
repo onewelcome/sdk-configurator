@@ -65,14 +65,14 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 Please read the following assumptions **carefully** if you wish to use the SDK configurator for an **existing** project in which the Onegini SDK is already 
 configured.
 
-####Android
+#### Android
 
 - **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the 
 SDK configurator searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the 
 `<manifest>` element. You must remove the existing config model if you have named it differently or if it is placed in a different location before running the 
 SDK configurator.
 
-####iOS
+#### iOS
 
 - **Config model:** The configurator tries to look for an existing config model class in the `Configuration` group in the root of your Xcode project. You must 
 remove the existing config model if it is located in a different group before running the SDK configurator.
