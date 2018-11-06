@@ -39,7 +39,7 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | Plugin version                 | Configurator version   |
 |--------------------------------|------------------------|
-| Cordova plugin 5.0.1           | 4.2.1                  |
+| Cordova plugin 5.0.x           | 4.2.1                  |
 | Cordova plugin 5.0.0           | 4.2.0                  |
 | Cordova plugin 4.3.x           | 4.2.0                  |
 | Cordova plugin 4.2.1 - 4.2.x   | 4.2.1                  |
