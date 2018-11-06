@@ -29,11 +29,11 @@ The configurator binaries differ per SDK version. Please see the compatibility m
  
 **iOS SDK**
 
-| SDK version       | Configurator version   |
-|-------------------|------------------------|
-| iOS SDK 7.x       | 4.x                    |
-| iOS SDK 5.x & 6.x | 3.x                    |
-| iOS SDK < 5.00.00 | 2.x                    |
+| SDK version                | Configurator version   |
+|----------------------------|------------------------|
+| iOS SDK 7.x & 8.x & 9.x    | 4.x                    |
+| iOS SDK 5.x & 6.x          | 3.x                    |
+| iOS SDK < 5.00.00          | 2.x                    |
 
 **Cordova plugin**
 
