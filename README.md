@@ -35,7 +35,7 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 | iOS SDK 5.x & 6.x          | 3.x                    |
 | iOS SDK < 5.00.00          | 2.x                    |
 
-**Cordova plugin - Android**
+**Cordova plugin**
 
 | Plugin version                 | Configurator version   |
 |--------------------------------|------------------------|
@@ -46,14 +46,6 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 | Cordova plugin 4.0.0 - 4.2.0   | 4.2.0                  |
 | Cordova plugin 3.x & 2.x       | 3.x                    |
 | Cordova plugin < 2.0.0         | 2.x                    |
-
-**Cordova plugin - iOS**
-
-| Plugin version             | Configurator version   |
-|----------------------------|------------------------|
-| Cordova plugin 4.x & 5.x   | 4.x                    |
-| Cordova plugin 3.x & 2.x   | 3.x                    |
-| Cordova plugin < 2.0.0     | 2.x                    |
 
 **NativeScript plugin**
 
