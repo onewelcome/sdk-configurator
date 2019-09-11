@@ -116,71 +116,39 @@ public final class SecurityController {
 
 func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
 	group := "Configuration"
+	xcodeProjPath := config.getIosXcodeProjPath()
+	configModelPath := config.getIosConfigModelPath()
+	headerStorePath := path.Join(configModelPath, "SecurityController.h")
+	modelStorePath := path.Join(configModelPath, "SecurityController.m")
+
+	// always remove old files
+	removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group)
+	removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group)
+	os.Remove(headerStorePath)
+	os.Remove(modelStorePath)
+
+	if rootDetection && debugDetection && !debugLogs && tamperingProtection {
+		return
+	}
+
 	headerContents := `#import <Foundation/Foundation.h>
 
 @interface SecurityController : NSObject
-+ (bool)rootDetection;
-+ (bool)debugDetection;
-+ (bool)debugLogs;
-@end
+%s@end
 `
+	headerContents = fmt.Sprintf(headerContents, PrepareHeaderFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
 
 	modelContents := `#import "SecurityController.h"
 
 @implementation SecurityController
-+(bool)rootDetection{
-    return %s;
-}
-+(bool)debugDetection{
-    return %s;
-}
-+(bool)debugLogs{
-    return %s;
-}
-@end
+%s@end
 `
-	var (
-		sDebugDetection string
-		sRootDetection  string
-		sDebugLogs      string
-	)
+	modelContents = fmt.Sprintf(modelContents, PrepareModelFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
 
-	if debugDetection {
-		sDebugDetection = "YES"
-	} else {
-		sDebugDetection = "NO"
-	}
-
-	if rootDetection {
-		sRootDetection = "YES"
-	} else {
-		sRootDetection = "NO"
-	}
-
-	if debugLogs {
-		sDebugLogs = "YES"
-	} else {
-		sDebugLogs = "NO"
-	}
-
-	modelContents = fmt.Sprintf(modelContents, sRootDetection, sDebugDetection, sDebugLogs)
-	xcodeProjPath := config.getIosXcodeProjPath()
-	configModelPath := config.getIosConfigModelPath()
-
-	headerStorePath := path.Join(configModelPath, "SecurityController.h")
-	modelStorePath := path.Join(configModelPath, "SecurityController.m")
-
-	if rootDetection && debugDetection && !debugLogs {
-		removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group)
-		removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group)
-		os.Remove(headerStorePath)
-		os.Remove(modelStorePath)
-	} else {
-		ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
-		ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
-		addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group)
-		addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
-	}
+	ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
+	ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
+	addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group)
+	addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
 }
 
 func PrepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
@@ -197,6 +165,42 @@ func PrepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs b
 	}
 	if !tamperingProtection {
 		sb.WriteString("  public static final boolean tamperingProtection = false;\n")
+	}
+	return sb.String()
+}
+
+func PrepareHeaderFlagsForIos(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
+	// don't print unnecessary (default) flags
+	var sb strings.Builder
+	if !rootDetection {
+		sb.WriteString("+ (bool)rootDetection;\n")
+	}
+	if !debugDetection {
+		sb.WriteString("+ (bool)debugDetection;\n")
+	}
+	if debugLogs {
+		sb.WriteString("+ (bool)debugLogs;\n")
+	}
+	if !tamperingProtection {
+		sb.WriteString("+ (bool)tamperingProtection;\n")
+	}
+	return sb.String()
+}
+
+func PrepareModelFlagsForIos(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
+	// don't print unnecessary (default) flags
+	var sb strings.Builder
+	if !rootDetection {
+		sb.WriteString("+(bool)rootDetection{\n  return NO;\n}\n")
+	}
+	if !debugDetection {
+		sb.WriteString("+(bool)debugDetection{\n  return NO;\n}\n")
+	}
+	if debugLogs {
+		sb.WriteString("+(bool)debugLogs{\n  return YES;\n}\n")
+	}
+	if !tamperingProtection {
+		sb.WriteString("+(bool)tamperingProtection{\n  return NO;\n}\n")
 	}
 	return sb.String()
 }
