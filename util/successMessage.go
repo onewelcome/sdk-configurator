@@ -69,12 +69,12 @@ func PrintIosInfoPlistUpdateHint(config *Config) {
 	}
 	if config.ConfigureForNativeScript {
 		fmt.Println("")
-		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
+		fmt.Println("INFO: If you are using the system browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
 		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/nativescript-plugin/topics/configuration.html#configuring-a-custom-url-scheme-for-authentication")
 	} else {
 		fmt.Println("")
-		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
+		fmt.Println("INFO: If you are using the system browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
 		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/ios-sdk/topics/user-authentication.html#handling-registration-request-url-with-external-web-browser")
 	}
