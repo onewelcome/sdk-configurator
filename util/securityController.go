@@ -21,6 +21,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDetection bool, debugLogs bool) {
@@ -91,24 +92,25 @@ func ReadNativeScriptSecurityPreferences(config *Config) (rootDetection bool, de
 }
 
 func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
+	packageId := getPackageIdentifierFromConfig(config)
+	storePath := config.getAndroidSecurityControllerPath()
+	os.Remove(storePath) // always remove old file
+
+	if rootDetection && debugDetection && !debugLogs && tamperingProtection {
+		return
+	}
+
 	fileContents := `package %s;
 
 @SuppressWarnings({ "unused", "WeakerAccess" })
 public final class SecurityController {
-  public static final boolean debugDetection = %s;
-  public static final boolean rootDetection = %s;
-  public static final boolean debugLogs = %s;
-}`
-	packageId := getPackageIdentifierFromConfig(config)
-	fileContents = fmt.Sprintf(fileContents, packageId, strconv.FormatBool(debugDetection), strconv.FormatBool(rootDetection), strconv.FormatBool(debugLogs))
-	storePath := config.getAndroidSecurityControllerPath()
+%s}`
 
-	if rootDetection && debugDetection && !debugLogs {
-		os.Remove(storePath)
-	} else {
-		if err := ioutil.WriteFile(storePath, []byte(fileContents), os.ModePerm); err != nil {
-			log.Fatal("WARNING! Could not update security controller. This might be dangerous!")
-		}
+	flagsContents := PrepareFlagsForAndroid(debugDetection, rootDetection, debugLogs, tamperingProtection)
+	fileContents = fmt.Sprintf(fileContents, packageId, flagsContents)
+
+	if err := ioutil.WriteFile(storePath, []byte(fileContents), os.ModePerm); err != nil {
+		log.Fatal("WARNING! Could not update security controller. This might be dangerous!")
 	}
 }
 
@@ -179,4 +181,22 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 		addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group)
 		addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
 	}
+}
+
+func PrepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
+	// don't print unnecessary (default) flags
+	var sb strings.Builder
+	if !rootDetection {
+		sb.WriteString("  public static final boolean rootDetection = false;\n")
+	}
+	if !debugDetection {
+		sb.WriteString("  public static final boolean debugDetection = false;\n")
+	}
+	if debugLogs {
+		sb.WriteString("  public static final boolean debugLogs = true;\n")
+	}
+	if !tamperingProtection {
+		sb.WriteString("  public static final boolean tamperingProtection = false;\n")
+	}
+	return sb.String()
 }
