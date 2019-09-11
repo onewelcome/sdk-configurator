@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
+func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
 	fmt.Print("SUCCESS! Your application is now configured.\n\n")
 	fmt.Println("CONFIGURATION")
 
@@ -38,6 +38,11 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 		} else {
 			fmt.Printf("			%v\n", rgUris[i])
 		}
+	}
+
+	if !tamperingProtection {
+		fmt.Printf("Tampering protection:	%v\n\n", tamperingProtection)
+		fmt.Println("WARNING: --tamperingProtection=false flag enables a recovery mode of the Onegini Mobile SDK. This intended to let the Onegini Mobile SDK to continue operating in case of unannounced changes in the Android or iOS plaforms introduced by Google, Apple or other vendors. Using this feature reduces the security features provided by the Onegini Mobile SDK, and it should NOT be used in regular day-to-day usage. Onegini does NOT support the use of this flag in day-to-day usage, and will not respond to support requests where this feature is enabled in day-to-day usage.")
 	}
 }
 

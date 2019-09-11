@@ -47,11 +47,11 @@ var androidCmd = &cobra.Command{
 		util.ParseAndroidManifest(config)
 
 		util.PrepareAndroidPaths(config)
-		util.WriteAndroidSecurityController(config, debugDetection, rootDetection, debugLogs)
+		util.WriteAndroidSecurityController(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.WriteAndroidAppScheme(config)
 		util.CreateKeystore(config)
 		util.WriteAndroidConfigModel(config)
-		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
+		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.PrintAndroidManifestUpdateHint(config)
 	},
 }

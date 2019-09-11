@@ -54,10 +54,10 @@ var iosCmd = &cobra.Command{
 
 		util.PrepareIosPaths(config)
 		util.WriteIOSConfigModel(config)
-		util.WriteIOSSecurityController(config, debugDetection, rootDetection, debugLogs)
+		util.WriteIOSSecurityController(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.ConfigureIOSCertificates(config)
 
-		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
+		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.PrintIosInfoPlistUpdateHint(config)
 	},
 }

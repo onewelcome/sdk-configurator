@@ -90,7 +90,7 @@ func ReadNativeScriptSecurityPreferences(config *Config) (rootDetection bool, de
 	return
 }
 
-func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
+func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
 	fileContents := `package %s;
 
 @SuppressWarnings({ "unused", "WeakerAccess" })
@@ -112,7 +112,7 @@ public final class SecurityController {
 	}
 }
 
-func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
+func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
 	group := "Configuration"
 	headerContents := `#import <Foundation/Foundation.h>
 
