@@ -1,4 +1,4 @@
-//Copyright 2017 Onegini B.V.
+//Copyright 2019 Onegini B.V.
 //
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
@@ -35,7 +35,10 @@ var androidCmd = &cobra.Command{
 		if isCordova {
 			config.ConfigureForCordova = true
 			util.ParseCordovaConfig(config)
-			rootDetection, debugDetection, debugLogs = util.ReadCordovaSecurityPreferences(config)
+			rootDetection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiRootDetectionEnabled", rootDetection)
+			debugDetection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiDebugDetectionEnabled", debugDetection)
+			debugLogs = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiDebugLogsEnabled", debugLogs)
+			tamperingProtection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiTamperingProtectionEnabled", tamperingProtection)
 			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `cordova platform add android`")
 		} else if isNativeScript {
 			config.ConfigureForNativeScript = true
@@ -45,7 +48,6 @@ var androidCmd = &cobra.Command{
 			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `tns platform add android`")
 		}
 		util.ParseAndroidManifest(config)
-
 		util.PrepareAndroidPaths(config)
 		util.WriteAndroidSecurityController(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.WriteAndroidAppScheme(config)

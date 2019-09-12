@@ -1,4 +1,4 @@
-//Copyright 2017 Onegini B.V.
+//Copyright 2019 Onegini B.V.
 //
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
@@ -24,46 +24,22 @@ import (
 	"strings"
 )
 
-func ReadCordovaSecurityPreferences(config *Config) (rootDetection bool, debugDetection bool, debugLogs bool) {
-	rootDetectionSet := false
-	debugDetectionSet := false
-
-	for _, pref := range config.Cordova.Preferences {
-		if pref.Name == "OneginiRootDetectionEnabled" {
-			rootDetectionSet = true
+func ReadCordovaSecurityPreference(preferences []cordovaPreference, preferenceName string, defaultValue bool) bool {
+	for _, pref := range preferences {
+		if pref.Name == preferenceName {
 			var err error
-			rootDetection, err = strconv.ParseBool(pref.Value)
+			var value bool
+			value, err = strconv.ParseBool(pref.Value)
 			if err != nil {
-				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse 'OneginiRootDetectionEnabled' preference: %v\n", err.Error()))
+				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse '%s' preference: %v\n", preferenceName, err.Error()))
 				os.Exit(1)
-			}
-		}
-		if pref.Name == "OneginiDebugDetectionEnabled" {
-			debugDetectionSet = true
-			var err error
-			debugDetection, err = strconv.ParseBool(pref.Value)
-			if err != nil {
-				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse 'OneginiDebugDetectionEnabled' preference: %v\n", err.Error()))
-				os.Exit(1)
-			}
-		}
-		if pref.Name == "OneginiDebugLogsEnabled" {
-			var err error
-			debugLogs, err = strconv.ParseBool(pref.Value)
-			if err != nil {
-				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse 'OneginiDebugLogsEnabled' preference: %v\n", err.Error()))
-				os.Exit(1)
+			} else {
+				fmt.Printf("WARNING: config.xml contains %s=%t, this value will be used in the SecurityController\n", preferenceName, value)
+				return value
 			}
 		}
 	}
-
-	if !rootDetectionSet {
-		rootDetection = true
-	}
-	if !debugDetectionSet {
-		debugDetection = true
-	}
-	return
+	return defaultValue
 }
 
 func ReadNativeScriptSecurityPreferences(config *Config) (rootDetection bool, debugDetection bool, debugLogs bool) {
