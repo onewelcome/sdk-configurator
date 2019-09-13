@@ -43,13 +43,13 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&tamperingProtection, "tamperingProtection", "p", true, "Enable or disable tampering protection: --tamperingProtection=true. Onegini does not recommend this feature in day-to-day use")
 	RootCmd.PersistentFlags().BoolVarP(&isCordova, "cordova", "o", false, "Configure as Cordova project")
 	RootCmd.PersistentFlags().BoolVarP(&isNativeScript, "nativescript", "n", false, "Configure as NativeScript project")
-	RootCmd.PersistentFlags().MarkHidden("tamperingProtection")
+	_ = RootCmd.PersistentFlags().MarkHidden("tamperingProtection")
 }
 
 var RootCmd = &cobra.Command{
 	Use:   "onegini-sdk-configurator [platform]",
 	Short: "Configure your onegini SDK",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }

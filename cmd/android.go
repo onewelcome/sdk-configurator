@@ -61,7 +61,7 @@ var androidCmd = &cobra.Command{
 func verifyAndroidPlatformInstalled(errorMessage string) {
 	_, err := os.Stat(path.Join(appDir, "platforms", "android"))
 	if os.IsNotExist(err) {
-		os.Stderr.WriteString(fmt.Sprintln(errorMessage))
+		_, _ = os.Stderr.WriteString(fmt.Sprintln(errorMessage))
 		os.Exit(1)
 	}
 }

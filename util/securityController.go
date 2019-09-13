@@ -31,7 +31,7 @@ func ReadCordovaSecurityPreference(preferences []cordovaPreference, preferenceNa
 			var value bool
 			value, err = strconv.ParseBool(pref.Value)
 			if err != nil {
-				os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse '%s' preference: %v\n", preferenceName, err.Error()))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("ERROR: could not parse '%s' preference: %v\n", preferenceName, err.Error()))
 				os.Exit(1)
 			} else {
 				fmt.Printf("WARNING: config.xml contains %s=%t, this value will be used in the SecurityController\n", preferenceName, value)
@@ -70,7 +70,7 @@ func ReadNativeScriptSecurityPreferences(config *Config) (rootDetection bool, de
 func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
 	packageId := getPackageIdentifierFromConfig(config)
 	storePath := config.getAndroidSecurityControllerPath()
-	os.Remove(storePath) // always remove old file
+	_ = os.Remove(storePath) // always remove old file
 
 	if rootDetection && debugDetection && !debugLogs && tamperingProtection {
 		return
@@ -100,8 +100,8 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 	// always remove old files
 	removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group)
 	removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group)
-	os.Remove(headerStorePath)
-	os.Remove(modelStorePath)
+	_ = os.Remove(headerStorePath)
+	_ = os.Remove(modelStorePath)
 
 	if rootDetection && debugDetection && !debugLogs && tamperingProtection {
 		return
@@ -121,8 +121,8 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 `
 	modelContents = fmt.Sprintf(modelContents, PrepareModelFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
 
-	ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
-	ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
+	_ = ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
+	_ = ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
 	addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group)
 	addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
 }
