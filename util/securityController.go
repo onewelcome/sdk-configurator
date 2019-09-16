@@ -82,7 +82,7 @@ func WriteAndroidSecurityController(config *Config, debugDetection bool, rootDet
 public final class SecurityController {
 %s}`
 
-	flagsContents := PrepareFlagsForAndroid(debugDetection, rootDetection, debugLogs, tamperingProtection)
+	flagsContents := prepareFlagsForAndroid(debugDetection, rootDetection, debugLogs, tamperingProtection)
 	fileContents = fmt.Sprintf(fileContents, packageId, flagsContents)
 
 	if err := ioutil.WriteFile(storePath, []byte(fileContents), os.ModePerm); err != nil {
@@ -112,14 +112,14 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 @interface SecurityController : NSObject
 %s@end
 `
-	headerContents = fmt.Sprintf(headerContents, PrepareHeaderFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
+	headerContents = fmt.Sprintf(headerContents, prepareHeaderFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
 
 	modelContents := `#import "SecurityController.h"
 
 @implementation SecurityController
 %s@end
 `
-	modelContents = fmt.Sprintf(modelContents, PrepareModelFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
+	modelContents = fmt.Sprintf(modelContents, prepareModelFlagsForIos(debugDetection, rootDetection, debugLogs, tamperingProtection))
 
 	_ = ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
 	_ = ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
@@ -127,7 +127,7 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 	addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
 }
 
-func PrepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
+func prepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
 	// don't print unnecessary (default) flags
 	var sb strings.Builder
 	if !rootDetection {
@@ -145,7 +145,7 @@ func PrepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs b
 	return sb.String()
 }
 
-func PrepareHeaderFlagsForIos(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
+func prepareHeaderFlagsForIos(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
 	// don't print unnecessary (default) flags
 	var sb strings.Builder
 	if !rootDetection {
@@ -163,7 +163,7 @@ func PrepareHeaderFlagsForIos(debugDetection bool, rootDetection bool, debugLogs
 	return sb.String()
 }
 
-func PrepareModelFlagsForIos(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
+func prepareModelFlagsForIos(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {
 	// don't print unnecessary (default) flags
 	var sb strings.Builder
 	if !rootDetection {
