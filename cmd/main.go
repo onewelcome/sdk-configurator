@@ -17,15 +17,16 @@ package cmd
 import "github.com/spf13/cobra"
 
 var (
-	tsConfigLocation string
-	appDir           string
-	targetName       string
-	moduleName       string
-	rootDetection    bool
-	debugDetection   bool
-	debugLogs        bool
-	isCordova        bool
-	isNativeScript   bool
+	tsConfigLocation    string
+	appDir              string
+	targetName          string
+	moduleName          string
+	rootDetection       bool
+	debugDetection      bool
+	debugLogs           bool
+	tamperingProtection bool
+	isCordova           bool
+	isNativeScript      bool
 )
 
 func init() {
@@ -39,14 +40,16 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&debugDetection, "debugDetection", "d", true, "Enable or disable debug detection: --debugDetection=false")
 	RootCmd.PersistentFlags().BoolVarP(&rootDetection, "rootDetection", "r", true, "Enable or disable root detection: --rootDetection=false")
 	RootCmd.PersistentFlags().BoolVarP(&debugLogs, "debugLogs", "l", false, "Enable or disable debug logs: --debugLogs=true")
+	RootCmd.PersistentFlags().BoolVarP(&tamperingProtection, "tamperingProtection", "p", true, "Enable or disable tampering protection: --tamperingProtection=true. Onegini does not recommend this feature in day-to-day use")
 	RootCmd.PersistentFlags().BoolVarP(&isCordova, "cordova", "o", false, "Configure as Cordova project")
 	RootCmd.PersistentFlags().BoolVarP(&isNativeScript, "nativescript", "n", false, "Configure as NativeScript project")
+	_ = RootCmd.PersistentFlags().MarkHidden("tamperingProtection")
 }
 
 var RootCmd = &cobra.Command{
 	Use:   "onegini-sdk-configurator [platform]",
 	Short: "Configure your onegini SDK",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }

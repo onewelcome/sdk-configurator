@@ -1,4 +1,4 @@
-//Copyright 2017 Onegini B.V.
+//Copyright 2019 Onegini B.V.
 //
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
@@ -35,7 +35,10 @@ var iosCmd = &cobra.Command{
 		if isCordova {
 			config.ConfigureForCordova = true
 			util.ParseCordovaConfig(config)
-			rootDetection, debugDetection, debugLogs = util.ReadCordovaSecurityPreferences(config)
+			rootDetection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiRootDetectionEnabled", rootDetection)
+			debugDetection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiDebugDetectionEnabled", debugDetection)
+			debugLogs = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiDebugLogsEnabled", debugLogs)
+			tamperingProtection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiTamperingProtectionEnabled", tamperingProtection)
 			appTarget = config.Cordova.AppName
 
 			verifyIosPlatformInstalled("ERROR: Your project does not seem to have the iOS platform added. Please try `cordova platform add ios`")
@@ -54,10 +57,10 @@ var iosCmd = &cobra.Command{
 
 		util.PrepareIosPaths(config)
 		util.WriteIOSConfigModel(config)
-		util.WriteIOSSecurityController(config, debugDetection, rootDetection, debugLogs)
+		util.WriteIOSSecurityController(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.ConfigureIOSCertificates(config)
 
-		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs)
+		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.PrintIosInfoPlistUpdateHint(config)
 	},
 }
