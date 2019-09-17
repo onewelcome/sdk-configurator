@@ -1,5 +1,10 @@
 # Release notes
 
+## 4.2.2
+
+### Improvements
+* Provide a way to more easily recover apps using the SDK with the configurator, if potential future unannounced changes in iOS or Android prevent them from working correctly.
+
 ## 4.2.1
 
 Please note that this release is required if you are using the following Cordova Plugin Onegini versions:
