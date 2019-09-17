@@ -23,25 +23,29 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | SDK version           | Configurator version   |
 |-----------------------|------------------------|
-| Android SDK 8.x       | 4.x                    |
+| Android SDK 8.x & 9.x | 4.x                    |
 | Android SDK 6.x & 7.x | 3.x                    |
 | Android SDK < 6.00.00 | 2.x                    |
  
 **iOS SDK**
 
-| SDK version       | Configurator version   |
-|-------------------|------------------------|
-| iOS SDK 7.x       | 4.x                    |
-| iOS SDK 5.x & 6.x | 3.x                    |
-| iOS SDK < 5.00.00 | 2.x                    |
+| SDK version                | Configurator version   |
+|----------------------------|------------------------|
+| iOS SDK 7.x & 8.x & 9.x    | 4.x                    |
+| iOS SDK 5.x & 6.x          | 3.x                    |
+| iOS SDK < 5.00.00          | 2.x                    |
 
 **Cordova plugin**
 
-| Plugin version             | Configurator version   |
-|----------------------------|------------------------|
-| Cordova plugin 4.x         | 4.x                    |
-| Cordova plugin 3.x & 2.x   | 3.x                    |
-| Cordova plugin < 2.0.0     | 2.x                    |
+| Plugin version                 | Configurator version   |
+|--------------------------------|------------------------|
+| Cordova plugin 5.0.x           | 4.2.1                  |
+| Cordova plugin 5.0.0           | 4.2.0                  |
+| Cordova plugin 4.3.x           | 4.2.0                  |
+| Cordova plugin 4.2.1 - 4.2.x   | 4.2.1                  |
+| Cordova plugin 4.0.0 - 4.2.0   | 4.2.0                  |
+| Cordova plugin 3.x & 2.x       | 3.x                    |
+| Cordova plugin < 2.0.0         | 2.x                    |
 
 **NativeScript plugin**
 
@@ -65,14 +69,14 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 Please read the following assumptions **carefully** if you wish to use the SDK configurator for an **existing** project in which the Onegini SDK is already 
 configured.
 
-####Android
+#### Android
 
 - **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the 
 SDK configurator searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the 
 `<manifest>` element. You must remove the existing config model if you have named it differently or if it is placed in a different location before running the 
 SDK configurator.
 
-####iOS
+#### iOS
 
 - **Config model:** The configurator tries to look for an existing config model class in the `Configuration` group in the root of your Xcode project. You must 
 remove the existing config model if it is located in a different group before running the SDK configurator.

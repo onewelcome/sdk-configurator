@@ -1,4 +1,4 @@
-//Copyright 2017 Onegini B.V.
+//Copyright 2019 Onegini B.V.
 //
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool) {
+func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
 	fmt.Print("SUCCESS! Your application is now configured.\n\n")
 	fmt.Println("CONFIGURATION")
 
@@ -38,6 +38,11 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 		} else {
 			fmt.Printf("			%v\n", rgUris[i])
 		}
+	}
+
+	if !tamperingProtection {
+		fmt.Printf("Tampering protection:	%v\n\n", tamperingProtection)
+		fmt.Println("INFO: --tamperingProtection=false flag enables a recovery mode of the Onegini Mobile SDK. It's intended to let the Onegini Mobile SDK continue operating in case of unannounced changes in the Android or iOS platforms introduced by Google, Apple or other vendors. Using this feature reduces the security level provided by the Onegini Mobile SDK, and it should NOT be used in regular day-to-day usage. Onegini does NOT support the use of this flag in day-to-day usage, and will not respond to support requests where this feature is enabled in day-to-day usage.")
 	}
 }
 
@@ -64,12 +69,12 @@ func PrintIosInfoPlistUpdateHint(config *Config) {
 	}
 	if config.ConfigureForNativeScript {
 		fmt.Println("")
-		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
+		fmt.Println("INFO: If you are using the system browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
 		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/nativescript-plugin/topics/configuration.html#configuring-a-custom-url-scheme-for-authentication")
 	} else {
 		fmt.Println("")
-		fmt.Println("INFO: If you are using the sytem browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
+		fmt.Println("INFO: If you are using the system browser for user registration, don't forget to update your Info.plist to let iOS handle the custom URL scheme")
 		fmt.Println("INFO: The scheme that you must add: " + strings.Split(config.Options.RedirectUrl, "://")[0])
 		fmt.Println("INFO: More info is provided here: https://docs.onegini.com/public/ios-sdk/topics/user-authentication.html#handling-registration-request-url-with-external-web-browser")
 	}
