@@ -18,6 +18,8 @@
              @"ONGAppBaseURL" : @"",
              @"ONGResourceBaseURL" : @"",
              @"ONGRedirectURL" : @"",
+             @"ONGServerPublicKey" : @"",
+             @"ONGServerPublicKeyAlgorithm" : @"",
              };
 }
 

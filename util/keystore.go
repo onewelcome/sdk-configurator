@@ -41,7 +41,7 @@ func CreateKeystore(config *Config) {
 
 	keystorePassword := generateKeystorePassword(2048)
 	bcprovPath := restoreBcprov()
-	keytoolPath := findKeytool()
+	keytoolPath := findKeyTool()
 
 	for certName, certContents := range config.Certs {
 		cmdKeytool := exec.Command(
@@ -67,18 +67,18 @@ func CreateKeystore(config *Config) {
 	}
 }
 
-func findKeytool() (keytoolPath string) {
-	keytoolPath, lookErr := exec.LookPath("keytool")
+func findKeyTool() (keyToolPath string) {
+	keyToolPath, lookErr := exec.LookPath("keytool")
 	if lookErr != nil {
 		keyToolInJavaHome := path.Join(os.Getenv("JAVA_HOME"), "bin")
-		keytoolPath, _ = exec.LookPath(keyToolInJavaHome + string(filepath.Separator) + "keytool")
+		keyToolPath, _ = exec.LookPath(keyToolInJavaHome + string(filepath.Separator) + "keytool")
 	}
 
-	if _, err := os.Stat(keytoolPath); err != nil {
+	if _, err := os.Stat(keyToolPath); err != nil {
 		os.Stderr.WriteString(fmt.Sprintln("ERROR: Could not find keytool utility in your $PATH or $JAVA_HOME/bin.\n\nSee https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t for istructions on how to set $JAVA_HOME"))
 		os.Exit(1)
 	}
-	return keytoolPath
+	return keyToolPath
 }
 
 func CalculateKeystoreHash(keystorePath string) (hash string) {
