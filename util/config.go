@@ -41,15 +41,19 @@ type Config struct {
 }
 
 type options struct {
-	MaxPinFailures           int      `json:"max_pin_failures"`
-	TokenServerUri           string   `json:"token_server_uri"`
-	AppID                    string   `json:"application_identifier"`
-	AppPlatform              string   `json:"application_platform"`
-	AppVersion               string   `json:"application_version"`
-	ResourceGatewayUris      []string `json:"resource_gateway_uri"`
-	RedirectUrl              string   `json:"redirect_url"`
-	ServerPublicKey          string   `json:"server_public_key"`
-	ServerPublicKeyAlgorithm string   `json:"server_public_key_algorithm"`
+	MaxPinFailures      int             `json:"max_pin_failures"`
+	TokenServerUri      string          `json:"token_server_uri"`
+	AppID               string          `json:"application_identifier"`
+	AppPlatform         string          `json:"application_platform"`
+	AppVersion          string          `json:"application_version"`
+	ResourceGatewayUris []string        `json:"resource_gateway_uri"`
+	RedirectUrl         string          `json:"redirect_url"`
+	ServerPublicKey     serverPublicKey `json:"server_public_key"`
+}
+
+type serverPublicKey struct {
+	Encoded   string `json:"encoded"`
+	Algorithm string `json:"algorithm"`
 }
 
 type cordovaPreference struct {
