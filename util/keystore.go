@@ -75,7 +75,7 @@ func findKeytool() (keyToolPath string) {
 	}
 
 	if _, err := os.Stat(keyToolPath); err != nil {
-		os.Stderr.WriteString(fmt.Sprintln("ERROR: Could not find keytool utility in your $PATH or $JAVA_HOME/bin.\n\nSee https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t for istructions on how to set $JAVA_HOME"))
+		os.Stderr.WriteString(fmt.Sprintln("ERROR: Could not find keytool utility in your $PATH or $JAVA_HOME/bin.\n\nSee https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t for instructions on how to set $JAVA_HOME"))
 		os.Exit(1)
 	}
 	return keyToolPath
