@@ -41,7 +41,7 @@ func CreateKeystore(config *Config) {
 
 	keystorePassword := generateKeystorePassword(2048)
 	bcprovPath := restoreBcprov()
-	keytoolPath := findKeyTool()
+	keytoolPath := findKeytool()
 
 	for certName, certContents := range config.Certs {
 		cmdKeytool := exec.Command(
@@ -67,7 +67,7 @@ func CreateKeystore(config *Config) {
 	}
 }
 
-func findKeyTool() (keyToolPath string) {
+func findKeytool() (keyToolPath string) {
 	keyToolPath, lookErr := exec.LookPath("keytool")
 	if lookErr != nil {
 		keyToolInJavaHome := path.Join(os.Getenv("JAVA_HOME"), "bin")

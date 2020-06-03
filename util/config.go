@@ -77,7 +77,7 @@ type NS struct {
 
 type OneginiPreferences struct {
 	RootDetectionEnabled  *bool `json:"root-detection-enabled,omitempty"`
-	DebugDetectionEnabled *bool `json:"debug-detection-enabledserver_key,omitempty"`
+	DebugDetectionEnabled *bool `json:"debug-detection-enabled,omitempty"`
 	DebugLogsEnabled      bool  `json:"debug-logs-enabled"`
 }
 
