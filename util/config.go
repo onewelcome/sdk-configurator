@@ -41,13 +41,19 @@ type Config struct {
 }
 
 type options struct {
-	MaxPinFailures      int      `json:"max_pin_failures"`
-	TokenServerUri      string   `json:"token_server_uri"`
-	AppID               string   `json:"application_identifier"`
-	AppPlatform         string   `json:"application_platform"`
-	AppVersion          string   `json:"application_version"`
-	ResourceGatewayUris []string `json:"resource_gateway_uri"`
-	RedirectUrl         string   `json:"redirect_url"`
+	MaxPinFailures      int             `json:"max_pin_failures"`
+	TokenServerUri      string          `json:"token_server_uri"`
+	AppID               string          `json:"application_identifier"`
+	AppPlatform         string          `json:"application_platform"`
+	AppVersion          string          `json:"application_version"`
+	ResourceGatewayUris []string        `json:"resource_gateway_uri"`
+	RedirectUrl         string          `json:"redirect_url"`
+	ServerPublicKey     serverPublicKey `json:"server_public_key"`
+}
+
+type serverPublicKey struct {
+	Encoded   string `json:"encoded"`
+	Algorithm string `json:"algorithm"`
 }
 
 type cordovaPreference struct {
@@ -161,18 +167,18 @@ func parseTsZip(path string, config *Config) {
 	defer readCloser.Close()
 
 	for _, file := range readCloser.File {
-		readCloser, err := file.Open()
+		openedFile, err := file.Open()
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: could not read the contents of Token Server configuration zip: %v\n", err.Error()))
 			os.Exit(1)
 		}
 
 		if file.Name == "config.json" {
-			config.Options, _ = parseTsJson(readCloser)
+			config.Options, _ = parseTsJson(openedFile)
 			// Don't use the filepath.Separator in the statement below because the filename always contains the forward / regardless of the
 			// platform the configurator is run on
 		} else if strings.HasPrefix(file.Name, "certificates/") {
-			config.Certs[strings.Replace(file.Name, "certificates"+string(filepath.Separator), "", -1)] = readCert(readCloser)
+			config.Certs[strings.Replace(file.Name, "certificates"+string(filepath.Separator), "", -1)] = readCert(openedFile)
 		}
 	}
 	VerifyTsZipContents(config)
