@@ -19,7 +19,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
-	"strings"
+	"net/url"
 )
 
 func WriteAndroidAppScheme(config *Config) {
@@ -28,41 +28,58 @@ func WriteAndroidAppScheme(config *Config) {
 	}
 
 	manifestPath := config.getAndroidManifestPath()
-	manifestBytes, err := ioutil.ReadFile(manifestPath)
-	if err != nil {
-		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v.\n", err))
-		os.Exit(1)
-	}
+	manifestBytes := loadAndroidManifest(manifestPath)
+	parsedRedirectUrl := parseRedirectUrl(config.Options.RedirectUrl)
 
 	if config.ConfigureForCordova {
 		manifestString := string(manifestBytes)
 		shouldRemoveIntentFilter := shouldRemoveIntentFilter(config)
 
-		manifestBytes = []byte(ReplaceManifest(manifestString, shouldRemoveIntentFilter, config.Options.RedirectUrl))
+		manifestBytes = []byte(ReplaceManifest(manifestString, shouldRemoveIntentFilter, parsedRedirectUrl))
 		ioutil.WriteFile(manifestPath, manifestBytes, os.ModePerm)
 	}
 }
 
-func ReplaceManifest(manifest string, shouldRemoveIntentFilter bool, redirectUrl string) string {
-	scheme := strings.Split(redirectUrl, "://")[0]
+func loadAndroidManifest(manifestPath string) []byte {
+	manifestBytes, err := ioutil.ReadFile(manifestPath)
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot read the Android Manifest: %v.\n", err))
+		os.Exit(1)
+	}
+	return manifestBytes
+}
+
+func parseRedirectUrl(redirectUrl string) *url.URL {
+	url, err := url.Parse(redirectUrl)
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Cannot parse provided redirectUrl: %v.\n", err))
+		os.Exit(1)
+	}
+	return url
+}
+
+func ReplaceManifest(manifest string, shouldRemoveIntentFilter bool, redirectUrl *url.URL) string {
+	scheme := redirectUrl.Scheme
+	host := redirectUrl.Host
+	path := redirectUrl.Path
 	manifestBytes := []byte(manifest)
 	newRegexp := regexp.MustCompile(`(?s)\s*<intent-filter android:label="OneginiRedirectionIntent" android:name="OneginiRedirectionIntent">(.*?)</intent-filter>`)
 	oldRegexp := regexp.MustCompile(`(?s)\s*<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
 
-	schemeRegexp := regexp.MustCompile(`android:scheme="[^"]*"`)
+	schemeRegexp := regexp.MustCompile(`android:scheme="[^"]*"( android:host="[^"]*")?( android:pathPrefix="[^"]*")?`)
 	if newRegexp.Match(manifestBytes) {
 		if shouldRemoveIntentFilter {
 			manifestBytes = newRegexp.ReplaceAll(manifestBytes, []byte(""))
 		} else {
 			manifestBytes = newRegexp.ReplaceAllFunc(manifestBytes, func(input []byte) (output []byte) {
-				output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+				output = schemeRegexp.ReplaceAll(input, prepareScheme(scheme, host, path))
 				return
 			})
 		}
 	} else {
 		// backward compatible check for older versions of the cordova plugin
 		manifestBytes = oldRegexp.ReplaceAllFunc(manifestBytes, func(input []byte) (output []byte) {
-			output = schemeRegexp.ReplaceAll(input, []byte("android:scheme=\""+scheme+"\""))
+			output = schemeRegexp.ReplaceAll(input, prepareScheme(scheme, host, path))
 			return
 		})
 	}
@@ -76,4 +93,12 @@ func shouldRemoveIntentFilter(config *Config) bool {
 		}
 	}
 	return false
+}
+
+func prepareScheme(scheme string, host string, path string) []byte {
+	stringToInject := "android:scheme=\""+scheme+"\" android:host=\""+host+"\""
+	if (path != "") {
+		stringToInject = stringToInject+" android:pathPrefix=\""+path+"\""
+	}
+	return []byte(stringToInject)
 }
