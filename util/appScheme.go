@@ -66,13 +66,16 @@ func ReplaceManifest(manifest string, shouldRemoveIntentFilter bool, redirectUrl
 	newRegexp := regexp.MustCompile(`(?s)\s*<intent-filter android:label="OneginiRedirectionIntent" android:name="OneginiRedirectionIntent">(.*?)</intent-filter>`)
 	oldRegexp := regexp.MustCompile(`(?s)\s*<activity\s+.*android:name="MainActivity".*>.*<intent-filter>.*android:scheme="([^"]*)".*</intent-filter>.*</activity>`)
 
-	schemeRegexp := regexp.MustCompile(`android:scheme="[^"]*"( android:host="[^"]*")?( android:pathPrefix="[^"]*")?`)
+	schemeRegexp := regexp.MustCompile(`<data .*/>`)
 	if newRegexp.Match(manifestBytes) {
 		if shouldRemoveIntentFilter {
 			manifestBytes = newRegexp.ReplaceAll(manifestBytes, []byte(""))
 		} else {
 			manifestBytes = newRegexp.ReplaceAllFunc(manifestBytes, func(input []byte) (output []byte) {
-				output = schemeRegexp.ReplaceAll(input, prepareScheme(scheme, host, path))
+				output = schemeRegexp.ReplaceAllFunc(input, func(input []byte) (output []byte) {
+					output = prepareScheme(scheme, host, path)
+					return
+				})
 				return
 			})
 		}
@@ -83,6 +86,7 @@ func ReplaceManifest(manifest string, shouldRemoveIntentFilter bool, redirectUrl
 			return
 		})
 	}
+
 	return string(manifestBytes)
 }
 
@@ -96,9 +100,11 @@ func shouldRemoveIntentFilter(config *Config) bool {
 }
 
 func prepareScheme(scheme string, host string, path string) []byte {
-	stringToInject := "android:scheme=\""+scheme+"\" android:host=\""+host+"\""
+	stringToInject := "<data android:scheme=\""+scheme+"\" android:host=\""+host+"\""
 	if (path != "") {
 		stringToInject = stringToInject+" android:pathPrefix=\""+path+"\""
 	}
+	stringToInject = stringToInject+" />"
+
 	return []byte(stringToInject)
 }
