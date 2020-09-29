@@ -3,7 +3,7 @@
 ## 4.3.0
 
 ### Improvements
-* Add support for Universal links in Cordova
+* Added compatibility for Universal links
 
 ## 4.2.2
 
