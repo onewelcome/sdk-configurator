@@ -1,5 +1,10 @@
 # Release notes
 
+## 4.3.0
+
+### Improvements
+* Add support for Universal links in Cordova
+
 ## 4.2.2
 
 ### Improvements
