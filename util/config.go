@@ -36,6 +36,7 @@ type Config struct {
 	AndroidManifest          androidManifest
 	AppDir                   string
 	AppTarget                string
+	FlavorName               string
 	ConfigureForCordova      bool
 	ConfigureForNativeScript bool
 }
@@ -149,6 +150,10 @@ func ParseAndroidManifest(config *Config) {
 
 func SetAppTarget(appTarget string, config *Config) {
 	config.AppTarget = appTarget
+}
+
+func SetFlavorName(flavorName string, config *Config) {
+	config.FlavorName = flavorName
 }
 
 func parseTsZip(path string, config *Config) {
@@ -265,22 +270,27 @@ func getNativeScriptAndroidClasspath(config *Config) string {
 	return path.Join(getNativeScriptAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
 }
 
-func getDefaultAndroidPlatformPath(config *Config) string {
-	return path.Join(config.AppDir, config.AppTarget, "src", "main")
+func getDefaultAndroidPlatformPath(config *Config, useFlavor bool) string {
+	srcPath := path.Join(config.AppDir, config.AppTarget, "src")
+	if (useFlavor && len(config.FlavorName) > 0) {
+		return path.Join(srcPath, config.FlavorName)
+	} else {
+		return path.Join(srcPath, "main")
+	}
 }
 
-func getDefaultAndroidClasspath(config *Config) string {
-	return path.Join(getDefaultAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
+func getDefaultAndroidClasspath(config *Config, useFlavor bool) string {
+	return path.Join(getDefaultAndroidPlatformPath(config, useFlavor), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
 }
 
-func getPlatformSpecificAndroidPlatformPath(config *Config) string {
+func getPlatformSpecificAndroidPlatformPath(config *Config, useFlavor bool) string {
 	androidPlatformPath := ""
 	if config.ConfigureForCordova {
 		androidPlatformPath = getCordovaAndroidPlatformPath(config)
 	} else if config.ConfigureForNativeScript {
 		androidPlatformPath = getNativeScriptAndroidPlatformPath(config)
 	} else {
-		androidPlatformPath = getDefaultAndroidPlatformPath(config)
+		androidPlatformPath = getDefaultAndroidPlatformPath(config, useFlavor)
 	}
 
 	return androidPlatformPath
@@ -293,14 +303,14 @@ func getPlatformSpecificAndroidClasspathPath(config *Config) string {
 	} else if config.ConfigureForNativeScript {
 		androidClasspathPath = getNativeScriptAndroidClasspath(config)
 	} else {
-		androidClasspathPath = getDefaultAndroidClasspath(config)
+		androidClasspathPath = getDefaultAndroidClasspath(config, true)
 	}
 
 	return androidClasspathPath
 }
 
 func (config *Config) getAndroidKeystorePath() string {
-	androidRawPath := path.Join(getPlatformSpecificAndroidPlatformPath(config), "res", "raw")
+	androidRawPath := path.Join(getPlatformSpecificAndroidPlatformPath(config, true), "res", "raw")
 	if exists(androidRawPath) == false {
 		os.MkdirAll(androidRawPath, os.ModePerm)
 	}
@@ -309,7 +319,7 @@ func (config *Config) getAndroidKeystorePath() string {
 }
 
 func (config *Config) getAndroidManifestPath() string {
-	return path.Join(getPlatformSpecificAndroidPlatformPath(config), "AndroidManifest.xml")
+	return path.Join(getPlatformSpecificAndroidPlatformPath(config, false), "AndroidManifest.xml")
 }
 
 func (config *Config) getAndroidConfigModelPath() string {

@@ -21,6 +21,7 @@ var (
 	appDir              string
 	targetName          string
 	moduleName          string
+	flavorName          string
 	rootDetection       bool
 	debugDetection      bool
 	debugLogs           bool
@@ -37,6 +38,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&appDir, "app-dir", "a", ".", "Path to application project root directory")
 	RootCmd.PersistentFlags().StringVarP(&targetName, "target-name", "t", "", "The target name in your Xcode project for which you want to configure the Onegini SDK (for iOS). More info can be found at https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html")
 	RootCmd.PersistentFlags().StringVarP(&moduleName, "module-name", "m", "", "The Gradle module name that contains your application sources (for Android). More info can be found at https://developer.android.com/studio/projects/index.html")
+	RootCmd.PersistentFlags().StringVarP(&flavorName, "flavor-name", "f", "", "The optional flavor name for Android project. More info can be found at https://developer.android.com/studio/build/build-variants#product-flavors")
 	RootCmd.PersistentFlags().BoolVarP(&debugDetection, "debugDetection", "d", true, "Enable or disable debug detection: --debugDetection=false")
 	RootCmd.PersistentFlags().BoolVarP(&rootDetection, "rootDetection", "r", true, "Enable or disable root detection: --rootDetection=false")
 	RootCmd.PersistentFlags().BoolVarP(&debugLogs, "debugLogs", "l", false, "Enable or disable debug logs: --debugLogs=true")
