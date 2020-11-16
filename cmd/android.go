@@ -31,6 +31,7 @@ var androidCmd = &cobra.Command{
 
 		verifyAppModuleName(moduleName)
 		util.SetAppTarget(moduleName, config)
+		util.SetFlavorName(flavorName, config)
 
 		if isCordova {
 			config.ConfigureForCordova = true
