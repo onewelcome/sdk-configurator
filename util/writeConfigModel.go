@@ -91,7 +91,6 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 		"ONGResourceBaseURL":          config.Options.ResourceGatewayUris[0],
 		"ONGRedirectURL":              config.Options.RedirectUrl,
 		"ONGServerPublicKey":          config.Options.ServerPublicKey.Encoded,
-		"ONGServerPublicKeyAlgorithm": config.Options.ServerPublicKey.Algorithm,
 	}
 
 	for preference, value := range configMap {
@@ -152,7 +151,6 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"baseURL":                  config.Options.TokenServerUri,
 		"resourceBaseURL":          config.Options.ResourceGatewayUris[0],
 		"serverPublicKey":          config.Options.ServerPublicKey.Encoded,
-		"serverPublicKeyAlgorithm": config.Options.ServerPublicKey.Algorithm,
 		"keystoreHash":             CalculateKeystoreHash(keystorePath),
 	}
 
