@@ -1,5 +1,10 @@
 # Release notes
 
+## 4.3.0
+
+### Improvements
+* Added compatibility for Universal links
+
 ## 4.2.2
 
 ### Improvements
