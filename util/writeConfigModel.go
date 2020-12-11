@@ -165,7 +165,11 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 
 	for preference, value := range stringConfigMap {
 		newPref := preference + ` = "` + value + `";`
-		re := regexp.MustCompile(preference + `\s=\s".*";`)
+		if (preference == "serverPublicKey" && len(value) == 0) {
+			newPref = preference + ` = null;`
+		}
+
+		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
