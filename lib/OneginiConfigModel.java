@@ -15,6 +15,7 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
   private final String resourceBaseURL = "value_will_be_replaced";
   private final String keystoreHash = "value_will_be_replaced";
   private final int maxPinFailures = 1;
+  private final String serverPublicKey = null;
 
   public String getAppIdentifier() {
     return appIdentifier;
@@ -52,6 +53,10 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
     return Build.BRAND + " " + Build.MODEL;
   }
 
+  public String getServerPublicKey() {
+    return serverPublicKey;
+  }
+
   /**
    * @Deprecated Since Android SDK 8.0.0 this attribute is not required.
    */
@@ -81,6 +86,7 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
             ", maxPinFailures='" + maxPinFailures + "'" +
             ", resourceBaseURL='" + resourceBaseURL + "'" +
             ", keyStoreHash='" + getKeyStoreHash() + "'" +
+            ", serverPublicKey='" + serverPublicKey + "'" +
             "}";
   }
 }

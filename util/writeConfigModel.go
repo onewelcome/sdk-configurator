@@ -85,11 +85,12 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	base64Certs := getBase64Certs(config)
 
 	configMap := map[string]string{
-		"ONGAppIdentifier":   config.Options.AppID,
-		"ONGAppVersion":      config.Options.AppVersion,
-		"ONGAppBaseURL":      config.Options.TokenServerUri,
-		"ONGResourceBaseURL": config.Options.ResourceGatewayUris[0],
-		"ONGRedirectURL":     config.Options.RedirectUrl,
+		"ONGAppIdentifier":            config.Options.AppID,
+		"ONGAppVersion":               config.Options.AppVersion,
+		"ONGAppBaseURL":               config.Options.TokenServerUri,
+		"ONGResourceBaseURL":          config.Options.ResourceGatewayUris[0],
+		"ONGRedirectURL":              config.Options.RedirectUrl,
+		"ONGServerPublicKey":          config.Options.ServerPublicKey.Encoded,
 	}
 
 	for preference, value := range configMap {
@@ -144,12 +145,13 @@ func readAndroidConfigModelFromAssets() []byte {
 
 func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
-		"appIdentifier":   config.Options.AppID,
-		"redirectionUri":  config.Options.RedirectUrl,
-		"appVersion":      config.Options.AppVersion,
-		"baseURL":         config.Options.TokenServerUri,
-		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
-		"keystoreHash":    CalculateKeystoreHash(keystorePath),
+		"appIdentifier":            config.Options.AppID,
+		"redirectionUri":           config.Options.RedirectUrl,
+		"appVersion":               config.Options.AppVersion,
+		"baseURL":                  config.Options.TokenServerUri,
+		"resourceBaseURL":          config.Options.ResourceGatewayUris[0],
+		"serverPublicKey":          config.Options.ServerPublicKey.Encoded,
+		"keystoreHash":             CalculateKeystoreHash(keystorePath),
 	}
 
 	// We might remove the maxPinFailures in a future release as it is no longer necessary for Android SDK versions > 6.00.01
@@ -163,7 +165,11 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 
 	for preference, value := range stringConfigMap {
 		newPref := preference + ` = "` + value + `";`
-		re := regexp.MustCompile(preference + `\s=\s".*";`)
+		if (preference == "serverPublicKey" && len(value) == 0) {
+			newPref = preference + ` = null;`
+		}
+
+		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
