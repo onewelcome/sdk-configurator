@@ -85,12 +85,11 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	base64Certs := getBase64Certs(config)
 
 	configMap := map[string]string{
-		"ONGAppIdentifier":            config.Options.AppID,
-		"ONGAppVersion":               config.Options.AppVersion,
-		"ONGAppBaseURL":               config.Options.TokenServerUri,
-		"ONGResourceBaseURL":          config.Options.ResourceGatewayUris[0],
-		"ONGRedirectURL":              config.Options.RedirectUrl,
-		"ONGServerPublicKey":          config.Options.ServerPublicKey.Encoded,
+		"ONGAppIdentifier":   config.Options.AppID,
+		"ONGAppVersion":      config.Options.AppVersion,
+		"ONGAppBaseURL":      config.Options.TokenServerUri,
+		"ONGResourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"ONGRedirectURL":     config.Options.RedirectUrl,
 	}
 
 	for preference, value := range configMap {
@@ -103,6 +102,10 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 
 	re := regexp.MustCompile(`return @\[.*\];.*`)
 	modelMFile = re.ReplaceAll(modelMFile, []byte(newDef))
+
+	serverPublicKeyNewDef := "return @\"" + config.Options.ServerPublicKey.Encoded + "\";"
+	reServerPublicKey := regexp.MustCompile(`return @\".*\";.*`)
+	modelMFile = reServerPublicKey.ReplaceAll(modelMFile, []byte(serverPublicKeyNewDef))
 
 	versionRe := regexp.MustCompile(`CONFIGURATOR_VERSION`)
 	modelMFile = versionRe.ReplaceAll(modelMFile, []byte(version.Version))
