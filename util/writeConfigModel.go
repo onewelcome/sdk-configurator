@@ -85,12 +85,11 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	base64Certs := getBase64Certs(config)
 
 	configMap := map[string]string{
-		"ONGAppIdentifier":            config.Options.AppID,
-		"ONGAppVersion":               config.Options.AppVersion,
-		"ONGAppBaseURL":               config.Options.TokenServerUri,
-		"ONGResourceBaseURL":          config.Options.ResourceGatewayUris[0],
-		"ONGRedirectURL":              config.Options.RedirectUrl,
-		"ONGServerPublicKey":          config.Options.ServerPublicKey.Encoded,
+		"ONGAppIdentifier":   config.Options.AppID,
+		"ONGAppVersion":      config.Options.AppVersion,
+		"ONGAppBaseURL":      config.Options.TokenServerUri,
+		"ONGResourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"ONGRedirectURL":     config.Options.RedirectUrl,
 	}
 
 	for preference, value := range configMap {
@@ -99,10 +98,14 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 		modelMFile = re.ReplaceAll(modelMFile, []byte(newPref))
 	}
 
-	newDef := "return @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
+	newDef := "certificates\n{\n	return @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
 
-	re := regexp.MustCompile(`return @\[.*\];.*`)
+	re := regexp.MustCompile(`certificates\s*{\s*return @\[.*\];.*`)
 	modelMFile = re.ReplaceAll(modelMFile, []byte(newDef))
+
+	serverPublicKeyNewDef := "serverPublicKey\n{\n	return @\"" + config.Options.ServerPublicKey.Encoded + "\";"
+	reServerPublicKey := regexp.MustCompile(`serverPublicKey\s*{\s*return @\".*\";`)
+	modelMFile = reServerPublicKey.ReplaceAll(modelMFile, []byte(serverPublicKeyNewDef))
 
 	versionRe := regexp.MustCompile(`CONFIGURATOR_VERSION`)
 	modelMFile = versionRe.ReplaceAll(modelMFile, []byte(version.Version))
@@ -145,13 +148,13 @@ func readAndroidConfigModelFromAssets() []byte {
 
 func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
-		"appIdentifier":            config.Options.AppID,
-		"redirectionUri":           config.Options.RedirectUrl,
-		"appVersion":               config.Options.AppVersion,
-		"baseURL":                  config.Options.TokenServerUri,
-		"resourceBaseURL":          config.Options.ResourceGatewayUris[0],
-		"serverPublicKey":          config.Options.ServerPublicKey.Encoded,
-		"keystoreHash":             CalculateKeystoreHash(keystorePath),
+		"appIdentifier":   config.Options.AppID,
+		"redirectionUri":  config.Options.RedirectUrl,
+		"appVersion":      config.Options.AppVersion,
+		"baseURL":         config.Options.TokenServerUri,
+		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"serverPublicKey": config.Options.ServerPublicKey.Encoded,
+		"keystoreHash":    CalculateKeystoreHash(keystorePath),
 	}
 
 	// We might remove the maxPinFailures in a future release as it is no longer necessary for Android SDK versions > 6.00.01
@@ -165,7 +168,7 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 
 	for preference, value := range stringConfigMap {
 		newPref := preference + ` = "` + value + `";`
-		if (preference == "serverPublicKey" && len(value) == 0) {
+		if preference == "serverPublicKey" && len(value) == 0 {
 			newPref = preference + ` = null;`
 		}
 

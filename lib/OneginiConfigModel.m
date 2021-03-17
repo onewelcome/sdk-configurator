@@ -18,9 +18,12 @@
              @"ONGAppBaseURL" : @"",
              @"ONGResourceBaseURL" : @"",
              @"ONGRedirectURL" : @"",
-             @"ONGServerPublicKey" : @"",
-             @"ONGServerPublicKeyAlgorithm" : @"",
              };
+}
+
++ (NSString *)serverPublicKey
+{
+    return @"";
 }
 
 @end
