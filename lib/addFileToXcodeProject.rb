@@ -27,11 +27,7 @@ end
 # Add file to target
 project.targets.each do |target|
   if target.name == app_name
-    if group_name == "Resources"
-      target.add_resources(file_refs)
-    else
       target.add_file_references(file_refs)
-    end
   end
 end
 
