@@ -1,5 +1,15 @@
 # Release notes
 
+## 5.0.0
+
+Please note that this release will NOT work with following versions:
+* Cordova Plugin Onegini 8.x.x and below
+* iOS SDK 9.x.x and below
+
+### Features
+* Made the SDK configurator compatible with Android SDK 11.0.0, iOS SDK 10.0.0 and Cordova Plugin 9.0.0
+* Added flavour support for Android app configurations
+
 ## 4.3.0
 
 ### Improvements

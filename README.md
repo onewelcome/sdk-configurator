@@ -23,7 +23,8 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | SDK version           | Configurator version   |
 |-----------------------|------------------------|
-| Android SDK 8.x & 9.x | 4.x                    |
+| Android SDK 11.x | 5.x                    |
+| Android SDK 8.x & 9.x & 10.x | 4.x                    |
 | Android SDK 6.x & 7.x | 3.x                    |
 | Android SDK < 6.00.00 | 2.x                    |
  
@@ -31,6 +32,7 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | SDK version                | Configurator version   |
 |----------------------------|------------------------|
+| iOS SDK 10.x                 | 5.x                    |
 | iOS SDK 7.x & 8.x & 9.x    | 4.x                    |
 | iOS SDK 5.x & 6.x          | 3.x                    |
 | iOS SDK < 5.00.00          | 2.x                    |
@@ -39,6 +41,8 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | Plugin version                 | Configurator version   |
 |--------------------------------|------------------------|
+| Cordova plugin 9.x           | 5.0                  |
+| Cordova plugin 6.x & 7.x & 8.x           | 4.2.1                  |
 | Cordova plugin 5.0.x           | 4.2.1                  |
 | Cordova plugin 5.0.0           | 4.2.0                  |
 | Cordova plugin 4.3.x           | 4.2.0                  |
@@ -80,7 +84,7 @@ SDK configurator.
 
 - **Config model:** The configurator tries to look for an existing config model class in the `Configuration` group in the root of your Xcode project. You must 
 remove the existing config model if it is located in a different group before running the SDK configurator.
-- **Certificates:** The configurator will remove any existing certificates located in the `Resources` group in the root of your Xcode project. You must remove 
+- **Certificates:** [Applies only to Configurator versions up to and including 4.x.x] The configurator will remove any existing certificates located in the `Resources` group in the root of your Xcode project. You must remove 
 any certificates located in another location before running the SDK configurator.
 
 ## Usage
