@@ -2,7 +2,7 @@
 
 ## 5.0.0
 
-Please note that this release will NOT work with following versions:
+### Please note that this release will NOT work with following versions:
 * Cordova Plugin Onegini 8.x.x and below
 * iOS SDK 9.x.x and below
 
