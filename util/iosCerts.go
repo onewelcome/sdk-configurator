@@ -17,9 +17,7 @@ package util
 import (
 	"encoding/base64"
 	"encoding/pem"
-	"io/ioutil"
 	"os"
-	"path"
 
 	"fmt"
 	"path/filepath"
@@ -31,18 +29,6 @@ func ConfigureIOSCertificates(config *Config) {
 	xcodeProjPath := config.getIosXcodeProjPath()
 
 	removeOldCerts(storeDir, xcodeProjPath)
-
-	for certName, certContents := range config.Certs {
-
-		certPath := path.Join(storeDir, certName+".cer")
-
-		block, _ := pem.Decode([]byte(certContents))
-		ioutil.WriteFile(certPath, block.Bytes, os.ModePerm)
-
-		if !config.ConfigureForNativeScript {
-			iosAddCertFilesToXcodeProj(certPath, xcodeProjPath, config.AppTarget)
-		}
-	}
 }
 
 func removeOldCerts(storeDir string, xcodeProjPath string) {

@@ -21,11 +21,6 @@ func PrepareIosPaths(config *Config) {
 	if _, err := os.Stat(configModelPath); os.IsNotExist(err) {
 		os.Mkdir(configModelPath, 0775)
 	}
-
-	certificatePath := config.getIosXcodeCertificatePath()
-	if _, err := os.Stat(certificatePath); os.IsNotExist(err) {
-		os.Mkdir(certificatePath, 0775)
-	}
 }
 
 func PrepareAndroidPaths(config *Config) {

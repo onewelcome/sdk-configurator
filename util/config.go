@@ -36,18 +36,25 @@ type Config struct {
 	AndroidManifest          androidManifest
 	AppDir                   string
 	AppTarget                string
+	FlavorName               string
 	ConfigureForCordova      bool
 	ConfigureForNativeScript bool
 }
 
 type options struct {
-	MaxPinFailures      int      `json:"max_pin_failures"`
-	TokenServerUri      string   `json:"token_server_uri"`
-	AppID               string   `json:"application_identifier"`
-	AppPlatform         string   `json:"application_platform"`
-	AppVersion          string   `json:"application_version"`
-	ResourceGatewayUris []string `json:"resource_gateway_uri"`
-	RedirectUrl         string   `json:"redirect_url"`
+	MaxPinFailures      int             `json:"max_pin_failures"`
+	TokenServerUri      string          `json:"token_server_uri"`
+	AppID               string          `json:"application_identifier"`
+	AppPlatform         string          `json:"application_platform"`
+	AppVersion          string          `json:"application_version"`
+	ResourceGatewayUris []string        `json:"resource_gateway_uri"`
+	RedirectUrl         string          `json:"redirect_url"`
+	ServerPublicKey     serverPublicKey `json:"server_public_key"`
+}
+
+type serverPublicKey struct {
+	Encoded   string `json:"encoded"`
+	Algorithm string `json:"algorithm"`
 }
 
 type cordovaPreference struct {
@@ -151,6 +158,10 @@ func SetAppTarget(appTarget string, config *Config) {
 	config.AppTarget = appTarget
 }
 
+func SetFlavorName(flavorName string, config *Config) {
+	config.FlavorName = flavorName
+}
+
 func parseTsZip(path string, config *Config) {
 	readCloser, err := zip.OpenReader(path)
 	if err != nil {
@@ -161,18 +172,18 @@ func parseTsZip(path string, config *Config) {
 	defer readCloser.Close()
 
 	for _, file := range readCloser.File {
-		readCloser, err := file.Open()
+		openedFile, err := file.Open()
 		if err != nil {
 			os.Stderr.WriteString(fmt.Sprintf("ERROR: could not read the contents of Token Server configuration zip: %v\n", err.Error()))
 			os.Exit(1)
 		}
 
 		if file.Name == "config.json" {
-			config.Options, _ = parseTsJson(readCloser)
+			config.Options, _ = parseTsJson(openedFile)
 			// Don't use the filepath.Separator in the statement below because the filename always contains the forward / regardless of the
 			// platform the configurator is run on
 		} else if strings.HasPrefix(file.Name, "certificates/") {
-			config.Certs[strings.Replace(file.Name, "certificates"+string(filepath.Separator), "", -1)] = readCert(readCloser)
+			config.Certs[strings.Replace(file.Name, "certificates"+string(filepath.Separator), "", -1)] = readCert(openedFile)
 		}
 	}
 	VerifyTsZipContents(config)
@@ -265,22 +276,27 @@ func getNativeScriptAndroidClasspath(config *Config) string {
 	return path.Join(getNativeScriptAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
 }
 
-func getDefaultAndroidPlatformPath(config *Config) string {
-	return path.Join(config.AppDir, config.AppTarget, "src", "main")
+func getDefaultAndroidPlatformPath(config *Config, useFlavor bool) string {
+	srcPath := path.Join(config.AppDir, config.AppTarget, "src")
+	if (useFlavor && len(config.FlavorName) > 0) {
+		return path.Join(srcPath, config.FlavorName)
+	} else {
+		return path.Join(srcPath, "main")
+	}
 }
 
-func getDefaultAndroidClasspath(config *Config) string {
-	return path.Join(getDefaultAndroidPlatformPath(config), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
+func getDefaultAndroidClasspath(config *Config, useFlavor bool) string {
+	return path.Join(getDefaultAndroidPlatformPath(config, useFlavor), "java", path.Join(strings.Split(config.AndroidManifest.PackageID, ".")...))
 }
 
-func getPlatformSpecificAndroidPlatformPath(config *Config) string {
+func getPlatformSpecificAndroidPlatformPath(config *Config, useFlavor bool) string {
 	androidPlatformPath := ""
 	if config.ConfigureForCordova {
 		androidPlatformPath = getCordovaAndroidPlatformPath(config)
 	} else if config.ConfigureForNativeScript {
 		androidPlatformPath = getNativeScriptAndroidPlatformPath(config)
 	} else {
-		androidPlatformPath = getDefaultAndroidPlatformPath(config)
+		androidPlatformPath = getDefaultAndroidPlatformPath(config, useFlavor)
 	}
 
 	return androidPlatformPath
@@ -293,14 +309,14 @@ func getPlatformSpecificAndroidClasspathPath(config *Config) string {
 	} else if config.ConfigureForNativeScript {
 		androidClasspathPath = getNativeScriptAndroidClasspath(config)
 	} else {
-		androidClasspathPath = getDefaultAndroidClasspath(config)
+		androidClasspathPath = getDefaultAndroidClasspath(config, true)
 	}
 
 	return androidClasspathPath
 }
 
 func (config *Config) getAndroidKeystorePath() string {
-	androidRawPath := path.Join(getPlatformSpecificAndroidPlatformPath(config), "res", "raw")
+	androidRawPath := path.Join(getPlatformSpecificAndroidPlatformPath(config, true), "res", "raw")
 	if exists(androidRawPath) == false {
 		os.MkdirAll(androidRawPath, os.ModePerm)
 	}
@@ -309,7 +325,7 @@ func (config *Config) getAndroidKeystorePath() string {
 }
 
 func (config *Config) getAndroidManifestPath() string {
-	return path.Join(getPlatformSpecificAndroidPlatformPath(config), "AndroidManifest.xml")
+	return path.Join(getPlatformSpecificAndroidPlatformPath(config, false), "AndroidManifest.xml")
 }
 
 func (config *Config) getAndroidConfigModelPath() string {

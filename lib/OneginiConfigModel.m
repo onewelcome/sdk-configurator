@@ -21,4 +21,9 @@
              };
 }
 
++ (NSString *)serverPublicKey
+{
+    return @"";
+}
+
 @end

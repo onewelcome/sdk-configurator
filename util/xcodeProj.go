@@ -48,10 +48,6 @@ func init() {
 	}
 }
 
-func iosAddCertFilesToXcodeProj(certPath string, xcodeProjPath string, appTarget string) {
-	addFileToXcodeProj(certPath, xcodeProjPath, appTarget, "Resources")
-}
-
 func iosRemoveCertFilesFromXcodeProj(certPath string, xcodeProjPath string) {
 	removeFileFromXcodeProj(certPath, xcodeProjPath, "Resources")
 }

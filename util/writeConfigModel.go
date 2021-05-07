@@ -98,10 +98,14 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 		modelMFile = re.ReplaceAll(modelMFile, []byte(newPref))
 	}
 
-	newDef := "return @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
+	newDef := "certificates\n{\n	return @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
 
-	re := regexp.MustCompile(`return @\[.*\];.*`)
+	re := regexp.MustCompile(`certificates\s*{\s*return @\[.*\];.*`)
 	modelMFile = re.ReplaceAll(modelMFile, []byte(newDef))
+
+	serverPublicKeyNewDef := "serverPublicKey\n{\n	return @\"" + config.Options.ServerPublicKey.Encoded + "\";"
+	reServerPublicKey := regexp.MustCompile(`serverPublicKey\s*{\s*return @\".*\";`)
+	modelMFile = reServerPublicKey.ReplaceAll(modelMFile, []byte(serverPublicKeyNewDef))
 
 	versionRe := regexp.MustCompile(`CONFIGURATOR_VERSION`)
 	modelMFile = versionRe.ReplaceAll(modelMFile, []byte(version.Version))
@@ -149,6 +153,7 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"appVersion":      config.Options.AppVersion,
 		"baseURL":         config.Options.TokenServerUri,
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"serverPublicKey": config.Options.ServerPublicKey.Encoded,
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
 	}
 
@@ -163,7 +168,11 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 
 	for preference, value := range stringConfigMap {
 		newPref := preference + ` = "` + value + `";`
-		re := regexp.MustCompile(preference + `\s=\s".*";`)
+		if preference == "serverPublicKey" && len(value) == 0 {
+			newPref = preference + ` = null;`
+		}
+
+		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 

@@ -20,7 +20,12 @@ import (
 )
 
 func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) {
-	fmt.Print("SUCCESS! Your application is now configured.\n\n")
+	fmt.Print("SUCCESS! Your application ")
+	if (len(config.FlavorName) > 0) {
+		fmt.Printf("(\"%v\" flavor) ", config.FlavorName)
+	}
+	fmt.Print("is now configured.\n\n")
+
 	fmt.Println("CONFIGURATION")
 
 	fmt.Printf("App Identifier:		%v\n", config.Options.AppID)
