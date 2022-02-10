@@ -98,10 +98,12 @@ Use the `--help` flag for up to date help:
  
 Example for configuring an iOS project:
 ```sh
-./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/path/to/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true
+./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/path/to/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true -f mySubfolder
 ```
 
 Replace the `myTarget` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) for more information on the app target.
+
+Optionally use and replace `-f` flag with proper subfolder name.
 
 ### Android Example
 Example for configuring an Android project:

@@ -54,6 +54,7 @@ var iosCmd = &cobra.Command{
 		}
 		verifyAppTarget(appTarget)
 		util.SetAppTarget(appTarget, config)
+		util.SetFlavorName(flavorName, config)
 
 		util.PrepareIosPaths(config)
 		util.WriteIOSConfigModel(config)
