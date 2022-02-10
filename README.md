@@ -103,7 +103,7 @@ Example for configuring an iOS project:
 
 Replace the `myTarget` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) for more information on the app target.
 
-Optionally use and replace `-f` flag with proper subfolder name.
+Optionally use and replace `mySubfolder` for `-f` flag with proper subfolder name which is useful for many targets with different configurations each.
 
 ### Android Example
 Example for configuring an Android project:
