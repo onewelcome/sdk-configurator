@@ -19,7 +19,7 @@ import "os"
 func PrepareIosPaths(config *Config) {
 	configModelPath := config.getIosConfigModelPath()
 	if _, err := os.Stat(configModelPath); os.IsNotExist(err) {
-		os.Mkdir(configModelPath, 0775)
+		os.MkdirAll(configModelPath, 0755)
 	}
 }
 

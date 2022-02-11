@@ -400,7 +400,13 @@ func (config *Config) getIosXcodeProjPath() string {
 }
 
 func (config *Config) getIosConfigModelPath() string {
-	return path.Join(getPlatformSpecificIosSrcPath(config), "Configuration")
+	subfolder := config.FlavorName
+	srcPath := path.Join(getPlatformSpecificIosSrcPath(config), "Configuration")
+	if len(subfolder) > 0 {
+		return path.Join(srcPath, subfolder)
+	} else {
+		return srcPath
+	}
 }
 
 func (config *Config) getIosXcodeCertificatePath() string {

@@ -44,8 +44,8 @@ func WriteIosConfigModel(modelMFile []byte, modelHFile []byte, config *Config) {
 	ioutil.WriteFile(modelMFilePath, modelMFile, os.ModePerm)
 	ioutil.WriteFile(modelHFilePath, modelHFile, os.ModePerm)
 
-	iosAddConfigModelFileToXcodeProj(modelMFilePath, xcodeProjPath, config.AppTarget)
-	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, config.AppTarget)
+	iosAddConfigModelFileToXcodeProj(modelMFilePath, xcodeProjPath, config.AppTarget, config.FlavorName)
+	iosAddConfigModelFileToXcodeProj(modelHFilePath, xcodeProjPath, config.AppTarget, config.FlavorName)
 }
 
 func cleanupOldIosConfigModel(config *Config) {
@@ -55,8 +55,8 @@ func cleanupOldIosConfigModel(config *Config) {
 	deleteFileIfExists(modelMFilePath, "ERROR: Could not delete old config model M file in Project")
 	deleteFileIfExists(modelHFilePath, "ERROR: Could not delete old config model H file in Project")
 
-	iosRemoveConfigModelFileFromXcodeProj(modelMFilePath, config.getIosXcodeProjPath())
-	iosRemoveConfigModelFileFromXcodeProj(modelHFilePath, config.getIosXcodeProjPath())
+	iosRemoveConfigModelFileFromXcodeProj(modelMFilePath, config.getIosXcodeProjPath(), config.FlavorName)
+	iosRemoveConfigModelFileFromXcodeProj(modelHFilePath, config.getIosXcodeProjPath(), config.FlavorName)
 }
 
 func readIosConfigModelFromAssetsOrProject(modelPath string, assetPath string) []byte {

@@ -98,8 +98,8 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 	modelStorePath := path.Join(configModelPath, "SecurityController.m")
 
 	// always remove old files
-	removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group)
-	removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group)
+	removeFileFromXcodeProj(headerStorePath, xcodeProjPath, group, config.FlavorName)
+	removeFileFromXcodeProj(modelStorePath, xcodeProjPath, group, config.FlavorName)
 	_ = os.Remove(headerStorePath)
 	_ = os.Remove(modelStorePath)
 
@@ -123,8 +123,8 @@ func WriteIOSSecurityController(config *Config, debugDetection bool, rootDetecti
 
 	_ = ioutil.WriteFile(headerStorePath, []byte(headerContents), os.ModePerm)
 	_ = ioutil.WriteFile(modelStorePath, []byte(modelContents), os.ModePerm)
-	addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group)
-	addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group)
+	addFileToXcodeProj(headerStorePath, xcodeProjPath, config.AppTarget, group, config.FlavorName)
+	addFileToXcodeProj(modelStorePath, xcodeProjPath, config.AppTarget, group, config.FlavorName)
 }
 
 func prepareFlagsForAndroid(debugDetection bool, rootDetection bool, debugLogs bool, tamperingProtection bool) string {

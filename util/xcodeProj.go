@@ -49,18 +49,18 @@ func init() {
 }
 
 func iosRemoveCertFilesFromXcodeProj(certPath string, xcodeProjPath string) {
-	removeFileFromXcodeProj(certPath, xcodeProjPath, "Resources")
+	removeFileFromXcodeProj(certPath, xcodeProjPath, "Resources", "")
 }
 
-func iosAddConfigModelFileToXcodeProj(modelFile string, xcodeProjPath string, appTarget string) {
-	addFileToXcodeProj(modelFile, xcodeProjPath, appTarget, "Configuration")
+func iosAddConfigModelFileToXcodeProj(modelFile string, xcodeProjPath string, appTarget string, subfolder string) {
+	addFileToXcodeProj(modelFile, xcodeProjPath, appTarget, "Configuration", subfolder)
 }
 
-func iosRemoveConfigModelFileFromXcodeProj(modelFile string, xcodeProjPath string) {
-	removeFileFromXcodeProj(modelFile, xcodeProjPath, "Configuration")
+func iosRemoveConfigModelFileFromXcodeProj(modelFile string, xcodeProjPath string, subfolder string) {
+	removeFileFromXcodeProj(modelFile, xcodeProjPath, "Configuration", subfolder)
 }
 
-func removeFileFromXcodeProj(filepath string, xcodeProjPath string, group string) {
+func removeFileFromXcodeProj(filepath string, xcodeProjPath string, group string, subfolder string) {
 	ruby := checkForRuby()
 	checkForXcodeprojGem()
 
@@ -70,12 +70,13 @@ func removeFileFromXcodeProj(filepath string, xcodeProjPath string, group string
 		xcodeProjPath,
 		filepath,
 		group,
+		subfolder,
 	)
 
 	startCmd(cmd)
 }
 
-func addFileToXcodeProj(filePath string, xcodeProjPath string, appName string, group string) {
+func addFileToXcodeProj(filePath string, xcodeProjPath string, appName string, group string, subfolder string) {
 	ruby := checkForRuby()
 	checkForXcodeprojGem()
 
@@ -86,6 +87,7 @@ func addFileToXcodeProj(filePath string, xcodeProjPath string, appName string, g
 		filePath,
 		appName,
 		group,
+		subfolder,
 	)
 
 	startCmd(cmd)
