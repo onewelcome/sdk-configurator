@@ -1,5 +1,10 @@
 # Release notes
 
+## 5.1.0
+
+### Improvements
+* Supporting -f flag for iOS to create files in a desired subfolder (useful for many targets with different configurations each)
+
 ## 5.0.0
 
 ### Please note that this release will NOT work with following versions:
