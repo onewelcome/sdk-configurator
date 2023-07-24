@@ -278,7 +278,7 @@ func getNativeScriptAndroidClasspath(config *Config) string {
 
 func getDefaultAndroidPlatformPath(config *Config, useFlavor bool) string {
 	srcPath := path.Join(config.AppDir, config.AppTarget, "src")
-	if (useFlavor && len(config.FlavorName) > 0) {
+	if useFlavor && len(config.FlavorName) > 0 {
 		return path.Join(srcPath, config.FlavorName)
 	} else {
 		return path.Join(srcPath, "main")
@@ -329,6 +329,14 @@ func (config *Config) getAndroidManifestPath() string {
 }
 
 func (config *Config) getAndroidConfigModelPath() string {
+	modelPath := config.getAndroidConfigModelPath()
+	fmt.Println("Current model path ", modelPath)
+	// if model path ends with "java/OneginiConfigModel.java" it means that package name in manifest was not found
+
+	if strings.HasSuffix(modelPath, "/src/main/java/OneginiConfigModel.java") {
+		fmt.Println("I'm inside if")
+	}
+
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
 }
 
