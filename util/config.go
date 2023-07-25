@@ -25,6 +25,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -329,23 +330,41 @@ func (config *Config) getAndroidManifestPath() string {
 }
 
 func (config *Config) getAndroidConfigModelPath() string {
-	modelPath := config.getAndroidConfigModelPath()
-	fmt.Println("Current model path ", modelPath)
-	// if model path ends with "java/OneginiConfigModel.java" it means that package name in manifest was not found
-
-	if strings.HasSuffix(modelPath, "/src/main/java/OneginiConfigModel.java") {
-		fmt.Println("I'm inside if")
+	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+	// if package name wasn't found in AndroidManifest.xml file, check namespace property in build.gradle
+	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
+		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
+		modelPath = path.Join(modelPath, config.getAndroidNamespacePath(), "/OneginiConfigModel.java")
 	}
-
-	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+	return modelPath
 }
 
 func (config *Config) getAndroidSecurityControllerPath() string {
-	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
+	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
+	if strings.HasSuffix(modelPath, "java/SecurityController.java") {
+		modelPath = strings.TrimSuffix(modelPath, "SecurityController.java")
+		modelPath = path.Join(modelPath, config.getAndroidNamespacePath(), "/SecurityController.java")
+	}
+	return modelPath
 }
 
 func (config *Config) getAndroidClasspathPath() string {
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config))
+}
+
+func (config *Config) getAndroidNamespacePath() string {
+	gradleFilePath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
+	gradleContent, err := ioutil.ReadFile(gradleFilePath)
+	if err != nil {
+		fmt.Println("Error during reading gradle file", err)
+	}
+	namespaceRegexMatches := regexp.MustCompile(`(?m)^\s*namespace\s+'([^']+)'\s*$`).FindStringSubmatch(string(gradleContent))
+	if len(namespaceRegexMatches) == 2 {
+		return strings.ReplaceAll(namespaceRegexMatches[1], ".", "/")
+	} else {
+		fmt.Println("Namespace property not found in build.gradle file")
+		return ""
+	}
 }
 
 // iOS Paths

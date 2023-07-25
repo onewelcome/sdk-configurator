@@ -116,11 +116,7 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 func WriteAndroidConfigModel(config *Config) {
 	modelPath := config.getAndroidConfigModelPath()
 	keyStorePath := config.getAndroidKeystorePath()
-	fmt.Println("This is weird", modelPath)
-	fmt.Println("This is weird", modelPath)
-
 	deleteFileIfExists(modelPath, "ERROR: Could not delete old config model in Project")
-
 	model := readAndroidConfigModelFromAssets()
 	model = overrideAndroidConfigModelValues(config, keyStorePath, model)
 	ioutil.WriteFile(modelPath, model, os.ModePerm)
