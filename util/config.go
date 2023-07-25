@@ -204,7 +204,12 @@ func readCert(reader io.Reader) (contents string) {
 }
 
 func getPackageIdentifierFromConfig(config *Config) string {
-	return config.AndroidManifest.PackageID
+	if config.AndroidManifest.PackageID != "" {
+		return config.AndroidManifest.PackageID
+	} else {
+		fmt.Println("PKPK NAMESPACE!!!", config.getAndroidNamespacePath())
+		return config.getAndroidNamespacePath()
+	}
 }
 
 func VerifyTsZipContents(config *Config) {
@@ -334,7 +339,7 @@ func (config *Config) getAndroidConfigModelPath() string {
 	// if package name wasn't found in AndroidManifest.xml file, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
 		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
-		modelPath = path.Join(modelPath, config.getAndroidNamespacePath(), "/OneginiConfigModel.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.java")
 	}
 	return modelPath
 }
@@ -343,7 +348,7 @@ func (config *Config) getAndroidSecurityControllerPath() string {
 	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
 	if strings.HasSuffix(modelPath, "java/SecurityController.java") {
 		modelPath = strings.TrimSuffix(modelPath, "SecurityController.java")
-		modelPath = path.Join(modelPath, config.getAndroidNamespacePath(), "/SecurityController.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/SecurityController.java")
 	}
 	return modelPath
 }
@@ -360,7 +365,7 @@ func (config *Config) getAndroidNamespacePath() string {
 	}
 	namespaceRegexMatches := regexp.MustCompile(`(?m)^\s*namespace\s+'([^']+)'\s*$`).FindStringSubmatch(string(gradleContent))
 	if len(namespaceRegexMatches) == 2 {
-		return strings.ReplaceAll(namespaceRegexMatches[1], ".", "/")
+		return namespaceRegexMatches[1]
 	} else {
 		fmt.Println("Namespace property not found in build.gradle file")
 		return ""
