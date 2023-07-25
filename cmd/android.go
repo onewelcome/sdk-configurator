@@ -54,6 +54,10 @@ var androidCmd = &cobra.Command{
 		util.WriteAndroidAppScheme(config)
 		util.CreateKeystore(config)
 		fmt.Println("This is weird :|")
+		fmt.Println("This is weird :|")
+
+		fmt.Println("This is weird :|")
+
 		util.WriteAndroidConfigModel(config)
 		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.PrintAndroidManifestUpdateHint(config)
