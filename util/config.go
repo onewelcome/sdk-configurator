@@ -205,6 +205,8 @@ func readCert(reader io.Reader) (contents string) {
 
 func getPackageIdentifierFromConfig(config *Config) string {
 	if config.AndroidManifest.PackageID != "" {
+		fmt.Println("PKPK I am inside empty package id", config.getAndroidNamespacePath())
+
 		return config.AndroidManifest.PackageID
 	} else {
 		fmt.Println("PKPK NAMESPACE!!!", config.getAndroidNamespacePath())
