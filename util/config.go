@@ -363,8 +363,8 @@ func (config *Config) getAndroidNamespacePath() string {
 	if err != nil {
 		fmt.Println("Error during reading gradle file", err)
 	}
-	namespaceRegexMatches := regexp.MustCompile(`(?m)^\s*namespace\s+(['"])(.*?)\1\s*$`).FindStringSubmatch(string(gradleContent))
-	fmt.Println("regex1 matches", namespaceRegexMatches)
+	pattern := `namespace\s+['"]([^'"]+)['"]`
+	namespaceRegexMatches := regexp.MustCompile(pattern).FindStringSubmatch(string(gradleContent))
 	if len(namespaceRegexMatches) == 2 {
 		return namespaceRegexMatches[1]
 	} else {
