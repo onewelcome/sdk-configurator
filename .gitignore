@@ -1,3 +1,6 @@
 .idea
+.vscode/launch.json
+go.mod
+go.sum
 onegini-sdk-configurator
 target

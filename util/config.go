@@ -25,6 +25,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -203,7 +204,11 @@ func readCert(reader io.Reader) (contents string) {
 }
 
 func getPackageIdentifierFromConfig(config *Config) string {
-	return config.AndroidManifest.PackageID
+	if config.AndroidManifest.PackageID != "" {
+		return config.AndroidManifest.PackageID
+	} else {
+		return config.getAndroidNamespacePath()
+	}
 }
 
 func VerifyTsZipContents(config *Config) {
@@ -278,7 +283,7 @@ func getNativeScriptAndroidClasspath(config *Config) string {
 
 func getDefaultAndroidPlatformPath(config *Config, useFlavor bool) string {
 	srcPath := path.Join(config.AppDir, config.AppTarget, "src")
-	if (useFlavor && len(config.FlavorName) > 0) {
+	if useFlavor && len(config.FlavorName) > 0 {
 		return path.Join(srcPath, config.FlavorName)
 	} else {
 		return path.Join(srcPath, "main")
@@ -329,15 +334,43 @@ func (config *Config) getAndroidManifestPath() string {
 }
 
 func (config *Config) getAndroidConfigModelPath() string {
-	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+	// if modelPath has no package name, check namespace property in build.gradle
+	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
+		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.java")
+	}
+	return modelPath
 }
 
 func (config *Config) getAndroidSecurityControllerPath() string {
-	return path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
+	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
+	// if modelPath has no package name, check namespace property in build.gradle
+	if strings.HasSuffix(modelPath, "java/SecurityController.java") {
+		modelPath = strings.TrimSuffix(modelPath, "SecurityController.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/SecurityController.java")
+	}
+	return modelPath
 }
 
 func (config *Config) getAndroidClasspathPath() string {
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config))
+}
+
+func (config *Config) getAndroidNamespacePath() string {
+	gradleFilePath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
+	gradleContent, err := ioutil.ReadFile(gradleFilePath)
+	if err != nil {
+		fmt.Println("Error during reading gradle file", err)
+	}
+	pattern := `namespace\s+['"]([^'"]+)['"]`
+	namespaceRegexMatches := regexp.MustCompile(pattern).FindStringSubmatch(string(gradleContent))
+	if len(namespaceRegexMatches) == 2 {
+		return namespaceRegexMatches[1]
+	} else {
+		fmt.Println("Namespace property not found in build.gradle file")
+		return ""
+	}
 }
 
 // iOS Paths
