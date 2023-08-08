@@ -3,7 +3,7 @@
 ## 5.2.0
 
 ### Improvements
-* Made the SDK configurator compatible with recent Gradle versions.   
+* Made the SDK configurator compatible with recent Gradle versions by supporting package name defined as a namespace parameter in gradle file.  
 
 ## 5.1.0
 
