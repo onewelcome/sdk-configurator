@@ -1,5 +1,10 @@
 # Release notes
 
+## 5.2.0
+
+### Improvements
+* Made the SDK configurator compatible with recent Gradle versions.   
+
 ## 5.1.0
 
 ### Improvements
