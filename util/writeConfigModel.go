@@ -21,11 +21,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Onegini/onegini-sdk-configurator/version"
+	"github.com/onewelcome/sdk-configurator/version"
 
 	"fmt"
 
-	"github.com/Onegini/onegini-sdk-configurator/data"
+	"github.com/onewelcome/sdk-configurator/data"
 )
 
 func WriteIOSConfigModel(config *Config) {
@@ -85,6 +85,8 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	base64Certs := getBase64Certs(config)
 
 	configMap := map[string]string{
+		"ONGServerType":      config.Options.ServerType,
+		"ONGServerVersion":   config.Options.ServerVersion,
 		"ONGAppIdentifier":   config.Options.AppID,
 		"ONGAppVersion":      config.Options.AppVersion,
 		"ONGAppBaseURL":      config.Options.TokenServerUri,

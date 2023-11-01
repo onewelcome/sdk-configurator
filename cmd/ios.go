@@ -20,7 +20,7 @@ import (
 
 	"fmt"
 
-	"github.com/Onegini/onegini-sdk-configurator/util"
+	"github.com/onewelcome/sdk-configurator/util"
 	"github.com/spf13/cobra"
 )
 
@@ -72,9 +72,9 @@ func verifyAppTarget(appTarget string) {
 			os.Stderr.WriteString(fmt.Sprintln("ERROR: No application identifier found in your 'config.xml'. Please make sure that you have set one."))
 			os.Exit(1)
 		} else {
-			fmt.Print("ERROR: No target name provided. Provide one using 'onegini-sdk-configurator ios -t <target-name>'\n")
+			fmt.Print("ERROR: No target name provided. Provide one using 'sdk-configurator ios -t <target-name>'\n")
 			fmt.Print("ERROR: More info on the target name can be found here: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html\n\n")
-			fmt.Print("execute 'onegini-sdk-configurator --help' to see how to use the configurator\n")
+			fmt.Print("execute 'sdk-configurator --help' to see how to use the configurator\n")
 			os.Exit(1)
 		}
 	}

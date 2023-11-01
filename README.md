@@ -91,14 +91,14 @@ any certificates located in another location before running the SDK configurator
 
 Use the `--help` flag for up to date help:
 ```sh
-./onegini-sdk-configurator --help
+./sdk-configurator --help
 ```
 
 ### iOS example
  
 Example for configuring an iOS project:
 ```sh
-./onegini-sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/path/to/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true -f mySubfolder
+./sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/path/to/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true -f mySubfolder
 ```
 
 Replace the `myTarget` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) for more information on the app target.
@@ -108,7 +108,7 @@ Optionally use and replace `mySubfolder` for `-f` flag with proper subfolder nam
 ### Android Example
 Example for configuring an Android project:
 ```sh
-./onegini-sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --module-name app --app-dir ~/path/to/android-app/ --debugDetection=true --rootDetection=true
+./sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --module-name app --app-dir ~/path/to/android-app/ --debugDetection=true --rootDetection=true
 ```
 
 Replace the `app` value with the name of the Gradle module that contains your application sources. See the [Android documentation](https://developer.android.com/studio/projects/index.html) for more info.
@@ -118,7 +118,7 @@ The Onegini Cordova plugin contains a hook that will automatically trigger the c
 
 Example for configuring a Cordova Android project manually:
 ```sh
-./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
+./sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --cordova
 ```
 
 ### NativeScript example
@@ -126,7 +126,7 @@ The Onegini NativeScript plugin contains a hook that will automatically trigger 
 
 Example for configuring a NativeScript Android project manually:
 ```sh
-./onegini-sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --nativescript
+./sdk-configurator android --config /path/to/tokenserver-app-config.zip --app-dir /path/to/cordova-app/ --nativescript
 ```
 
 Make sure you have the `nativescript-onegini` plugin installed before running the configurator. You will need to rerun the configurator for each installed platform 

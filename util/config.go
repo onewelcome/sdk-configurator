@@ -51,6 +51,8 @@ type options struct {
 	ResourceGatewayUris []string        `json:"resource_gateway_uri"`
 	RedirectUrl         string          `json:"redirect_url"`
 	ServerPublicKey     serverPublicKey `json:"server_public_key"`
+	ServerType          string          `json:"server_type"`
+	ServerVersion       string          `json:"server_version"`
 }
 
 type serverPublicKey struct {
@@ -92,8 +94,8 @@ func ParseConfig(appDir string, configPath string) (config *Config) {
 	config.Certs = make(map[string]string)
 
 	if len(configPath) == 0 {
-		fmt.Print("ERROR: No Token Server configuration provided. Provide one using 'onegini-sdk-configurator <platform> -c <config-zip-location>'\n\n")
-		fmt.Print("execute 'onegini-sdk-configurator --help' to see how to use the configurator\n")
+		fmt.Print("ERROR: No Token Server configuration provided. Provide one using 'sdk-configurator <platform> -c <config-zip-location>'\n\n")
+		fmt.Print("execute 'sdk-configurator --help' to see how to use the configurator\n")
 		os.Exit(1)
 	}
 
