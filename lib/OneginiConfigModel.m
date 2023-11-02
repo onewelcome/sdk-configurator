@@ -12,6 +12,8 @@
 + (NSDictionary *)configuration
 {
     return @{
+             @"ONGServerType" : @"",
+             @"ONGServerVersion" : @"",
              @"ONGAppIdentifier" : @"",
              @"ONGAppPlatform" : @"ios",
              @"ONGAppVersion" : @"",

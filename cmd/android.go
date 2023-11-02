@@ -19,7 +19,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/Onegini/onegini-sdk-configurator/util"
+	"github.com/onewelcome/sdk-configurator/util"
 	"github.com/spf13/cobra"
 )
 
@@ -74,9 +74,9 @@ func verifyAppModuleName(moduleName string) {
 		}
 	} else {
 		if len(moduleName) == 0 {
-			fmt.Print("ERROR: No module name provided. Provide one using 'onegini-sdk-configurator android -m <module-name>'\n")
+			fmt.Print("ERROR: No module name provided. Provide one using 'sdk-configurator android -m <module-name>'\n")
 			fmt.Print("ERROR: More info on the module name can be found here: https://developer.android.com/studio/projects/index.html\n\n")
-			fmt.Print("execute 'onegini-sdk-configurator --help' to see how to use the configurator\n")
+			fmt.Print("execute 'sdk-configurator --help' to see how to use the configurator\n")
 			os.Exit(1)
 		}
 	}

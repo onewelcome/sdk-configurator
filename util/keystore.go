@@ -28,7 +28,7 @@ import (
 
 	"path/filepath"
 
-	"github.com/Onegini/onegini-sdk-configurator/data"
+	"github.com/onewelcome/sdk-configurator/data"
 )
 
 func CreateKeystore(config *Config) {
@@ -105,7 +105,7 @@ func generateKeystorePassword(n int) string {
 }
 
 func restoreBcprov() (filePath string) {
-	tempPath := path.Join(os.TempDir(), "onegini-sdk-configurator")
+	tempPath := path.Join(os.TempDir(), "sdk-configurator")
 	filePath = path.Join(tempPath, "lib", "bcprov-jdk15on-1.46.jar")
 
 	if err := data.RestoreAsset(tempPath, "lib/bcprov-jdk15on-1.46.jar"); err != nil {

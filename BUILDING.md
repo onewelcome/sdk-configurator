@@ -12,13 +12,13 @@ Read more about setting up go in the [official docs](https://golang.org/doc/inst
 
 Install dependencies:
 ```sh
-go get github.com/spf13/cobra
-go get -u github.com/jteeuwen/go-bindata/...
+go install github.com/spf13/cobra@latest
+go install github.com/jteeuwen/go-bindata/...@latest
 ```
 
 Clone project:
 ```sh
-go get github.com/Onegini/onegini-sdk-configurator
+go install github.com/onewelcome/sdk-configurator
 ```
 
 Build project with:

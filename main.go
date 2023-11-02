@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Onegini/onegini-sdk-configurator/cmd"
+	"github.com/onewelcome/sdk-configurator/cmd"
 )
 
 func main() {

@@ -2,5 +2,8 @@
 .vscode/launch.json
 go.mod
 go.sum
-onegini-sdk-configurator
+sdk-configurator
 target
+bin/go-bindata
+bin/gox
+bin/sdk-configurator
