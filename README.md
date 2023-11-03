@@ -77,7 +77,8 @@ configured.
 
 - **Config model:** The configurator tries to look for an existing config model class with the following name `OneginiConfigModel`. The location in which the 
 SDK configurator searches is the package that is mentioned in your `AndroidManifest.xml`. The package can be found in the `package` attribute of the 
-`<manifest>` element. You must remove the existing config model if you have named it differently or if it is placed in a different location before running the 
+`<manifest>` element. If it cannot be found, as a second step it looks for `namespace` attribute in the gradle file.
+You must remove the existing config model if you have named it differently or if it is placed in a different location before running the 
 SDK configurator.
 
 #### iOS
