@@ -16,6 +16,8 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
   private final String keystoreHash = "value_will_be_replaced";
   private final int maxPinFailures = 1;
   private final String serverPublicKey = null;
+  private final String serverType = "value_will_be_replaced";
+  private final String serverVersion = "value_will_be_replaced";
 
   public String getAppIdentifier() {
     return appIdentifier;
@@ -57,23 +59,17 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
     return serverPublicKey;
   }
 
-  /**
-   * @Deprecated Since Android SDK 8.0.0 this attribute is not required.
-   */
-  public boolean shouldGetIdToken() {
-    return false;
+    public String getServerType() {
+    return serverType;
   }
 
-  /**
-   * Get the max PIN failures. This attribute is just used for visual representation towards the end-user.
-   *
-   * @Deprecated Since Android SDK 6.01.00 this attribute is fetched from the Device config.
-   *
-   * @return The max PIN failures
-   */
-  public int getMaxPinFailures() {
-    return maxPinFailures;
+    public String getServerVersion() {
+    return serverVersion;
   }
+
+toString
+
+
 
   @Override
   public String toString() {
@@ -87,6 +83,8 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
             ", resourceBaseURL='" + resourceBaseURL + "'" +
             ", keyStoreHash='" + getKeyStoreHash() + "'" +
             ", serverPublicKey='" + serverPublicKey + "'" +
+            ", serverType='" + serverType + "'" +
+            ", serverVersion='" + serverVersion + "'" +
             "}";
   }
 }
