@@ -12,13 +12,23 @@ Read more about setting up go in the [official docs](https://golang.org/doc/inst
 
 Install dependencies:
 ```sh
-go install github.com/spf13/cobra@latest
+go get -u github.com/spf13/cobra
 go install github.com/jteeuwen/go-bindata/...@latest
 ```
 
 Clone project:
 ```sh
 go install github.com/onewelcome/sdk-configurator
+```
+
+Initialize module:
+```sh
+go mod init sdk-configurator
+```
+
+Install dependencies:
+```sh
+go mod tidy
 ```
 
 Build project with:
