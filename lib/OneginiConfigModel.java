@@ -67,10 +67,6 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
     return serverVersion;
   }
 
-toString
-
-
-
   @Override
   public String toString() {
     return "ConfigModel{" +
