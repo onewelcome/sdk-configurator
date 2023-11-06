@@ -31,7 +31,7 @@ Install dependencies:
 go mod tidy
 ```
 
-In order for build to reflect local changes, add following into `go.mod`` file
+In order for builds to reflect local changes, add following into `go.mod` file
 ```sh
 replace github.com/onewelcome/sdk-configurator => /path/to/project/locally
 ```
@@ -39,10 +39,19 @@ or run
 ```sh
 go mod edit -replace github.com/onewelcome/sdk-configurator=/path/to/project/locally
 ```
-
-Build project with:
+and build project with:
 ```sh
 make
+```
+
+Build executable file
+```sh
+go build
+```
+
+Build release files
+```sh
+make release
 ```
 
 Install the go binary with:
@@ -58,9 +67,4 @@ go run main.go
 Update binary assets using
 ```sh
 go-bindata -pkg data -o data/bindata.go lib/
-```
-
-Build executable file
-```sh
-go build
 ```
