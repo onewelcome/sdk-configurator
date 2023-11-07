@@ -157,6 +157,8 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"serverPublicKey": config.Options.ServerPublicKey.Encoded,
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
+		"serverType":      config.Options.ServerType,
+		"serverVersion":   config.Options.ServerVersion,
 	}
 
 	// We might remove the maxPinFailures in a future release as it is no longer necessary for Android SDK versions > 6.00.01
