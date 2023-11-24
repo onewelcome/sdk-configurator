@@ -1,5 +1,10 @@
 # Release notes
 
+## 5.3.0
+
+### Features
+* Added support for two new fields - "serverType" nad "serverVersion" which indicates with which backend server type and version, app communicates with. 
+
 ## 5.2.0
 
 ### Improvements
