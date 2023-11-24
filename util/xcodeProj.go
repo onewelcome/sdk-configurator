@@ -24,7 +24,7 @@ import (
 
 	"strings"
 
-	"github.com/Onegini/onegini-sdk-configurator/data"
+	"github.com/onewelcome/sdk-configurator/data"
 )
 
 var (
@@ -33,7 +33,7 @@ var (
 )
 
 func init() {
-	tempPath := path.Join(os.TempDir(), "onegini-sdk-configurator")
+	tempPath := path.Join(os.TempDir(), "sdk-configurator")
 	removeFileScriptPath = path.Join(tempPath, "lib", "removeFileFromXcodeProject.rb")
 	addFileScriptPath = path.Join(tempPath, "lib", "addFileToXcodeProject.rb")
 

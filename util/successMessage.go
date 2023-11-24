@@ -36,6 +36,8 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 	fmt.Printf("Root detection:		%v\n", rootDetection)
 	fmt.Printf("Debug logs:		%v\n", debugLogs)
 	fmt.Printf("Token Server URI:	%v\n", config.Options.TokenServerUri)
+	fmt.Printf("Server type:		%v\n", config.Options.ServerType)
+	fmt.Printf("Server version:		%v\n", config.Options.ServerVersion)
 	rgUris := config.Options.ResourceGatewayUris
 	for i := 0; i < len(rgUris); i++ {
 		if i == 0 {
@@ -47,7 +49,7 @@ func PrintSuccessMessage(config *Config, debugDetection bool, rootDetection bool
 
 	if !tamperingProtection {
 		fmt.Printf("Tampering protection:	%v\n\n", tamperingProtection)
-		fmt.Println("INFO: --tamperingProtection=false flag enables a recovery mode of the Onegini Mobile SDK. It's intended to let the Onegini Mobile SDK continue operating in case of unannounced changes in the Android or iOS platforms introduced by Google, Apple or other vendors. Using this feature reduces the security level provided by the Onegini Mobile SDK, and it should NOT be used in regular day-to-day usage. Onegini does NOT support the use of this flag in day-to-day usage, and will not respond to support requests where this feature is enabled in day-to-day usage.")
+		fmt.Println("INFO: --tamperingProtection=false flag enables a recovery mode of the Mobile SDK. It's intended to let the Mobile SDK continue operating in case of unannounced changes in the Android or iOS platforms introduced by Google, Apple or other vendors. Using this feature reduces the security level provided by the Onegini Mobile SDK, and it should NOT be used in regular day-to-day usage. Onegini does NOT support the use of this flag in day-to-day usage, and will not respond to support requests where this feature is enabled in day-to-day usage.")
 	}
 }
 

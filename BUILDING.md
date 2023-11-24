@@ -12,18 +12,46 @@ Read more about setting up go in the [official docs](https://golang.org/doc/inst
 
 Install dependencies:
 ```sh
-go get github.com/spf13/cobra
-go get -u github.com/jteeuwen/go-bindata/...
+go get -u github.com/spf13/cobra
+go install github.com/jteeuwen/go-bindata/...@latest
 ```
 
 Clone project:
 ```sh
-go get github.com/Onegini/onegini-sdk-configurator
+go install github.com/onewelcome/sdk-configurator
 ```
 
-Build project with:
+Initialize module:
+```sh
+go mod init sdk-configurator
+```
+
+Install dependencies:
+```sh
+go mod tidy
+```
+
+In order for builds to reflect local changes, add following into `go.mod` file
+```sh
+replace github.com/onewelcome/sdk-configurator => /path/to/project/locally
+```
+or run 
+```sh
+go mod edit -replace github.com/onewelcome/sdk-configurator=/path/to/project/locally
+```
+and build project with:
 ```sh
 make
+```
+
+Build executable file
+```sh
+go build
+```
+
+Build release files
+```sh
+make release
 ```
 
 Install the go binary with:

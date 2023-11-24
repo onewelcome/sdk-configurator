@@ -21,11 +21,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Onegini/onegini-sdk-configurator/version"
+	"github.com/onewelcome/sdk-configurator/version"
 
 	"fmt"
 
-	"github.com/Onegini/onegini-sdk-configurator/data"
+	"github.com/onewelcome/sdk-configurator/data"
 )
 
 func WriteIOSConfigModel(config *Config) {
@@ -85,6 +85,8 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	base64Certs := getBase64Certs(config)
 
 	configMap := map[string]string{
+		"ONGServerType":      config.Options.ServerType,
+		"ONGServerVersion":   config.Options.ServerVersion,
 		"ONGAppIdentifier":   config.Options.AppID,
 		"ONGAppVersion":      config.Options.AppVersion,
 		"ONGAppBaseURL":      config.Options.TokenServerUri,
@@ -155,6 +157,8 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
 		"serverPublicKey": config.Options.ServerPublicKey.Encoded,
 		"keystoreHash":    CalculateKeystoreHash(keystorePath),
+		"serverType":      config.Options.ServerType,
+		"serverVersion":   config.Options.ServerVersion,
 	}
 
 	// We might remove the maxPinFailures in a future release as it is no longer necessary for Android SDK versions > 6.00.01

@@ -17,7 +17,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Onegini/onegini-sdk-configurator/version"
+	"github.com/onewelcome/sdk-configurator/version"
 
 	"os"
 
@@ -26,9 +26,9 @@ import (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print onegini-sdk-configurator version and exit",
+	Short: "Print sdk-configurator version and exit",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("onegini-sdk-configurator %s\n", version.Version)
+		fmt.Printf("sdk-configurator %s\n", version.Version)
 		os.Exit(0)
 	},
 }
