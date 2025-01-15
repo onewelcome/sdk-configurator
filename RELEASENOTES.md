@@ -1,5 +1,10 @@
 # Release notes
 
+## 6.0.0
+
+### Features
+* Removed generation of Security Controls file and flags to customise its content. 
+
 ## 5.3.0
 
 ### Features

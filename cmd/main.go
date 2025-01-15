@@ -17,17 +17,13 @@ package cmd
 import "github.com/spf13/cobra"
 
 var (
-	tsConfigLocation    string
-	appDir              string
-	targetName          string
-	moduleName          string
-	flavorName          string
-	rootDetection       bool
-	debugDetection      bool
-	debugLogs           bool
-	tamperingProtection bool
-	isCordova           bool
-	isNativeScript      bool
+	tsConfigLocation string
+	appDir           string
+	targetName       string
+	moduleName       string
+	flavorName       string
+	isCordova        bool
+	isNativeScript   bool
 )
 
 func init() {
@@ -39,10 +35,6 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&targetName, "target-name", "t", "", "The target name in your Xcode project for which you want to configure the SDK (for iOS). More info can be found at https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html")
 	RootCmd.PersistentFlags().StringVarP(&moduleName, "module-name", "m", "", "The Gradle module name that contains your application sources (for Android). More info can be found at https://developer.android.com/studio/projects/index.html")
 	RootCmd.PersistentFlags().StringVarP(&flavorName, "flavor-name", "f", "", "The optional flavor name for Android project (or destination subfolder for iOS). More info can be found at https://developer.android.com/studio/build/build-variants#product-flavors")
-	RootCmd.PersistentFlags().BoolVarP(&debugDetection, "debugDetection", "d", true, "Enable or disable debug detection: --debugDetection=false")
-	RootCmd.PersistentFlags().BoolVarP(&rootDetection, "rootDetection", "r", true, "Enable or disable root detection: --rootDetection=false")
-	RootCmd.PersistentFlags().BoolVarP(&debugLogs, "debugLogs", "l", false, "Enable or disable debug logs: --debugLogs=true")
-	RootCmd.PersistentFlags().BoolVarP(&tamperingProtection, "tamperingProtection", "p", true, "Enable or disable tampering protection: --tamperingProtection=true. We do not recommend this feature in day-to-day use")
 	RootCmd.PersistentFlags().BoolVarP(&isCordova, "cordova", "o", false, "Configure as Cordova project")
 	RootCmd.PersistentFlags().BoolVarP(&isNativeScript, "nativescript", "n", false, "Configure as NativeScript project")
 	_ = RootCmd.PersistentFlags().MarkHidden("tamperingProtection")

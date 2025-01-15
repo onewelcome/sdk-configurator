@@ -23,6 +23,7 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | SDK version           | Configurator version   |
 |-----------------------|------------------------|
+| Android SDK > 12.2.1 | 6.x
 | Android SDK 11.x | 5.x                    |
 | Android SDK 8.x & 9.x & 10.x | 4.x                    |
 | Android SDK 6.x & 7.x | 3.x                    |
@@ -32,6 +33,7 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 
 | SDK version                | Configurator version   |
 |----------------------------|------------------------|
+| iOS SDK > 12.3.0 | 6.x
 | iOS SDK 10.x                 | 5.x                    |
 | iOS SDK 7.x & 8.x & 9.x    | 4.x                    |
 | iOS SDK 5.x & 6.x          | 3.x                    |
@@ -99,7 +101,7 @@ Use the `--help` flag for up to date help:
  
 Example for configuring an iOS project:
 ```sh
-./sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/path/to/ios-app/ --target-name myTarget --debugDetection=true --rootDetection=true -f mySubfolder
+./sdk-configurator ios --config ~/path/to/tokenserver-app-config.zip --app-dir ~/path/to/ios-app/ --target-name myTarget -f mySubfolder
 ```
 
 Replace the `myTarget` value with the application target located in your Xcode project. See the [Apple documentation](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html) for more information on the app target.
@@ -109,7 +111,7 @@ Optionally use and replace `mySubfolder` for `-f` flag with proper subfolder nam
 ### Android Example
 Example for configuring an Android project:
 ```sh
-./sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --module-name app --app-dir ~/path/to/android-app/ --debugDetection=true --rootDetection=true
+./sdk-configurator android --config ~/path/to/tokenserver-app-config.zip --module-name app --app-dir ~/path/to/android-app/ 
 ```
 
 Replace the `app` value with the name of the Gradle module that contains your application sources. See the [Android documentation](https://developer.android.com/studio/projects/index.html) for more info.
