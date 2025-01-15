@@ -24,7 +24,7 @@ The configurator binaries differ per SDK version. Please see the compatibility m
 | SDK version           | Configurator version   |
 |-----------------------|------------------------|
 | Android SDK > 12.2.1 | 6.x
-| Android SDK 11.x | 5.x                    |
+| Android SDK 11.x & 12.x | 5.x                    |
 | Android SDK 8.x & 9.x & 10.x | 4.x                    |
 | Android SDK 6.x & 7.x | 3.x                    |
 | Android SDK < 6.00.00 | 2.x                    |
