@@ -71,18 +71,11 @@ type cordovaConfig struct {
 }
 
 type nativeScriptConfig struct {
-	NS                 NS                 `json:"nativescript"`
-	OneginiPreferences OneginiPreferences `json:"onegini"`
+	NS NS `json:"nativescript"`
 }
 
 type NS struct {
 	ID string `json:"id"`
-}
-
-type OneginiPreferences struct {
-	RootDetectionEnabled  *bool `json:"root-detection-enabled,omitempty"`
-	DebugDetectionEnabled *bool `json:"debug-detection-enabled,omitempty"`
-	DebugLogsEnabled      bool  `json:"debug-logs-enabled"`
 }
 
 type androidManifest struct {

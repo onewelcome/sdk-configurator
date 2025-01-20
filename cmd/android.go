@@ -36,25 +36,19 @@ var androidCmd = &cobra.Command{
 		if isCordova {
 			config.ConfigureForCordova = true
 			util.ParseCordovaConfig(config)
-			rootDetection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiRootDetectionEnabled", rootDetection)
-			debugDetection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiDebugDetectionEnabled", debugDetection)
-			debugLogs = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiDebugLogsEnabled", debugLogs)
-			tamperingProtection = util.ReadCordovaSecurityPreference(config.Cordova.Preferences, "OneginiTamperingProtectionEnabled", tamperingProtection)
 			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `cordova platform add android`")
 		} else if isNativeScript {
 			config.ConfigureForNativeScript = true
 			util.SetAppTarget("", config)
 			util.ParseNativeScriptConfig(config)
-			rootDetection, debugDetection, debugLogs = util.ReadNativeScriptSecurityPreferences(config)
 			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `tns platform add android`")
 		}
 		util.ParseAndroidManifest(config)
 		util.PrepareAndroidPaths(config)
-		util.WriteAndroidSecurityController(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
 		util.WriteAndroidAppScheme(config)
 		util.CreateKeystore(config)
 		util.WriteAndroidConfigModel(config)
-		util.PrintSuccessMessage(config, debugDetection, rootDetection, debugLogs, tamperingProtection)
+		util.PrintSuccessMessage(config)
 		util.PrintAndroidManifestUpdateHint(config)
 	},
 }
