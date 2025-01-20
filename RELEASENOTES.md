@@ -5,7 +5,7 @@
 ### Features
 * Removed generation of Security Controls file and flags to customise its content. Security Controller is now hardcoded in a specific SDK version. More info can be found in the SDK documentation 
 Android - //ADD LINK
-iOS - //ADD LINK
+iOS - https://thalesdocs.com/oip/omi-sdk/ios-sdk/ios-sdk-setup-project/index.html#using-security-controls-during-development
 
 ## 5.3.0
 
