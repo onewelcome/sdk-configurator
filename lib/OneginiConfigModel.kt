@@ -26,7 +26,7 @@ class OneginiConfigModel {
         ", baseURL='" + baseURL + "'" +
         ", maxPinFailures='" + maxPinFailures + "'" +
         ", resourceBaseURL='" + resourceBaseURL + "'" +
-        ", keyStoreHash='" + keyStoreHash + "'" +
+        ", keystoreHash='" + keystoreHash + "'" +
         ", serverPublicKey='" + serverPublicKey + "'" +
         ", serverType='" + serverType + "'" +
         ", serverVersion='" + serverVersion + "'" +

@@ -123,7 +123,7 @@ func WriteAndroidConfigModel(config *Config) {
 
 	model := readAndroidConfigModelFromAssets()
 	model = overrideAndroidConfigModelValues(config, keyStorePath, model)
-	ioutil.WriteFile(modelPath, model, os.ModePerm)
+	os.WriteFile(modelPath, model, os.ModePerm)
 }
 
 func deleteFileIfExists(filePath string, errorDescription string) {
