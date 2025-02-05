@@ -329,21 +329,11 @@ func (config *Config) getAndroidManifestPath() string {
 }
 
 func (config *Config) getAndroidConfigModelPath() string {
-	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.kt")
 	// if modelPath has no package name, check namespace property in build.gradle
-	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
-		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.java")
-	}
-	return modelPath
-}
-
-func (config *Config) getAndroidSecurityControllerPath() string {
-	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
-	// if modelPath has no package name, check namespace property in build.gradle
-	if strings.HasSuffix(modelPath, "java/SecurityController.java") {
-		modelPath = strings.TrimSuffix(modelPath, "SecurityController.java")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/SecurityController.java")
+	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.kt") {
+		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.kt")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.kt")
 	}
 	return modelPath
 }

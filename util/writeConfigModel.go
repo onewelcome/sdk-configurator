@@ -139,7 +139,7 @@ func deleteFileIfExists(filePath string, errorDescription string) {
 }
 
 func readAndroidConfigModelFromAssets() []byte {
-	model, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.java")
+	model, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.kt")
 	if errFileNotFoundInTmp != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
 		os.Exit(1)
