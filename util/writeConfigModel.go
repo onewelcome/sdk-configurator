@@ -18,7 +18,6 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/onewelcome/sdk-configurator/version"
@@ -151,38 +150,27 @@ func readAndroidConfigModelFromAssets() []byte {
 func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
 		"appIdentifier":   config.Options.AppID,
-		"redirectionUri":  config.Options.RedirectUrl,
+		"redirectUri":     config.Options.RedirectUrl,
 		"appVersion":      config.Options.AppVersion,
-		"baseURL":         config.Options.TokenServerUri,
-		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"baseUrl":         config.Options.TokenServerUri,
+		"resourceBaseUrl": config.Options.ResourceGatewayUris[0],
 		"serverPublicKey": config.Options.ServerPublicKey.Encoded,
-		"keystoreHash":    CalculateKeystoreHash(keystorePath),
+		"keyStoreHash":    CalculateKeystoreHash(keystorePath),
 		"serverType":      config.Options.ServerType,
 		"serverVersion":   config.Options.ServerVersion,
 	}
 
-	// We might remove the maxPinFailures in a future release as it is no longer necessary for Android SDK versions > 6.00.01
-	intConfigMap := map[string]string{
-		"maxPinFailures": strconv.Itoa(config.Options.MaxPinFailures),
-	}
-
-	newPackage := "package " + getPackageIdentifierFromConfig(config) + ";"
-	packageRe := regexp.MustCompile(`package\s.*;`)
+	newPackage := "package " + getPackageIdentifierFromConfig(config)
+	packageRe := regexp.MustCompile(`package\s.*`)
 	model = packageRe.ReplaceAll(model, []byte(newPackage))
 
 	for preference, value := range stringConfigMap {
-		newPref := preference + ` = "` + value + `";`
+		newPref := preference + ` = "` + value + `"`
 		if preference == "serverPublicKey" && len(value) == 0 {
 			newPref = preference + ` = null;`
 		}
 
-		re := regexp.MustCompile(preference + `\s=\s.*;`)
-		model = re.ReplaceAll(model, []byte(newPref))
-	}
-
-	for preference, value := range intConfigMap {
-		newPref := preference + ` = ` + value + `;`
-		re := regexp.MustCompile(preference + `\s=\s.*;`)
+		re := regexp.MustCompile(preference + `\s=\s.*`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 
