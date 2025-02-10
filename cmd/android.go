@@ -48,6 +48,7 @@ var androidCmd = &cobra.Command{
 		util.WriteAndroidAppScheme(config)
 		util.CreateKeystore(config)
 		util.WriteAndroidConfigModel(config, generateJavaConfigModel)
+		util.RemoveAndroidSecurityController(config)
 		util.PrintSuccessMessage(config)
 		util.PrintAndroidManifestUpdateHint(config)
 	},
