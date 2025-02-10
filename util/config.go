@@ -328,12 +328,22 @@ func (config *Config) getAndroidManifestPath() string {
 	return path.Join(getPlatformSpecificAndroidPlatformPath(config, false), "AndroidManifest.xml")
 }
 
-func (config *Config) getAndroidConfigModelPath() string {
+func (config *Config) getAndroidConfigModelKotlinPath() string {
 	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.kt")
 	// if modelPath has no package name, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.kt") {
 		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.kt")
 		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.kt")
+	}
+	return modelPath
+}
+
+func (config *Config) getAndroidConfigModelJavaPath() string {
+	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "OneginiConfigModel.java")
+	// if modelPath has no package name, check namespace property in build.gradle
+	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
+		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.java")
 	}
 	return modelPath
 }

@@ -114,15 +114,23 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 	return
 }
 
-func WriteAndroidConfigModel(config *Config) {
-	modelPath := config.getAndroidConfigModelPath()
+func WriteAndroidConfigModel(config *Config, generateJavaConfigModel bool) {
+	modelJavaPath := config.getAndroidConfigModelJavaPath()
+	modelKotlinPath := config.getAndroidConfigModelKotlinPath()
 	keyStorePath := config.getAndroidKeystorePath()
 
-	deleteFileIfExists(modelPath, "ERROR: Could not delete old config model in Project")
+	deleteFileIfExists(modelJavaPath, "ERROR: Could not delete old java config model in Project")
+	deleteFileIfExists(modelKotlinPath, "ERROR: Could not delete old kotlin config model in Project")
 
-	model := readAndroidConfigModelFromAssets()
-	model = overrideAndroidConfigModelValues(config, keyStorePath, model)
-	os.WriteFile(modelPath, model, os.ModePerm)
+	if generateJavaConfigModel {
+		model := readAndroidJavaConfigModelFromAssets()
+		model = overrideAndroidConfigJavaModelValues(config, keyStorePath, model)
+		os.WriteFile(modelJavaPath, model, os.ModePerm)
+	} else {
+		model := readAndroidKotlinConfigModelFromAssets()
+		model = overrideAndroidConfigKotlinModelValues(config, keyStorePath, model)
+		os.WriteFile(modelKotlinPath, model, os.ModePerm)
+	}
 }
 
 func deleteFileIfExists(filePath string, errorDescription string) {
@@ -137,7 +145,7 @@ func deleteFileIfExists(filePath string, errorDescription string) {
 	}
 }
 
-func readAndroidConfigModelFromAssets() []byte {
+func readAndroidKotlinConfigModelFromAssets() []byte {
 	model, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.kt")
 	if errFileNotFoundInTmp != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
@@ -147,7 +155,17 @@ func readAndroidConfigModelFromAssets() []byte {
 	return model
 }
 
-func overrideAndroidConfigModelValues(config *Config, keystorePath string, model []byte) []byte {
+func readAndroidJavaConfigModelFromAssets() []byte {
+	model, errFileNotFoundInTmp := data.Asset("lib/OneginiConfigModel.java")
+	if errFileNotFoundInTmp != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read config model in assets: %v\n", errFileNotFoundInTmp))
+		os.Exit(1)
+	}
+
+	return model
+}
+
+func overrideAndroidConfigKotlinModelValues(config *Config, keystorePath string, model []byte) []byte {
 	stringConfigMap := map[string]string{
 		"appIdentifier":   config.Options.AppID,
 		"redirectUri":     config.Options.RedirectUrl,
@@ -171,6 +189,39 @@ func overrideAndroidConfigModelValues(config *Config, keystorePath string, model
 		}
 
 		re := regexp.MustCompile(preference + `\s=\s.*`)
+		model = re.ReplaceAll(model, []byte(newPref))
+	}
+
+	re := regexp.MustCompile(`CONFIGURATOR_VERSION`)
+	model = re.ReplaceAll(model, []byte(version.Version))
+
+	return model
+}
+
+func overrideAndroidConfigJavaModelValues(config *Config, keystorePath string, model []byte) []byte {
+	stringConfigMap := map[string]string{
+		"appIdentifier":   config.Options.AppID,
+		"redirectionUri":  config.Options.RedirectUrl,
+		"appVersion":      config.Options.AppVersion,
+		"baseURL":         config.Options.TokenServerUri,
+		"resourceBaseURL": config.Options.ResourceGatewayUris[0],
+		"serverPublicKey": config.Options.ServerPublicKey.Encoded,
+		"keystoreHash":    CalculateKeystoreHash(keystorePath),
+		"serverType":      config.Options.ServerType,
+		"serverVersion":   config.Options.ServerVersion,
+	}
+
+	newPackage := "package " + getPackageIdentifierFromConfig(config) + ";"
+	packageRe := regexp.MustCompile(`package\s.*;`)
+	model = packageRe.ReplaceAll(model, []byte(newPackage))
+
+	for preference, value := range stringConfigMap {
+		newPref := preference + ` = "` + value + `";`
+		if preference == "serverPublicKey" && len(value) == 0 {
+			newPref = preference + ` = null;`
+		}
+
+		re := regexp.MustCompile(preference + `\s=\s.*;`)
 		model = re.ReplaceAll(model, []byte(newPref))
 	}
 

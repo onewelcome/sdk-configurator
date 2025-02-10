@@ -17,13 +17,14 @@ package cmd
 import "github.com/spf13/cobra"
 
 var (
-	tsConfigLocation string
-	appDir           string
-	targetName       string
-	moduleName       string
-	flavorName       string
-	isCordova        bool
-	isNativeScript   bool
+	tsConfigLocation        string
+	appDir                  string
+	targetName              string
+	moduleName              string
+	flavorName              string
+	generateJavaConfigModel bool
+	isCordova               bool
+	isNativeScript          bool
 )
 
 func init() {
@@ -35,6 +36,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&targetName, "target-name", "t", "", "The target name in your Xcode project for which you want to configure the SDK (for iOS). More info can be found at https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringYourApp/ConfiguringYourApp.html")
 	RootCmd.PersistentFlags().StringVarP(&moduleName, "module-name", "m", "", "The Gradle module name that contains your application sources (for Android). More info can be found at https://developer.android.com/studio/projects/index.html")
 	RootCmd.PersistentFlags().StringVarP(&flavorName, "flavor-name", "f", "", "The optional flavor name for Android project (or destination subfolder for iOS). More info can be found at https://developer.android.com/studio/build/build-variants#product-flavors")
+	RootCmd.PersistentFlags().BoolVarP(&generateJavaConfigModel, "generateJavaConfigModel", "g", false, "Generate OneginiConfigModel in Java instead of Kotlin")
 	RootCmd.PersistentFlags().BoolVarP(&isCordova, "cordova", "o", false, "Configure as Cordova project")
 	RootCmd.PersistentFlags().BoolVarP(&isNativeScript, "nativescript", "n", false, "Configure as NativeScript project")
 	_ = RootCmd.PersistentFlags().MarkHidden("tamperingProtection")
