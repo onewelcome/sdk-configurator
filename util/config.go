@@ -354,18 +354,24 @@ func (config *Config) getAndroidClasspathPath() string {
 
 func (config *Config) getAndroidNamespacePath() string {
 	gradleFilePath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
-	gradleContent, err := ioutil.ReadFile(gradleFilePath)
+	gradleContent, err := os.ReadFile(gradleFilePath)
 	if err != nil {
 		fmt.Println("Error during reading gradle file", err)
 	}
-	pattern := `namespace\s+['"]([^'"]+)['"]`
+
+	pattern := `namespace\s*=\s*['"]([^'"]+)['"]|namespace\s+['"]([^'"]+)['"]`
 	namespaceRegexMatches := regexp.MustCompile(pattern).FindStringSubmatch(string(gradleContent))
-	if len(namespaceRegexMatches) == 2 {
-		return namespaceRegexMatches[1]
-	} else {
-		fmt.Println("Namespace property not found in build.gradle file")
-		return ""
+
+	if len(namespaceRegexMatches) > 0 {
+		if namespaceRegexMatches[1] != "" {
+			return namespaceRegexMatches[1]
+		}
+		if namespaceRegexMatches[2] != "" {
+			return namespaceRegexMatches[2]
+		}
 	}
+	fmt.Println("Namespace property not found in build.gradle file")
+	return ""
 }
 
 // iOS Paths
