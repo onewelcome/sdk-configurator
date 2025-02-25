@@ -359,16 +359,11 @@ func (config *Config) getAndroidNamespacePath() string {
 		fmt.Println("Error during reading gradle file", err)
 	}
 
-	pattern := `namespace\s*=\s*['"]([^'"]+)['"]|namespace\s+['"]([^'"]+)['"]`
+	pattern := `(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`
 	namespaceRegexMatches := regexp.MustCompile(pattern).FindStringSubmatch(string(gradleContent))
 
-	if len(namespaceRegexMatches) > 0 {
-		if namespaceRegexMatches[1] != "" {
-			return namespaceRegexMatches[1]
-		}
-		if namespaceRegexMatches[2] != "" {
-			return namespaceRegexMatches[2]
-		}
+	if len(namespaceRegexMatches) > 0 && namespaceRegexMatches[1] != "" {
+		return namespaceRegexMatches[1]
 	}
 	fmt.Println("Namespace property not found in build.gradle file")
 	return ""
