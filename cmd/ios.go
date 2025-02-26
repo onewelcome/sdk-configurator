@@ -50,11 +50,10 @@ var iosCmd = &cobra.Command{
 		verifyAppTarget(appTarget)
 		util.SetAppTarget(appTarget, config)
 		util.SetFlavorName(flavorName, config)
-
 		util.PrepareIosPaths(config)
 		util.WriteIOSConfigModel(config)
 		util.ConfigureIOSCertificates(config)
-
+		util.RemoveIOSSecurityController(config)
 		util.PrintSuccessMessage(config)
 		util.PrintIosInfoPlistUpdateHint(config)
 	},
