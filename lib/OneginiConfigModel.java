@@ -74,7 +74,6 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
             ", redirectionUri='" + redirectionUri + "'" +
             ", appVersion='" + appVersion + "'" +
             ", baseURL='" + baseURL + "'" +
-            ", maxPinFailures='" + maxPinFailures + "'" +
             ", resourceBaseURL='" + resourceBaseURL + "'" +
             ", keyStoreHash='" + getKeyStoreHash() + "'" +
             ", serverPublicKey='" + serverPublicKey + "'" +

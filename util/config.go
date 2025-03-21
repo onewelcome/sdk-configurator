@@ -43,7 +43,6 @@ type Config struct {
 }
 
 type options struct {
-	MaxPinFailures      int             `json:"max_pin_failures"`
 	TokenServerUri      string          `json:"token_server_uri"`
 	AppID               string          `json:"application_identifier"`
 	AppPlatform         string          `json:"application_platform"`
