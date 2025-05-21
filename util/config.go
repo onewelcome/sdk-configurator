@@ -40,6 +40,7 @@ type Config struct {
 	FlavorName               string
 	ConfigureForCordova      bool
 	ConfigureForNativeScript bool
+	GenerateJavaConfigModel  bool
 }
 
 type options struct {
@@ -157,6 +158,10 @@ func SetFlavorName(flavorName string, config *Config) {
 	config.FlavorName = flavorName
 }
 
+func SetGenerateJavaConfigModel(config *Config, generateJavaConfigModel bool) {
+	config.GenerateJavaConfigModel = generateJavaConfigModel
+}
+
 func parseTsZip(path string, config *Config) {
 	readCloser, err := zip.OpenReader(path)
 	if err != nil {
@@ -201,7 +206,17 @@ func getPackageIdentifierFromConfig(config *Config) string {
 	if config.AndroidManifest.PackageID != "" {
 		return config.AndroidManifest.PackageID
 	} else {
-		return config.getAndroidNamespacePath()
+		return config.getAndroidNamespacePath(config.getBuildGradleFileName())
+	}
+}
+
+func (config *Config) getBuildGradleFileName() string {
+	fmt.Printf("generate java config model value ")
+	fmt.Println(config.GenerateJavaConfigModel)
+	if config.GenerateJavaConfigModel {
+		return "build.gradle"
+	} else {
+		return "build.gradle.kts"
 	}
 }
 
@@ -332,7 +347,7 @@ func (config *Config) getAndroidConfigModelKotlinPath() string {
 	// if modelPath has no package name, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.kt") {
 		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.kt")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.kt")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(config.getBuildGradleFileName()), ".", "/"), "/OneginiConfigModel.kt")
 	}
 	return modelPath
 }
@@ -342,7 +357,7 @@ func (config *Config) getAndroidConfigModelJavaPath() string {
 	// if modelPath has no package name, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
 		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(config.getBuildGradleFileName()), ".", "/"), "/OneginiConfigModel.java")
 	}
 	return modelPath
 }
@@ -351,7 +366,7 @@ func (config *Config) getAndroidClasspathPath() string {
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config))
 }
 
-func (config *Config) getAndroidNamespacePath() string {
+func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 	gradleFilePath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
 	gradleContent, err := os.ReadFile(gradleFilePath)
 	if err != nil {
