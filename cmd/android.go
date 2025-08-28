@@ -43,6 +43,7 @@ var androidCmd = &cobra.Command{
 			util.ParseNativeScriptConfig(config)
 			verifyAndroidPlatformInstalled("ERROR: Your project does not seem to have the Android platform added. Please try `tns platform add android`")
 		}
+		util.SetGenerateJavaConfigModel(config, generateJavaConfigModel)
 		util.ParseAndroidManifest(config)
 		util.PrepareAndroidPaths(config)
 		util.WriteAndroidAppScheme(config)

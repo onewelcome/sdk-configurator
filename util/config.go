@@ -21,6 +21,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path"
@@ -41,6 +42,7 @@ type Config struct {
 	ConfigureForCordova      bool
 	ConfigureForNativeScript bool
 	GenerateJavaConfigModel  bool
+	CachedNamespace          string
 }
 
 type options struct {
@@ -211,8 +213,6 @@ func getPackageIdentifierFromConfig(config *Config) string {
 }
 
 func (config *Config) getBuildGradleFileName() string {
-	fmt.Printf("generate java config model value ")
-	fmt.Println(config.GenerateJavaConfigModel)
 	if config.GenerateJavaConfigModel {
 		return "build.gradle"
 	} else {
@@ -367,20 +367,75 @@ func (config *Config) getAndroidClasspathPath() string {
 }
 
 func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
-	gradleFilePath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
-	gradleContent, err := os.ReadFile(gradleFilePath)
+	// Return cached value if available
+	if config.CachedNamespace != "" {
+		return config.CachedNamespace
+	}
+
+	reDirect := regexp.MustCompile(`namespace\s*=\s*['"]([^'"]+)['"]`)
+	reIdentifier := regexp.MustCompile(`namespace\s*=\s*([A-Za-z_][A-Za-z0-9_]*)`)
+	reConst := regexp.MustCompile(`\b(?:const\s+val|val|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*['"]([^'"]+)['"]`)
+
+	gradleFilePath := path.Join(config.AppDir, config.AppTarget, gradleFileName)
+
+	data, err := os.ReadFile(gradleFilePath)
 	if err != nil {
-		fmt.Println("Error during reading gradle file", err)
+		fmt.Println("Could not read gradle file:", gradleFilePath, "error:", err)
+		return ""
+	}
+	content := string(data)
+
+	// Direct assignment
+	if match := reDirect.FindStringSubmatch(content); match != nil {
+		config.CachedNamespace = match[1]
+		return config.CachedNamespace
 	}
 
-	pattern := `(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`
-	namespaceRegexMatches := regexp.MustCompile(pattern).FindStringSubmatch(string(gradleContent))
-
-	if len(namespaceRegexMatches) > 0 && namespaceRegexMatches[1] != "" {
-		return namespaceRegexMatches[1]
+	// Identifier assignment
+	var identifier string
+	if match := reIdentifier.FindStringSubmatch(content); match != nil {
+		identifier = match[1]
+	} else {
+		fmt.Println("No namespace property found in file:", gradleFilePath)
+		return ""
 	}
-	fmt.Println("Namespace property not found in build.gradle file")
-	return ""
+
+	// Inform user about scanning
+	fmt.Println("Resolving namespace:", identifier, "- scanning project files, this may take a while...")
+
+	// Walk project directory
+	var namespaceValue string
+	walkErr := filepath.WalkDir(config.AppDir, func(fp string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return nil
+		}
+
+		data, readErr := os.ReadFile(fp)
+		if readErr != nil {
+			return nil
+		}
+
+		for _, cm := range reConst.FindAllStringSubmatch(string(data), -1) {
+			if cm[1] == identifier {
+				namespaceValue = cm[2]
+				config.CachedNamespace = namespaceValue
+				return fs.SkipDir
+			}
+		}
+		return nil
+	})
+
+	if walkErr != nil {
+		fmt.Println("Error while scanning project files:", walkErr)
+		return ""
+	}
+
+	if namespaceValue == "" {
+		fmt.Println("Could not resolve namespace identifier:", identifier)
+		return ""
+	}
+
+	return namespaceValue
 }
 
 // iOS Paths
