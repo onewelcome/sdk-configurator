@@ -372,7 +372,7 @@ func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 		return config.CachedNamespace
 	}
 
-	reDirect := regexp.MustCompile(`namespace\s*=\s*['"]([^'"]+)['"]`)
+	reDirect := regexp.MustCompile(`(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`)
 	reIdentifier := regexp.MustCompile(`namespace\s*=\s*([A-Za-z_][A-Za-z0-9_]*)`)
 	reConst := regexp.MustCompile(`\b(?:const\s+val|val|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*['"]([^'"]+)['"]`)
 
@@ -381,6 +381,7 @@ func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 	data, err := os.ReadFile(gradleFilePath)
 	if err != nil {
 		fmt.Println("Could not read gradle file:", gradleFilePath, "error:", err)
+		fmt.Println("Use '--generateJavaConfigModel true' flag if your project is based on java.")
 		return ""
 	}
 	content := string(data)
