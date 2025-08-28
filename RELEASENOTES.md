@@ -1,5 +1,10 @@
 # Release notes
 
+## 6.0.1
+
+### Bugfix
+* Fixed issue with toString() method in Android OneginiConfigModel.java class 
+
 ## 6.0.0
 
 ### Features
