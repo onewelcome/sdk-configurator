@@ -372,9 +372,9 @@ func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 		return config.CachedNamespace
 	}
 
-	reDirect := regexp.MustCompile(`(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`)
-	reIdentifier := regexp.MustCompile(`namespace\s*=\s*([A-Za-z_][A-Za-z0-9_]*)`)
-	reConst := regexp.MustCompile(`\b(?:const\s+val|val|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*['"]([^'"]+)['"]`)
+	findNamespaceValueRegex := regexp.MustCompile(`(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`)
+	findNamespaceVariableNameRegex := regexp.MustCompile(`namespace\s*=\s*([A-Za-z_][A-Za-z0-9_]*)`)
+	findNamespaceVariableInDifferentFileRegex := regexp.MustCompile(`\b(?:const\s+val|val|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*['"]([^'"]+)['"]`)
 
 	gradleFilePath := path.Join(config.AppDir, config.AppTarget, gradleFileName)
 
@@ -387,14 +387,14 @@ func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 	content := string(data)
 
 	// Direct assignment
-	if match := reDirect.FindStringSubmatch(content); match != nil {
+	if match := findNamespaceValueRegex.FindStringSubmatch(content); match != nil {
 		config.CachedNamespace = match[1]
 		return config.CachedNamespace
 	}
 
 	// Identifier assignment
 	var identifier string
-	if match := reIdentifier.FindStringSubmatch(content); match != nil {
+	if match := findNamespaceVariableNameRegex.FindStringSubmatch(content); match != nil {
 		identifier = match[1]
 	} else {
 		fmt.Println("No namespace property found in file:", gradleFilePath)
@@ -416,7 +416,7 @@ func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 			return nil
 		}
 
-		for _, cm := range reConst.FindAllStringSubmatch(string(data), -1) {
+		for _, cm := range findNamespaceVariableInDifferentFileRegex.FindAllStringSubmatch(string(data), -1) {
 			if cm[1] == identifier {
 				namespaceValue = cm[2]
 				config.CachedNamespace = namespaceValue
