@@ -1,5 +1,11 @@
 # Release notes
 
+## 6.1.0
+
+### Improvements
+* Made the SDK configurator compatible with gradle kotlin files.
+* SDK configurator supports namespace value being a variable in separate file.
+
 ## 6.0.1
 
 ### Bugfix
