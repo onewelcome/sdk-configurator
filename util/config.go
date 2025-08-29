@@ -411,6 +411,10 @@ func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
 			return nil
 		}
 
+		if !strings.HasSuffix(fp, ".kt") {
+			return nil
+		}
+
 		data, readErr := os.ReadFile(fp)
 		if readErr != nil {
 			return nil
