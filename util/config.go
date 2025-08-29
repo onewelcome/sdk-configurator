@@ -213,11 +213,19 @@ func getPackageIdentifierFromConfig(config *Config) string {
 }
 
 func (config *Config) getBuildGradleFileName() string {
-	if config.GenerateJavaConfigModel {
-		return "build.gradle"
-	} else {
+	ktsPath := path.Join(config.AppDir, config.AppTarget, "build.gradle.kts")
+	groovyPath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
+
+	if _, err := os.Stat(ktsPath); err == nil {
 		return "build.gradle.kts"
 	}
+
+	if _, err := os.Stat(groovyPath); err == nil {
+		return "build.gradle"
+	}
+
+	fmt.Println("No build.gradle(.kts) file found in project at:", path.Join(config.AppDir, config.AppTarget))
+	return ""
 }
 
 func VerifyTsZipContents(config *Config) {
