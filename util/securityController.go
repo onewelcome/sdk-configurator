@@ -27,10 +27,9 @@ func RemoveIOSSecurityController(config *Config) {
 
 func (config *Config) getAndroidSecurityControllerPath() string {
 	modelPath := path.Join(getPlatformSpecificAndroidClasspathPath(config), "SecurityController.java")
-	// if modelPath has no package name, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/SecurityController.java") {
 		modelPath = strings.TrimSuffix(modelPath, "SecurityController.java")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/SecurityController.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(config.getBuildGradleFileName()), ".", "/"), "/SecurityController.java")
 	}
 	return modelPath
 }

@@ -21,6 +21,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path"
@@ -40,6 +41,8 @@ type Config struct {
 	FlavorName               string
 	ConfigureForCordova      bool
 	ConfigureForNativeScript bool
+	GenerateJavaConfigModel  bool
+	CachedNamespace          string
 }
 
 type options struct {
@@ -157,6 +160,10 @@ func SetFlavorName(flavorName string, config *Config) {
 	config.FlavorName = flavorName
 }
 
+func SetGenerateJavaConfigModel(config *Config, generateJavaConfigModel bool) {
+	config.GenerateJavaConfigModel = generateJavaConfigModel
+}
+
 func parseTsZip(path string, config *Config) {
 	readCloser, err := zip.OpenReader(path)
 	if err != nil {
@@ -201,8 +208,24 @@ func getPackageIdentifierFromConfig(config *Config) string {
 	if config.AndroidManifest.PackageID != "" {
 		return config.AndroidManifest.PackageID
 	} else {
-		return config.getAndroidNamespacePath()
+		return config.getAndroidNamespacePath(config.getBuildGradleFileName())
 	}
+}
+
+func (config *Config) getBuildGradleFileName() string {
+	ktsPath := path.Join(config.AppDir, config.AppTarget, "build.gradle.kts")
+	groovyPath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
+
+	if _, err := os.Stat(ktsPath); err == nil {
+		return "build.gradle.kts"
+	}
+
+	if _, err := os.Stat(groovyPath); err == nil {
+		return "build.gradle"
+	}
+
+	fmt.Println("No build.gradle(.kts) file found in project at:", path.Join(config.AppDir, config.AppTarget))
+	return ""
 }
 
 func VerifyTsZipContents(config *Config) {
@@ -332,7 +355,7 @@ func (config *Config) getAndroidConfigModelKotlinPath() string {
 	// if modelPath has no package name, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.kt") {
 		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.kt")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.kt")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(config.getBuildGradleFileName()), ".", "/"), "/OneginiConfigModel.kt")
 	}
 	return modelPath
 }
@@ -342,7 +365,7 @@ func (config *Config) getAndroidConfigModelJavaPath() string {
 	// if modelPath has no package name, check namespace property in build.gradle
 	if strings.HasSuffix(modelPath, "java/OneginiConfigModel.java") {
 		modelPath = strings.TrimSuffix(modelPath, "OneginiConfigModel.java")
-		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(), ".", "/"), "/OneginiConfigModel.java")
+		modelPath = path.Join(modelPath, strings.ReplaceAll(config.getAndroidNamespacePath(config.getBuildGradleFileName()), ".", "/"), "/OneginiConfigModel.java")
 	}
 	return modelPath
 }
@@ -351,21 +374,81 @@ func (config *Config) getAndroidClasspathPath() string {
 	return path.Join(getPlatformSpecificAndroidClasspathPath(config))
 }
 
-func (config *Config) getAndroidNamespacePath() string {
-	gradleFilePath := path.Join(config.AppDir, config.AppTarget, "build.gradle")
-	gradleContent, err := os.ReadFile(gradleFilePath)
+func (config *Config) getAndroidNamespacePath(gradleFileName string) string {
+	// Return cached value if available
+	if config.CachedNamespace != "" {
+		return config.CachedNamespace
+	}
+
+	findNamespaceValueRegex := regexp.MustCompile(`(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`)
+	findNamespaceVariableNameRegex := regexp.MustCompile(`namespace\s*=\s*([A-Za-z_][A-Za-z0-9_]*)`)
+	findNamespaceVariableInDifferentFileRegex := regexp.MustCompile(`\b(?:const\s+val|val|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*['"]([^'"]+)['"]`)
+
+	gradleFilePath := path.Join(config.AppDir, config.AppTarget, gradleFileName)
+
+	data, err := os.ReadFile(gradleFilePath)
 	if err != nil {
-		fmt.Println("Error during reading gradle file", err)
+		fmt.Println("Could not read gradle file:", gradleFilePath, "error:", err)
+		fmt.Println("Use '--generateJavaConfigModel true' flag if your project is based on java.")
+		return ""
+	}
+	content := string(data)
+
+	// Direct assignment
+	if match := findNamespaceValueRegex.FindStringSubmatch(content); match != nil {
+		config.CachedNamespace = match[1]
+		return config.CachedNamespace
 	}
 
-	pattern := `(?:namespace\s*=\s*|namespace\s+)['"]([^'"]+)['"]`
-	namespaceRegexMatches := regexp.MustCompile(pattern).FindStringSubmatch(string(gradleContent))
-
-	if len(namespaceRegexMatches) > 0 && namespaceRegexMatches[1] != "" {
-		return namespaceRegexMatches[1]
+	// Identifier assignment
+	var identifier string
+	if match := findNamespaceVariableNameRegex.FindStringSubmatch(content); match != nil {
+		identifier = match[1]
+	} else {
+		fmt.Println("No namespace property found in file:", gradleFilePath)
+		return ""
 	}
-	fmt.Println("Namespace property not found in build.gradle file")
-	return ""
+
+	// Inform user about scanning
+	fmt.Println("Resolving namespace:", identifier, "- scanning project files, this may take a while...")
+
+	// Walk project directory
+	var namespaceValue string
+	walkErr := filepath.WalkDir(config.AppDir, func(fp string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return nil
+		}
+
+		if !strings.HasSuffix(fp, ".kt") {
+			return nil
+		}
+
+		data, readErr := os.ReadFile(fp)
+		if readErr != nil {
+			return nil
+		}
+
+		for _, cm := range findNamespaceVariableInDifferentFileRegex.FindAllStringSubmatch(string(data), -1) {
+			if cm[1] == identifier {
+				namespaceValue = cm[2]
+				config.CachedNamespace = namespaceValue
+				return fs.SkipDir
+			}
+		}
+		return nil
+	})
+
+	if walkErr != nil {
+		fmt.Println("Error while scanning project files:", walkErr)
+		return ""
+	}
+
+	if namespaceValue == "" {
+		fmt.Println("Could not resolve namespace identifier:", identifier)
+		return ""
+	}
+
+	return namespaceValue
 }
 
 // iOS Paths
