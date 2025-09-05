@@ -1,5 +1,10 @@
 # Release notes
 
+## 6.1.1
+
+### Bugfix
+* Fixed issue with serverPublicKey field being null for OneginiConfigModel.kt files.
+
 ## 6.1.0
 
 ### Improvements
