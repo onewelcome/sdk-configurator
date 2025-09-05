@@ -12,7 +12,7 @@ class OneginiConfigModel : OneginiClientConfigModel {
   override val baseUrl = "value_will_be_replaced"
   override val resourceBaseUrl = "value_will_be_replaced"
   override val keyStoreHash = "value_will_be_replaced"
-  override val serverPublicKey: String? = null
+  override val serverPublicKey = "value_will_be_replaced"
   override val serverType = "value_will_be_replaced"
   override val serverVersion = "value_will_be_replaced"
   override val certificatePinningKeyStore = R.raw.keystore
