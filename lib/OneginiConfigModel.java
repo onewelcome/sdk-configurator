@@ -14,7 +14,7 @@ public class OneginiConfigModel implements OneginiClientConfigModel {
   private final String baseURL = "value_will_be_replaced";
   private final String resourceBaseURL = "value_will_be_replaced";
   private final String keystoreHash = "value_will_be_replaced";
-  private final String serverPublicKey = null;
+  private final String serverPublicKey = "value_will_be_replaced";
   private final String serverType = "value_will_be_replaced";
   private final String serverVersion = "value_will_be_replaced";
 
