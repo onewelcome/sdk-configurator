@@ -1,5 +1,8 @@
 # Release notes
 
+## 6.1.2
+* Fixed issue with OneginiConfigModel file not placed in the project at all if full expected path is not present. 
+
 ## 6.1.1
 
 ### Bugfix
