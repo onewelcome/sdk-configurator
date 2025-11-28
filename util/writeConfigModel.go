@@ -17,6 +17,7 @@ package util
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -125,12 +126,23 @@ func WriteAndroidConfigModel(config *Config, generateJavaConfigModel bool) {
 	if generateJavaConfigModel {
 		model := readAndroidJavaConfigModelFromAssets()
 		model = overrideAndroidConfigJavaModelValues(config, keyStorePath, model)
-		os.WriteFile(modelJavaPath, model, os.ModePerm)
+		WriteFileEnsureDir(modelJavaPath, model, os.ModePerm)
 	} else {
 		model := readAndroidKotlinConfigModelFromAssets()
 		model = overrideAndroidConfigKotlinModelValues(config, keyStorePath, model)
-		os.WriteFile(modelKotlinPath, model, os.ModePerm)
+		WriteFileEnsureDir(modelKotlinPath, model, os.ModePerm)
 	}
+}
+
+func WriteFileEnsureDir(path string, data []byte, perm os.FileMode) error {
+	// Ensure the directory exists
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+
+	// Write the file
+	return os.WriteFile(path, data, perm)
 }
 
 func deleteFileIfExists(filePath string, errorDescription string) {
