@@ -100,7 +100,12 @@ func overrideIosConfigModelValues(config *Config) (modelMFile []byte) {
 		modelMFile = re.ReplaceAll(modelMFile, []byte(newPref))
 	}
 
-	newDef := "certificates\n{\n	return @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
+	var newDef string
+	if len(base64Certs) == 0 {
+		newDef = "certificates\n{\n\treturn @[]; //Base64Certificates"
+	} else {
+		newDef = "certificates\n{\n\treturn @[@\"" + strings.Join(base64Certs, "\", @\"") + "\"]; //Base64Certificates"
+	}
 
 	re := regexp.MustCompile(`certificates\s*{\s*return @\[.*\];.*`)
 	modelMFile = re.ReplaceAll(modelMFile, []byte(newDef))
@@ -207,6 +212,11 @@ func overrideAndroidConfigKotlinModelValues(config *Config, keystorePath string,
 	re := regexp.MustCompile(`CONFIGURATOR_VERSION`)
 	model = re.ReplaceAll(model, []byte(version.Version))
 
+	if len(config.Certs) == 0 {
+		re := regexp.MustCompile(`certificatePinningKeyStore\s=\sR\.raw\.keystore`)
+		model = re.ReplaceAll(model, []byte("certificatePinningKeyStore = 0"))
+	}
+
 	return model
 }
 
@@ -239,6 +249,11 @@ func overrideAndroidConfigJavaModelValues(config *Config, keystorePath string, m
 
 	re := regexp.MustCompile(`CONFIGURATOR_VERSION`)
 	model = re.ReplaceAll(model, []byte(version.Version))
+
+	if len(config.Certs) == 0 {
+		re := regexp.MustCompile(`return R\.raw\.keystore;`)
+		model = re.ReplaceAll(model, []byte("return 0;"))
+	}
 
 	return model
 }
