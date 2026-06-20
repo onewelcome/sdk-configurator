@@ -23,8 +23,6 @@ import (
 	"os/exec"
 
 	"strings"
-
-	"github.com/onewelcome/sdk-configurator/data"
 )
 
 var (
@@ -37,15 +35,15 @@ func init() {
 	removeFileScriptPath = path.Join(tempPath, "lib", "removeFileFromXcodeProject.rb")
 	addFileScriptPath = path.Join(tempPath, "lib", "addFileToXcodeProject.rb")
 
-	if err := data.RestoreAsset(tempPath, "lib/removeFileFromXcodeProject.rb"); err != nil {
-		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
-		os.Exit(1)
-	}
+	// if err := data.RestoreAsset(tempPath, "lib/removeFileFromXcodeProject.rb"); err != nil {
+	// 	os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
+	// 	os.Exit(1)
+	// }
 
-	if err := data.RestoreAsset(tempPath, "lib/addFileToXcodeProject.rb"); err != nil {
-		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
-		os.Exit(1)
-	}
+	// if err := data.RestoreAsset(tempPath, "lib/addFileToXcodeProject.rb"); err != nil {
+	// 	os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
+	// 	os.Exit(1)
+	// }
 }
 
 func iosRemoveCertFilesFromXcodeProj(certPath string, xcodeProjPath string) {
