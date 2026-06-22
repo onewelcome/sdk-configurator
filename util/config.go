@@ -242,8 +242,7 @@ func VerifyTsZipContents(config *Config) {
 	}
 
 	if config.Certs == nil || len(config.Certs) == 0 {
-		os.Stderr.WriteString(fmt.Sprintln("ERROR: Does the Token Server configuration zip contain certificates?"))
-		os.Exit(1)
+		fmt.Println("WARNING: No certificates found in the Token Server configuration zip. The config model will be generated without certificate pinning.")
 	}
 }
 

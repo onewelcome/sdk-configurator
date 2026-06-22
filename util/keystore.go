@@ -27,11 +27,13 @@ import (
 	"encoding/base64"
 
 	"path/filepath"
-
-	"github.com/onewelcome/sdk-configurator/data"
 )
 
 func CreateKeystore(config *Config) {
+	if len(config.Certs) == 0 {
+		return
+	}
+
 	storePath := config.getAndroidKeystorePath()
 
 	_, err := os.Stat(storePath)
@@ -82,6 +84,10 @@ func findKeytool() (keyToolPath string) {
 }
 
 func CalculateKeystoreHash(keystorePath string) (hash string) {
+	if _, err := os.Stat(keystorePath); os.IsNotExist(err) {
+		return ""
+	}
+
 	keystore, err := ioutil.ReadFile(keystorePath)
 	if err != nil {
 		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not calculate keystore hash: %v\n", err))
@@ -108,10 +114,11 @@ func restoreBcprov() (filePath string) {
 	tempPath := path.Join(os.TempDir(), "sdk-configurator")
 	filePath = path.Join(tempPath, "lib", "bcprov-jdk15on-1.46.jar")
 
-	if err := data.RestoreAsset(tempPath, "lib/bcprov-jdk15on-1.46.jar"); err != nil {
-		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
+	if err := os.MkdirAll(path.Join(tempPath, "lib"), 0755); err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not create temp directory: %v\n", err))
 		os.Exit(1)
 	}
+	restoreAsset("lib/bcprov-jdk15on-1.46.jar", filePath)
 
 	return
 }
