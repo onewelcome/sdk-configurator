@@ -114,10 +114,11 @@ func restoreBcprov() (filePath string) {
 	tempPath := path.Join(os.TempDir(), "sdk-configurator")
 	filePath = path.Join(tempPath, "lib", "bcprov-jdk15on-1.46.jar")
 
-	// if err := data.RestoreAsset(tempPath, "lib/bcprov-jdk15on-1.46.jar"); err != nil {
-	// 	os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
-	// 	os.Exit(1)
-	// }
+	if err := os.MkdirAll(path.Join(tempPath, "lib"), 0755); err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not create temp directory: %v\n", err))
+		os.Exit(1)
+	}
+	restoreAsset("lib/bcprov-jdk15on-1.46.jar", filePath)
 
 	return
 }

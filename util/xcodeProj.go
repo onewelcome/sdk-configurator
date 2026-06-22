@@ -23,6 +23,8 @@ import (
 	"os/exec"
 
 	"strings"
+
+	"github.com/onewelcome/sdk-configurator/data"
 )
 
 var (
@@ -35,15 +37,25 @@ func init() {
 	removeFileScriptPath = path.Join(tempPath, "lib", "removeFileFromXcodeProject.rb")
 	addFileScriptPath = path.Join(tempPath, "lib", "addFileToXcodeProject.rb")
 
-	// if err := data.RestoreAsset(tempPath, "lib/removeFileFromXcodeProject.rb"); err != nil {
-	// 	os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
-	// 	os.Exit(1)
-	// }
+	if err := os.MkdirAll(path.Join(tempPath, "lib"), 0755); err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not create temp directory: %v\n", err))
+		os.Exit(1)
+	}
 
-	// if err := data.RestoreAsset(tempPath, "lib/addFileToXcodeProject.rb"); err != nil {
-	// 	os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not restore required asset: %v\n", err))
-	// 	os.Exit(1)
-	// }
+	restoreAsset("lib/removeFileFromXcodeProject.rb", removeFileScriptPath)
+	restoreAsset("lib/addFileToXcodeProject.rb", addFileScriptPath)
+}
+
+func restoreAsset(assetName string, destPath string) {
+	assetBytes, err := data.Asset(assetName)
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not read required asset %q: %v\n", assetName, err))
+		os.Exit(1)
+	}
+	if err := os.WriteFile(destPath, assetBytes, 0644); err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("ERROR: Could not write required asset %q: %v\n", assetName, err))
+		os.Exit(1)
+	}
 }
 
 func iosRemoveCertFilesFromXcodeProj(certPath string, xcodeProjPath string) {
